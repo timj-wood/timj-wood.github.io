@@ -1,12 +1,12 @@
 :root {
-  --bg: #171d19;
-  --ink: #e6e9e3;
-  --muted: #8d9990;
-  --line: #2e3831;
-  --accent: #b39ddb;
-  --accent-soft: #4a3d63;
-  --moss: #8fb58a;
-  --code-bg: #232b26;
+  --bg: #e8e1d3;
+  --ink: #221f1b;
+  --muted: #7a7267;
+  --line: #d3cabb;
+  --accent: #8a4b2a;
+  --accent-soft: #d9b8a3;
+  --moss: #5e5346;
+  --code-bg: #ddd5c5;
 }
 
 * { box-sizing: border-box; }
@@ -38,11 +38,34 @@ a:focus-visible {
   border-bottom-color: transparent;
 }
 
+/* ---- Top bar ---- */
+.topbar {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 32px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.topbar .logo {
+  display: block;
+  border-bottom: none;
+  line-height: 0;
+}
+.topbar .logo img { height: 52px; width: auto; }
+.topbar nav a {
+  margin-left: 22px;
+  color: var(--muted);
+  border-bottom-color: transparent;
+  font-size: 0.95rem;
+}
+.topbar nav a:hover { color: var(--accent); border-bottom-color: var(--accent-soft); }
+
 /* ---- Home layout ---- */
 .page {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 56px 32px 96px;
+  padding: 48px 32px 96px;
   display: grid;
   grid-template-columns: 340px 1fr;
   gap: 72px;
@@ -168,7 +191,7 @@ main section + section { margin-top: 72px; }
 }
 .post .back {
   display: inline-block;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
   color: var(--muted);
   font-size: 0.9rem;
   border-bottom-color: var(--line);
@@ -201,12 +224,12 @@ main section + section { margin-top: 72px; }
 .post code {
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-size: 0.9em;
-  background: #e3e8e1;
+  background: var(--code-bg);
   padding: 0.1em 0.35em;
   border-radius: 3px;
 }
 .post pre {
-  background: #e3e8e1;
+  background: var(--code-bg);
   padding: 16px 20px;
   border-radius: 4px;
   overflow-x: auto;
@@ -234,6 +257,5 @@ main section + section { margin-top: 72px; }
   .photo { max-width: 360px; }
   h1 { font-size: 2.2rem; }
   .post h1 { font-size: 1.9rem; }
-  .scan { height: 110px; }
-  .scan.small { height: 56px; }
+  .topbar { padding: 20px 20px 0; }
 }

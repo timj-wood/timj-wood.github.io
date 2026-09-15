@@ -3,16 +3,23 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Why dadi's confidence intervals are too narrow – Timothy Wood</title>
+  <title>Why dadi's confidence intervals are too narrow – Swade</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../../assets/style.css">
 </head>
 <body>
 
+  <header class="topbar">
+    <a class="logo" href="../../"><img src="../../assets/brand/logo.svg" alt="Swade"></a>
+    <nav>
+      <a href="../../#writing">Writing</a>
+    </nav>
+  </header>
+
   <article class="post">
-    <a class="back" href="../../">Timothy Wood</a>
 
     <h1>Why dadi's confidence intervals are too narrow, and what to do about it</h1>
     <span class="when">September 2026</span>
@@ -179,9 +186,10 @@
 <pre><code>import numpy as np
 from dadi import Godambe
 
-# popt: fitted parameters; boots: list of bootstrap spectra
-G, H, J = Godambe.get_godambe(func_ex, pts, boots, popt, data,
-                              eps=0.01, log=False)
+# popt: fitted parameters (with theta appended if you want it included);
+# boots: list of bootstrap spectra
+G, H, J, _ = Godambe.get_godambe(func_ex, pts, boots, popt, data,
+                                 eps=0.01, log=False)
 
 # effective number of parameters and CLAIC
 k_eff  = np.trace(J @ np.linalg.inv(H))
@@ -200,9 +208,11 @@ lo, hi = popt * np.exp(-1.96 * se_log), popt * np.exp(1.96 * se_log)
 corr   = cov / np.outer(se, se)</code></pre>
 
     <p>
-      Check the return signature of <code>get_godambe</code> against your
-      dadi version, and pass <code>multinom=True</code> consistently if you
-      want θ included as a parameter.
+      Note that <code>get_godambe</code> works on whatever parameter vector
+      you hand it. To include θ, do what <code>GIM_uncert</code> does
+      internally with <code>multinom=True</code>: append the fitted θ to
+      <code>popt</code> and wrap <code>func_ex</code> so that it scales the
+      spectrum by the last parameter instead of optimising θ out.
     </p>
 
     <h2>Why the correlation matrix is not optional</h2>

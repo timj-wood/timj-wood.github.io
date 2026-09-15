@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How mixed are Scottish wildcats? – Swade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="logo" href="../../"><img src="../../assets/brand/logo.svg" alt="Swade"></a>
+    <nav>
+      <a href="../../#writing">Writing</a>
+    </nav>
+  </header>
+
+  <article class="post">
+
+    <h1>How mixed are Scottish wildcats? Fitting demographic models to a joint site frequency spectrum</h1>
+    <span class="when">September 2026</span>
+
+    <p>
+      The Scottish wildcat is hanging on by a thread. There are only a few
+      hundred left, and the bigger threat to them now isn't habitat or
+      persecution but domestic cats: the two interbreed freely, and recent
+      work has shown that the wild population has been steadily absorbing
+      domestic ancestry. How much, and over what timescale, is a question you
+      can try to answer from the genomes themselves.
+    </p>
+
+    <p>
+      Over the summer I worked on this with Mark Beaumont, Dennis Prangle and
+      Grace Yan. The idea was to fit a few competing models of the two
+      populations' shared history to sequence data from 16 wild-caught
+      Scottish wildcats and 6 domestic cats, ask which model fits best, and
+      be honest about which of its parameters the data actually pin down.
+      This post is the short version. The
+      <a href="../../assets/docs/dadi_report.pdf">full report</a> and the
+      <a href="https://github.com/timj-wood/wildcat_models">code</a> are
+      both available.
+    </p>
+
+    <h2>The data: a joint site frequency spectrum</h2>
+
+    <p>
+      Demographic inference from a site frequency spectrum (SFS) throws away
+      almost everything about the genome and keeps one thing: for each
+      variable site, how many copies of each allele are in the sample. A
+      <em>joint</em> SFS does this for two populations at once, so each site
+      becomes a pair of counts, (copies in the wildcats, copies in the
+      domestics), and the spectrum is a 2D histogram of those pairs.
+    </p>
+
+    <p>
+      Ours is <em>folded</em> because we have no outgroup, so we can't tell
+      which allele is ancestral. Instead of counting derived alleles, you
+      count the minor allele, which folds the histogram over its diagonal.
+      That costs some information (in particular some of the asymmetry
+      between the populations), but it avoids guessing.
+    </p>
+
+    <figure>
+      <img src="jsfs.png" alt="Folded joint site frequency spectrum, Scottish wildcat against domestic cat">
+      <figcaption>
+        The folded joint SFS, built from 123,348 segregating sites on
+        chromosomes A1 and A2. Vertical axis: minor-allele count in 32 wildcat
+        haplotypes; horizontal: count in 12 domestic haplotypes. Colour is log
+        count.
+      </figcaption>
+    </figure>
+
+    <p>
+      The shape of this histogram is what carries the history. Lots of rare
+      variants means recent expansion; a bulge at intermediate frequencies
+      means a bottleneck; mass along the diagonal means shared variation, and
+      so on. A demographic model predicts an expected spectrum, and you fit it
+      by comparing the prediction to the observed one.
+    </p>
+
+    <p>
+      One decision here mattered more than I expected. The Scottish sample
+      also included ten captive-bred animals, and I'd initially planned to
+      pool them with the wild-caught ones. But the captive cats are a small,
+      closed breeding population with about 20% lower diversity, and a
+      spectrum built from a structured population mimics a recent size change
+      that never happened. Pooling shifted 26% more mass into the middle of
+      the spectrum. So all the fits use the wild-caught animals only.
+    </p>
+
+    <h2>Three models</h2>
+
+    <p>
+      All three share a topology: one ancestral population splits into a
+      wildcat branch and a domestic branch, and the two then exchange migrants
+      up to the present. They differ in how much structure is imposed on top.
+    </p>
+
+    <figure>
+      <img src="models.png" alt="Diagrams of the three demographic models">
+      <figcaption>
+        (a) <code>sec_contact</code>: split, isolation, then contact. (b)
+        <code>basic</code>: each branch changes size once, at a time meant to
+        correspond to a real event, and migration rates change with it. (c)
+        <code>growth</code>: the same as (b) but the size changes are gradual.
+      </figcaption>
+    </figure>
+
+    <p>
+      The interesting comparison is between <code>sec_contact</code>, whose six
+      parameters correspond to nothing in particular, and <code>basic</code>,
+      which Mark specified with two named events in mind: the size change in
+      the domestic branch represents domestication, and the size change in the
+      wildcat branch represents Britain being cut off from the continent when
+      the land bridge flooded. If the labelled model fits better, that's weak
+      evidence the labels mean something.
+    </p>
+
+    <h2>What dadi does with them</h2>
+
+    <p>
+      <a href="https://dadi.readthedocs.io/">dadi</a> takes a model and solves
+      a diffusion approximation to get the expected SFS under it, then
+      computes a Poisson likelihood of the observed spectrum given that
+      expectation, and optimises over the parameters. The fitting itself is
+      routine: four rounds of fifty restarts each on the university's HPC,
+      narrowing the search each time.
+    </p>
+
+    <p>
+      The part that took the most care is that dadi's likelihood is a
+      <em>composite</em> likelihood. It treats every site as independent, which
+      they aren't, because nearby sites are linked. The result is that the
+      likelihood is far sharper than it should be, and every standard tool
+      built on it (AIC, confidence intervals) is over-confident. For model
+      selection I used the composite-likelihood AIC, which replaces the
+      parameter count with an effective count estimated from block-bootstrap
+      replicates of the genome. For <code>basic</code>, a 12-parameter model,
+      the effective count came out at 293. That's roughly how much the naive
+      likelihood overstates what the data say.
+    </p>
+
+    <h2>What came out</h2>
+
+    <p>
+      <code>sec_contact</code> lost decisively, by over 800 CLAIC units, and you
+      can see why in the residuals: it systematically misses the bins where
+      both populations have low allele counts. <code>basic</code> and
+      <code>growth</code> both fit well and are hard to tell apart.
+      <code>growth</code> technically scored better, but its fit ran into a
+      parameter bound rather than finding a maximum, which means the statistic
+      isn't defined for it. So <code>basic</code> is the result I report.
+    </p>
+
+    <figure>
+      <img src="fit.png" alt="Observed and fitted spectra for the basic model, with residuals">
+      <figcaption>
+        The <code>basic</code> fit. Observed spectrum (top left), model
+        expectation (top right), and residuals (bottom). No large regions of a
+        single sign, which is what you want.
+      </figcaption>
+    </figure>
+
+    <p>Under <code>basic</code>:</p>
+
+    <ul>
+      <li>The wildcat and domestic lineages split around 485,000 years ago,
+        though the interval on that runs from 190,000 to 1.3 million.</li>
+      <li>The domestic branch changed size around 10,600 years ago, which lines
+        up nicely with the earliest cats found alongside humans on Cyprus. But
+        the interval is 3,200 to 35,000 years, so treating it as a date would be
+        generous.</li>
+      <li>The wildcat branch changed size about 670 years ago. This is the
+        awkward one: the land bridge flooded around 8,200 years ago, and the
+        19th-century persecution is more recent. The model has a single break
+        point where the real history has several, so it's settled on a
+        compromise matching none of them. The land-bridge label doesn't
+        survive.</li>
+      <li>Recent gene flow runs strongly from domestic cats into wildcats,
+        and this holds across both good models even though they disagree about
+        almost everything ancient. Compounded over the recent epoch, the fitted
+        rate gives roughly 14% domestic ancestry, at the low end of the 11–74%
+        measured directly in modern individuals.</li>
+    </ul>
+
+    <h2>The part I'd want a reader to take away</h2>
+
+    <p>
+      Only four of the twelve parameters are determined to within a factor of
+      two, and they're all recent: the current wildcat size, the time of its
+      change, and the two recent migration rates. Everything deeper is known
+      only to within a factor of four to eleven. That's partly the data (two
+      chromosomes is not much sequence) and partly a fundamental limit: the
+      error in SFS-based inference shrinks only logarithmically with the
+      number of individuals but polynomially with the amount of sequence, so
+      adding cats wouldn't have helped much.
+    </p>
+
+    <p>
+      More importantly, the interval widths aren't independent of each other.
+    </p>
+
+    <figure>
+      <img src="corr.png" alt="Parameter correlation matrix for the basic model">
+      <figcaption>
+        Parameter correlations for <code>basic</code>. The block of deep
+        parameters in the top left are all correlated above 0.97 with each
+        other and below −0.99 with θ.
+      </figcaption>
+    </figure>
+
+    <p>
+      The ancestral sizes and the split time aren't three separately uncertain
+      quantities. They lie along a single ridge in the likelihood: make the
+      ancestral populations bigger and the split older while turning down θ
+      and early gene flow, and the fit barely changes. Even the "well
+      determined" recent parameters have this problem in miniature: the recent
+      wildcat epoch length and the migration rate into it correlate at 0.987,
+      so what the spectrum really constrains is their product, roughly the
+      cumulative amount of introgression, and not either one on its own.
+    </p>
+
+    <p>
+      That last point is the one I find most interesting, because it lines up
+      with the literature in an unexpected way. Earlier work estimated a much
+      higher migration rate over a much shorter period, and the two histories
+      reach a similar cumulative ancestry. My hypothesis is that the SFS pins
+      down the total quite well and the rate and duration hardly at all.
+    </p>
+
+    <h2>Why this was worth doing</h2>
+
+    <p>
+      The real aim was to build a baseline. My MSc dissertation will use
+      neural simulation-based inference for demographic modelling, and to know
+      whether that's working I need something to compare against. What this
+      project taught me is that the comparison can't just be a table of
+      interval widths. A method could reproduce every width in that table
+      while placing its uncertainty along a completely different ridge. The
+      correlation structure is part of the answer, and the honest uncertainty
+      is both wider and more structured than any single table shows.
+    </p>
+
+    <p>
+      Things I'd do next, roughly in order: refit the plain
+      isolation-with-migration model that was dropped early on, since without
+      it the comparison lacks its natural baseline; add sequence rather than
+      animals; and try to polarise the spectrum, since folding discards exactly
+      the asymmetry the worst-determined parameters describe.
+    </p>
+  </article>
+
+</body>
+</html>
