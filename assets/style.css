@@ -108,8 +108,19 @@ h1 {
   margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 18px;
-  font-weight: 500;
+  gap: 8px 20px;
+}
+.links a {
+  display: inline-flex;
+  color: var(--accent);
+  border-bottom: none;      /* stop the underline from drawing under the icon */
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.links a:hover { opacity: 1; }
+.links svg {
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 .updated {
