@@ -22,14 +22,14 @@
       you get numbers that look reassuringly tight. They are lying to you, and
       not by a little. This post is about why, how much, and the correction
       that fixes it. I worked through all of this for a
-      <a href="../wildcat-dadi/">project on Scottish wildcats</a>, and the
+      <a href="https://github.com/timj-wood/wildcat_models">project on Scottish wildcats</a>, and the
       details below come from that fit.
     </p>
 
-    <h2>The trap</h2>
+    <h2>The issues with dadi</h2>
 
     <p>
-      dadi fits a model by computing the expected site frequency spectrum
+      <a href="https://dadi.readthedocs.io/en/latest/">dadi</a> fits a model by computing the expected site frequency spectrum
       under it and comparing that to the observed spectrum with a Poisson
       likelihood, one term per bin. The likelihood is a product over bins, and
       the count in each bin is a sum over sites. Every site contributes as if
