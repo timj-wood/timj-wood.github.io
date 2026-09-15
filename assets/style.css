@@ -1,11 +1,12 @@
 :root {
-  --bg: #eef1ec;
-  --ink: #1e2a22;
-  --muted: #66736b;
-  --line: #cfd6cf;
-  --accent: #6b4e8c;
-  --accent-soft: #d9cfe6;
-  --moss: #4f6b4a;
+  --bg: #171d19;
+  --ink: #e6e9e3;
+  --muted: #8d9990;
+  --line: #2e3831;
+  --accent: #b39ddb;
+  --accent-soft: #4a3d63;
+  --moss: #8fb58a;
+  --code-bg: #232b26;
 }
 
 * { box-sizing: border-box; }
