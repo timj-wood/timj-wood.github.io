@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.title }}{% if page.url == "/" %} – {{ site.author }}{% endif %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ '/assets/style.css' | relative_url }}">
+  <meta property="og:title" content="{% if page.title %}{{ page.title }}{% else %}{{ site.title }} – {{ site.author }}{% endif %}">
+  <meta property="og:description" content="{{ page.summary | default: site.description }}">
+  <meta property="og:image" content="{{ '/assets/brand/logo.png' | absolute_url }}">
+  <meta property="og:url" content="{{ page.url | absolute_url }}">
+  {% if page.layout == "post" %}
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]'], ['$$', '$$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  {% endif %}
+</head>
+<body>
+
+  <header class="topbar">
+    <a class="logo" href="{{ '/' | relative_url }}"><img src="{{ '/assets/brand/logo-tight.svg' | relative_url }}" alt="Swade"></a>
+    <nav>
+      {% if page.url == "/" %}
+      <a href="#projects">Projects</a>
+      <a href="#writing">Writing</a>
+      <a href="{{ '/assets/docs/cv.pdf' | relative_url }}">CV</a>
+      {% else %}
+      <a href="{{ '/#writing' | relative_url }}">Writing</a>
+      {% endif %}
+    </nav>
+  </header>
+
+{{ content }}
+
+</body>
+</html>

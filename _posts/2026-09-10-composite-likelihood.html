@@ -1,29 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Why dadi's confidence intervals are too narrow – Swade</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../assets/style.css">
-</head>
-<body>
-
-  <header class="topbar">
-    <a class="logo" href="../../"><img src="../../assets/brand/logo-tight.svg" alt="Swade"></a>
-    <nav>
-      <a href="../../#writing">Writing</a>
-    </nav>
-  </header>
-
-  <article class="post">
-
-    <h1>Why dadi's confidence intervals are too narrow, and what to do about it</h1>
-    <span class="when">September 2026</span>
-
+---
+layout: post
+title: "Why dadi's confidence intervals are too narrow, and what to do about it"
+date: 2026-09-10
+summary: "Composite likelihood, the Godambe correction, and the mistakes I made applying it."
+---
     <p>
       If you fit a demographic model in dadi and ask for confidence intervals,
       you get numbers that look reassuringly tight. However, these values are lying to you, and by quite an amount. 
@@ -212,7 +192,7 @@ corr   = cov / np.outer(se, se)</code></pre>
     </p>
 
     <figure>
-      <img src="corr.png" alt="Parameter correlation matrix from the sandwich covariance">
+      <img src="{{ '/assets/img/posts/composite-likelihood/corr.png' | relative_url }}" alt="Parameter correlation matrix from the sandwich covariance">
       <figcaption>
         Correlations from the sandwich covariance for the wildcat model. The
         block in the top left are the ancestral sizes and the split time; all
@@ -230,7 +210,4 @@ corr   = cov / np.outer(se, se)</code></pre>
       down is their product. Neither fact is visible in a table of intervals.
       If you report one, report both.
     </p>
-  </article>
-
-</body>
-</html>
+  

@@ -1,0 +1,17 @@
+title: Swade
+author: Timothy Wood
+description: MSc Bioinformatics, University of Bristol. Population genomics and statistical genetics.
+url: https://timj-wood.github.io
+baseurl: ""
+
+# Posts live at /posts/<slug>/ — same URLs as before the move to Jekyll
+permalink: /posts/:title/
+
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  input: GFM
+
+exclude:
+  - README.md
+  - .DS_Store

@@ -108,8 +108,19 @@ h1 {
   margin: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 18px;
-  font-weight: 500;
+  gap: 8px 20px;
+}
+.links a {
+  display: inline-flex;
+  color: var(--accent);
+  border-bottom: none;      /* stop the underline from drawing under the icon */
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+.links a:hover { opacity: 1; }
+.links svg {
+  width: 1.4rem;
+  height: 1.4rem;
 }
 
 .updated {
@@ -258,4 +269,29 @@ main section + section { margin-top: 72px; }
   h1 { font-size: 2.2rem; }
   .post h1 { font-size: 1.9rem; }
   .topbar { padding: 20px 20px 0; }
+}
+
+/* ---- Post extras (tables, maths, drafts) ---- */
+.post table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5em 0;
+  font-size: 0.95rem;
+}
+.post th, .post td {
+  text-align: left;
+  padding: 0.5em 0.75em;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.post th { font-weight: 500; color: var(--moss); }
+.post mjx-container[display="true"] {
+  margin: 1.5em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.post h3 {
+  font-weight: 500;
+  font-size: 1.15rem;
+  margin: 1.8em 0 0.5em;
 }

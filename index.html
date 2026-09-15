@@ -1,52 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Swade – Timothy Wood</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="assets/style.css">
-  <meta property="og:title" content="Swade – Timothy Wood">
-  <meta property="og:description" content="MSc Bioinformatics, University of Bristol. Population genomics and statistical genetics.">
-  <meta property="og:image" content="https://timj-wood.github.io/assets/brand/logo.png">
-  <meta property="og:url" content="https://timj-wood.github.io/">
-</head>
-<body>
-
-  <header class="topbar">
-    <a class="logo" href="./"><img src="assets/brand/logo-tight.svg" alt="Swade"></a>
-    <nav>
-      <a href="#projects">Projects</a>
-      <a href="#writing">Writing</a>
-      <a href="assets/docs/cv.pdf">CV</a>
-    </nav>
-  </header>
-
+---
+layout: default
+---
   <div class="page">
 
     <aside>
-      <img class="photo" src="assets/img/profile.jpeg" alt="Tim Wood">
+      <img class="photo" src="{{ '/assets' | relative_url }}/img/profile.jpeg" alt="Tim Wood">
       <h1>Timothy Wood</h1>
       <p class="role">MSc Bioinformatics, University of Bristol</p>
       <p class="bio">
-        I'm an HDR UK Scholar studying MSc Bioinformatics at the
-        <a href="https://www.bristol.ac.uk/">University of Bristol</a>, where I
-        also did my BSc in Biology. I work on population genomics and
-        statistical genetics: so far, scanning Scottish wildcat genomes for
-        signals of domestic cat introgression and natural selection, and fitting demographic
-        models to their split from domestic cats. For my dissertation, I'll be
-        using neural simulation-based inference to model the genetics of
-        coeliac disease.
+        I'm an HDR UK Scholar on the MSc Bioinformatics at the University of Bristol, where I also did my BSc in Biology. 
+        I work on population genomics and statistical genetics — so far on Scottish wildcats, and next on coeliac disease, using neural simulation-based inference for my dissertation.
       </p>
-      <ul class="links">
-        <li><a href="https://github.com/timj-wood">GitHub</a></li>
-        <li><a href="mailto:tim.jwood@outlook.com">Email</a></li>
-        <li><a href="assets/docs/cv.pdf">CV</a></li>
-        <li><a href="https://www.linkedin.com/in/timj-wood">LinkedIn</a></li>
-      </ul>
+     <ul class="links">
+  <li>
+    <a href="https://github.com/timj-wood" aria-label="GitHub" title="GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href="mailto:tim.jwood@outlook.com" aria-label="Email" title="Email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2"/>
+        <path d="M3 7l9 6 9-6"/>
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href="{{ '/assets' | relative_url }}/docs/cv.pdf" aria-label="CV" title="CV">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <path d="M14 2v6h6M8 13h8M8 17h8"/>
+      </svg>
+    </a>
+  </li>
+  <li>
+    <a href="https://www.linkedin.com/in/timj-wood" aria-label="LinkedIn" title="LinkedIn">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M20.4 20.4h-3.6v-5.6c0-1.3 0-3-1.8-3s-2.1 1.4-2.1 2.9v5.7H9.3V9h3.4v1.6h.1c.5-.9 1.6-1.8 3.4-1.8 3.6 0 4.3 2.4 4.3 5.5v6.1zM5.3 7.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM7.1 20.4H3.5V9h3.6v11.4zM22.2 0H1.8C.8 0 0 .8 0 1.7v20.6c0 .9.8 1.7 1.8 1.7h20.4c1 0 1.8-.8 1.8-1.7V1.7C24 .8 23.2 0 22.2 0z"/>
+      </svg>
+    </a>
+  </li>
+</ul>
       <p class="updated">Updated 15/09/26</p>
     </aside>
 
@@ -63,7 +59,7 @@
               frequency spectrum for Scottish wildcat and domestic cat, to
               characterise divergence and gene flow between the two.
             </p>
-            <span class="with">With Mark Beaumont, Dennis Prangle and Grace Yan, School of Mathematics · <a href="assets/docs/dadi_report.pdf">Read the report</a></span>
+            <span class="with">With Mark Beaumont, Dennis Prangle and Grace Yan, School of Mathematics · <a href="{{ '/assets' | relative_url }}/docs/dadi_report.pdf">Read the report</a></span>
           </li>
           <li>
             <span class="when">BSc research project, 2025</span>
@@ -71,24 +67,27 @@
             <p>
               A GWAS-style scan for domestic cat introgression and signatures of selection across the wildcat genome.
             </p>
-            <span class="with">Supervised by Mark Beaumont · <a href="assets/docs/bsc_diss.pdf">Read the report</a></span>
+            <span class="with">Supervised by Mark Beaumont · <a href="{{ '/assets' | relative_url }}/docs/bsc_diss.pdf">Read the report</a></span>
           </li>
         </ol>
       </section>
 
       <section id="writing">
         <h2>Writing</h2>
+        {% if site.posts.size > 0 %}
         <ol class="timeline">
+          {% for post in site.posts %}
           <li>
-            <span class="when">September 2026</span>
-            <h3><a href="posts/composite-likelihood/">Why dadi's confidence intervals are too narrow</a></h3>
-            <p>Composite likelihood, the Godambe correction, and the mistakes I made applying it.</p>
+            <span class="when">{{ post.date | date: "%B %Y" }}</span>
+            <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+            <p>{{ post.summary }}</p>
           </li>
+          {% endfor %}
         </ol>
+        {% else %}
+        <p class="empty">Nothing here yet.</p>
+        {% endif %}
       </section>
 
     </main>
   </div>
-
-</body>
-</html>

@@ -1,29 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How mixed are Scottish wildcats? – Swade</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
-  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="../../assets/style.css">
-</head>
-<body>
-
-  <header class="topbar">
-    <a class="logo" href="../../"><img src="../../assets/brand/logo.svg" alt="Swade"></a>
-    <nav>
-      <a href="../../#writing">Writing</a>
-    </nav>
-  </header>
-
-  <article class="post">
-
-    <h1>How mixed are Scottish wildcats? Fitting demographic models to a joint site frequency spectrum</h1>
-    <span class="when">September 2026</span>
-
+---
+layout: post
+title: "How mixed are Scottish wildcats? Fitting demographic models to a joint site frequency spectrum"
+date: 2026-09-15
+summary: "Fitting 2D demographic models in dadi to a Scottish wildcat / domestic cat joint SFS."
+---
     <p>
       The Scottish wildcat is hanging on by a thread. There are only a few
       hundred left, and the bigger threat to them now isn't habitat or
@@ -40,7 +20,7 @@
       Scottish wildcats and 6 domestic cats, ask which model fits best, and
       be honest about which of its parameters the data actually pin down.
       This post is the short version. The
-      <a href="../../assets/docs/dadi_report.pdf">full report</a> and the
+      <a href="{{ '/assets/docs/dadi_report.pdf' | relative_url }}">full report</a> and the
       <a href="https://github.com/timj-wood/wildcat_models">code</a> are
       both available.
     </p>
@@ -65,7 +45,7 @@
     </p>
 
     <figure>
-      <img src="jsfs.png" alt="Folded joint site frequency spectrum, Scottish wildcat against domestic cat">
+      <img src="{{ '/assets/img/posts/wildcat-dadi/jsfs.png' | relative_url }}" alt="Folded joint site frequency spectrum, Scottish wildcat against domestic cat">
       <figcaption>
         The folded joint SFS, built from 123,348 segregating sites on
         chromosomes A1 and A2. Vertical axis: minor-allele count in 32 wildcat
@@ -101,7 +81,7 @@
     </p>
 
     <figure>
-      <img src="models.png" alt="Diagrams of the three demographic models">
+      <img src="{{ '/assets/img/posts/wildcat-dadi/models.png' | relative_url }}" alt="Diagrams of the three demographic models">
       <figcaption>
         (a) <code>sec_contact</code>: split, isolation, then contact. (b)
         <code>basic</code>: each branch changes size once, at a time meant to
@@ -157,7 +137,7 @@
     </p>
 
     <figure>
-      <img src="fit.png" alt="Observed and fitted spectra for the basic model, with residuals">
+      <img src="{{ '/assets/img/posts/wildcat-dadi/fit.png' | relative_url }}" alt="Observed and fitted spectra for the basic model, with residuals">
       <figcaption>
         The <code>basic</code> fit. Observed spectrum (top left), model
         expectation (top right), and residuals (bottom). No large regions of a
@@ -205,7 +185,7 @@
     </p>
 
     <figure>
-      <img src="corr.png" alt="Parameter correlation matrix for the basic model">
+      <img src="{{ '/assets/img/posts/wildcat-dadi/corr.png' | relative_url }}" alt="Parameter correlation matrix for the basic model">
       <figcaption>
         Parameter correlations for <code>basic</code>. The block of deep
         parameters in the top left are all correlated above 0.97 with each
@@ -252,7 +232,4 @@
       animals; and try to polarise the spectrum, since folding discards exactly
       the asymmetry the worst-determined parameters describe.
     </p>
-  </article>
-
-</body>
-</html>
+  
