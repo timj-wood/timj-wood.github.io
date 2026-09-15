@@ -19,41 +19,31 @@
 
     <p>
       If you fit a demographic model in dadi and ask for confidence intervals,
-      you get numbers that look reassuringly tight. They are lying to you, and
-      not by a little. This post is about why, how much, and the correction
-      that fixes it. I worked through all of this for a
-      <a href="../wildcat-dadi/">project on Scottish wildcats</a>, and the
-      details below come from that fit.
+      you get numbers that look reassuringly tight. However, these values are lying to you, and by quite an amount. 
+      This post is about why, how much, and the correction
+      that fixes it. I worked through all of this for a <a href="https://github.com/timj-wood/wildcat_models">project on Scottish wildcats</a>, and the details below come from that fit.
     </p>
 
-    <h2>The trap</h2>
+    <h2>The wolf in sheep's clothing (why dadi lies to you)</h2>
 
     <p>
-      dadi fits a model by computing the expected site frequency spectrum
-      under it and comparing that to the observed spectrum with a Poisson
-      likelihood, one term per bin. The likelihood is a product over bins, and
-      the count in each bin is a sum over sites. Every site contributes as if
-      it were an independent draw.
+      dadi fits a model by computing the expected site frequency spectrum under it and comparing that to the observed spectrum with a Poisson likelihood, one term per bin. 
+      The likelihood is a product over bins, and the count in each bin is a sum over sites. Every site contributes as if it were an independent draw.
     </p>
 
     <p>
-      Sites aren't independent. Neighbouring positions on a chromosome share
-      a genealogy, so they carry nearly the same information about history,
-      and a run of a thousand linked SNPs tells you far less than a thousand
-      independent ones would. dadi's likelihood counts them all. The technical
-      name is a <em>composite likelihood</em>: it has the form of a likelihood
-      and is maximised like one, but it is not the probability of the data
+      Sites aren't independent. Neighbouring positions on a chromosome share a genealogy, so they carry <em>nearly</em> the same information about the demographic history,
+      and a run of a thousand linked SNPs tells you far less than a thousand independent ones would. dadi's likelihood counts them all. The technical
+      name is for this is <em>composite likelihood</em>: it has the form of a likelihood and is maximised like one, but it is not the probability of the data
       under the model.
     </p>
 
     <p>
-      The consequence is that the likelihood surface is much sharper than the
-      data justify. Everything you'd normally derive from curvature inherits
-      the problem: Wald intervals come out too narrow, and AIC penalises
-      complexity too lightly, so it favours over-fitted models.
+      The consequence is that the likelihood surface is much sharper than the data justify. Everything you'd normally derive from curvature inherits
+      the problem that Wald intervals come out too narrow, and AIC penalises complexity too lightly, so it favours over-fitted models - obviously a major issue in comparing multiple models with differing parameters.
     </p>
 
-    <h2>How much</h2>
+    <h2>How much of a nuisance is composite likelihood?</h2>
 
     <p>
       The composite-likelihood version of AIC replaces the parameter count
@@ -63,14 +53,12 @@
     </p>
 
     <p>
-      That is the number to remember. Treating linked sites as independent
-      made the likelihood behave as though the model had about twenty-five
-      times as many free parameters as it does. The uncorrected AIC for that
-      fit was 2,846; the corrected value was 3,408. A gap of over 500 units
-      between the same model's two scores is not a subtlety.
+      Remember this number. Treating linked sites as independent made the likelihood behave as though the model had about <em>25x</em> as many free parameters as it does. 
+      The uncorrected AIC for that fit was 2,846, whereas the corrected value was 3,408. 
+      The gap of over 500 units between the same model's two scores highlights the impact of composite likelihood on model comparisons.
     </p>
 
-    <h2>The fix, in words first</h2>
+    <h2>The fix</h2>
 
     <p>
       There are two things you can measure about a likelihood at its
@@ -106,7 +94,7 @@
       of each other, as two of mine did.
     </p>
 
-    <h2>Things that went wrong on the way</h2>
+    <h2>That's all great. But what can go wrong?</h2>
 
     <p>
       dadi has a function for this, <code>Godambe.GIM_uncert</code>, and I
@@ -165,7 +153,7 @@
       CLAIC, though numerically the best, doesn't mean anything.
     </p>
 
-    <h2>Doing it yourself</h2>
+    <h2>Doing it yourself - the code</h2>
 
     <p>
       dadi 2.4.4 doesn't implement CLAIC directly (later versions do). But
