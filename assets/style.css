@@ -38,16 +38,6 @@ a:focus-visible {
   border-bottom-color: transparent;
 }
 
-/* ---- Genome scan header ---- */
-.scan {
-  width: 100%;
-  height: 150px;
-  display: block;
-  border-bottom: 1px solid var(--line);
-  background: #e6eae3;
-}
-.scan.small { height: 70px; }
-
 /* ---- Home layout ---- */
 .page {
   max-width: 1080px;
