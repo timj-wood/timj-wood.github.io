@@ -3,25 +3,83 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tim Wood</title>
+  <title>Timothy Wood</title>
   <style>
-    body { max-width: 720px; margin: 40px auto; padding: 0 20px;
-           font-family: Georgia, serif; line-height: 1.6; color: #222; }
-    img.profile { width: 160px; border-radius: 8px; }
-    h2 { margin-top: 2em; border-bottom: 1px solid #ddd; }
-    .meta { color: #777; font-style: italic; font-size: 0.9em; }
-    a { color: #1a5fb4; }
+    body {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 17px;
+      line-height: 1.65;
+      color: #222;
+      background: #fff;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 0.2em;
+    }
+    h2 {
+      font-size: 1.3em;
+      margin-top: 2.2em;
+      padding-bottom: 0.2em;
+      border-bottom: 1px solid #ddd;
+    }
+    .meta {
+      color: #777;
+      font-style: italic;
+      font-size: 0.9em;
+      margin-top: 0;
+    }
+    img.profile {
+      width: 160px;
+      border-radius: 8px;
+      margin: 1em 0;
+      display: block;
+    }
+    a {
+      color: #1a5fb4;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    ul.links {
+      list-style: none;
+      padding: 0;
+    }
+    ul.links li {
+      display: inline-block;
+      margin-right: 1.2em;
+    }
+    .item {
+      margin-bottom: 1.4em;
+    }
+    .item .date {
+      color: #777;
+      font-size: 0.9em;
+    }
+    .item p {
+      margin: 0.2em 0 0 0;
+    }
   </style>
 </head>
 <body>
+
   <h1>Tim Wood</h1>
   <p class="meta">Updated 15-09-2026</p>
+
   <img class="profile" src="assets/img/profile.jpeg" alt="Tim Wood">
 
-  <p>Hi! I'm an MSc Bioinformatics student at the University of Bristol,
-     interested in population genomics and statistical genetics.</p>
+  <p>
+    Hi! I'm an MSc Bioinformatics student at the
+    <a href="https://www.bristol.ac.uk/">University of Bristol</a>,
+    where I also did my BSc in Biology. I'm interested in population genomics
+    and statistical genetics, and my research so far has focused on
+    introgression, selection and demographic inference in Scottish wildcats.
+  </p>
 
-  <ul>
+  <ul class="links">
     <li><a href="https://github.com/timj-wood">GitHub</a></li>
     <li><a href="mailto:tim.jwood@outlook.com">Email</a></li>
     <li><a href="assets/docs/cv.pdf">CV</a></li>
@@ -29,10 +87,31 @@
   </ul>
 
   <h2>Projects</h2>
-  <p><a href="https://github.com/timj-wood/wildcat_models">Demographic inference for Scottish wildcats</a> (Summer 2026)<br>
-     2D dadi models fitted to a folded joint SFS for Scottish wildcat vs domestic cat.</p>
+
+  <div class="item">
+    <a href="https://github.com/timj-wood/wildcat_models">Demographic inference for Scottish wildcats</a>
+    <span class="date">(Summer 2026)</span>
+    <p>
+      Fitted 2D demographic models in dadi to a folded joint site frequency
+      spectrum for Scottish wildcat and domestic cat, to characterise
+      divergence and gene flow between the two. Supervised by Mark Beaumont,
+      Dennis Prangle and Grace Yan across the Schools of Biological Sciences
+      and Mathematics.
+    </p>
+  </div>
+
+  <div class="item">
+    <span>Introgression and selection in Scottish wildcats</span>
+    <span class="date">(BSc dissertation, 2026)</span>
+    <p>
+      A GWAS-style scan for domestic cat introgression and signatures of
+      selection across the wildcat genome. Supervised by Mark Beaumont.
+    </p>
+  </div>
 
   <h2>Writing</h2>
-  <p>Coming soon.</p>
+
+  <p>Nothing here yet.</p>
+
 </body>
 </html>
