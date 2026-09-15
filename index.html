@@ -3,36 +3,320 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tim Wood</title>
+  <title>Timothy Wood</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   <style>
-    body { max-width: 720px; margin: 40px auto; padding: 0 20px;
-           font-family: Georgia, serif; line-height: 1.6; color: #222; }
-    img.profile { width: 160px; border-radius: 8px; }
-    h2 { margin-top: 2em; border-bottom: 1px solid #ddd; }
-    .meta { color: #777; font-style: italic; font-size: 0.9em; }
-    a { color: #1a5fb4; }
+    :root {
+      --bg: #eef1ec;
+      --ink: #1e2a22;
+      --muted: #66736b;
+      --line: #cfd6cf;
+      --accent: #6b4e8c;
+      --accent-soft: #d9cfe6;
+      --moss: #4f6b4a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: "IBM Plex Sans", system-ui, sans-serif;
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-soft);
+      transition: border-color 0.15s;
+    }
+    a:hover { border-bottom-color: var(--accent); }
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+      border-bottom-color: transparent;
+    }
+
+    /* ---- Genome scan header ---- */
+    .scan {
+      width: 100%;
+      height: 150px;
+      display: block;
+      border-bottom: 1px solid var(--line);
+      background: #e6eae3;
+    }
+
+    /* ---- Layout ---- */
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 56px 32px 96px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 72px;
+      align-items: start;
+    }
+
+    aside {
+      position: sticky;
+      top: 40px;
+    }
+
+    .photo {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      margin-bottom: 28px;
+      box-shadow: 0 1px 0 var(--line);
+    }
+
+    h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 500;
+      font-size: 2.6rem;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin: 0 0 6px;
+    }
+
+    .role {
+      color: var(--muted);
+      margin: 0 0 24px;
+      font-size: 0.95rem;
+    }
+
+    .bio { margin: 0 0 28px; }
+
+    .links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      font-weight: 500;
+    }
+
+    .updated {
+      margin-top: 36px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* ---- Main ---- */
+    main h2 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 300;
+      font-size: 1.9rem;
+      margin: 0 0 28px;
+      line-height: 1.1;
+    }
+    main section + section { margin-top: 72px; }
+
+    .timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-left: 1px solid var(--line);
+    }
+
+    .timeline li {
+      position: relative;
+      padding: 0 0 40px 32px;
+    }
+    .timeline li:last-child { padding-bottom: 0; }
+
+    .timeline li::before {
+      content: "";
+      position: absolute;
+      left: -5px;
+      top: 0.55em;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--bg);
+    }
+
+    .when {
+      display: block;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+
+    .timeline h3 {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin: 0 0 8px;
+      line-height: 1.3;
+    }
+
+    .timeline p {
+      margin: 0;
+      max-width: 62ch;
+    }
+
+    .with {
+      display: block;
+      margin-top: 8px;
+      color: var(--moss);
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+      margin: 0;
+    }
+
+    /* ---- Mobile ---- */
+    @media (max-width: 800px) {
+      .page {
+        grid-template-columns: 1fr;
+        gap: 56px;
+        padding: 40px 20px 72px;
+      }
+      aside { position: static; }
+      .photo { max-width: 360px; }
+      h1 { font-size: 2.2rem; }
+      .scan { height: 110px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Tim Wood</h1>
-  <p class="meta">Updated 15-09-2026</p>
-  <img class="profile" src="assets/img/profile.jpg" alt="Tim Wood">
 
-  <p>Hi! I'm an MSc Bioinformatics student at the University of Bristol,
-     interested in population genomics and statistical genetics.</p>
+  <svg class="scan" id="scan" role="img"
+       aria-label="Decorative genome scan: points across chromosomes with a few peaks"
+       preserveAspectRatio="none"></svg>
 
-  <ul>
-    <li><a href="https://github.com/timj-wood">GitHub</a></li>
-    <li><a href="mailto:you@example.com">Email</a></li>
-    <li><a href="assets/docs/cv.pdf">CV</a></li>
-    <li><a href="https://www.linkedin.com/in/...">LinkedIn</a></li>
-  </ul>
+  <div class="page">
 
-  <h2>Projects</h2>
-  <p><a href="https://github.com/timj-wood/wildcat_models">Demographic inference for Scottish wildcats</a> (Summer 2026)<br>
-     2D dadi models fitted to a folded joint SFS for Scottish wildcat vs domestic cat.</p>
+    <aside>
+      <img class="photo" src="assets/img/profile.jpeg" alt="Tim Wood">
+      <h1>Timothy Wood</h1>
+      <p class="role">MSc Bioinformatics, University of Bristol</p>
+      <p class="bio">
+        I am a HDR UK Scholar, studying MSc Bioinformatics at the <a href="https://www.bristol.ac.uk/">University of Bristol</a>  
+        I work on population genomics and statistical genetics. So far, I have worked on Scottish wildcats 
+        - scanning their genomes for domestic-cat introgression and selection, and fitting demographic models 
+        to work out when the two lineages split and how much they've mixed since. For my dissertation, 
+        I plan to use neural-net based simulation-based inference methods to model the demography of Coeliac disease. 
+        I did my BSc in Biology at <a href="https://www.bristol.ac.uk/">Bristol</a> too.
+      </p>
+      <ul class="links">
+        <li><a href="https://github.com/timj-wood">GitHub</a></li>
+        <li><a href="mailto:tim.jwood@outlook.com">Email</a></li>
+        <li><a href="assets/docs/cv.pdf">CV</a></li>
+        <li><a href="https://www.linkedin.com/in/timj-wood">LinkedIn</a></li>
+      </ul>
+      <p class="updated">Updated 15 September 2026</p>
+    </aside>
 
-  <h2>Writing</h2>
-  <p>Coming soon.</p>
+    <main>
+
+      <section>
+        <h2>Projects</h2>
+        <ol class="timeline">
+          <li>
+            <span class="when">Summer 2026</span>
+            <h3><a href="https://github.com/timj-wood/wildcat_models">Demographic inference for Scottish wildcats</a></h3>
+            <p>
+              Fitted 2D demographic models in dadi to a folded joint site
+              frequency spectrum for Scottish wildcat and domestic cat, to
+              characterise divergence and gene flow between the two.
+            </p>
+            <span class="with">With Mark Beaumont, Dennis Prangle and Grace Yan, School of Mathematics</span>
+          </li>
+          <li>
+            <span class="when">BSc dissertation, 2026</span>
+            <h3>Introgression and selection in Scottish wildcats</h3>
+            <p>
+              A GWAS-style scan for domestic cat introgression and signatures of
+              selection across the wildcat genome.
+            </p>
+            <span class="with">Supervised by Mark Beaumont</span>
+          </li>
+        </ol>
+      </section>
+
+      <section>
+        <h2>Writing</h2>
+        <p class="empty">Nothing here yet.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Draws a stylised genome scan (Manhattan-plot style) in the header.
+    // Deterministic, so it looks the same on every load.
+    (function () {
+      var svg = document.getElementById('scan');
+      var W = 1200, H = 150;
+      svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+      var seed = 7;
+      function rand() {
+        seed = (seed * 16807) % 2147483647;
+        return (seed - 1) / 2147483646;
+      }
+
+      var chromCount = 18;
+      var lengths = [];
+      var total = 0;
+      for (var c = 0; c < chromCount; c++) {
+        var l = 0.5 + rand() * 1.2;
+        lengths.push(l);
+        total += l;
+      }
+
+      var peaks = [
+        { x: 0.17, w: 0.02, h: 0.9 },
+        { x: 0.46, w: 0.015, h: 0.7 },
+        { x: 0.78, w: 0.025, h: 1.0 }
+      ];
+
+      var out = '';
+      var x0 = 0;
+      for (var i = 0; i < chromCount; i++) {
+        var w = (lengths[i] / total) * W;
+        var fill = i % 2 === 0 ? '#6b4e8c' : '#4f6b4a';
+        var n = Math.round(w * 0.9);
+        for (var k = 0; k < n; k++) {
+          var x = x0 + rand() * w;
+          var t = x / W;
+          var y = rand() * rand() * 0.28;
+          for (var p = 0; p < peaks.length; p++) {
+            var d = (t - peaks[p].x) / peaks[p].w;
+            y += peaks[p].h * Math.exp(-d * d) * rand();
+          }
+          if (y > 1) y = 1;
+          var cy = H - 14 - y * (H - 30);
+          var r = 1.2 + y * 1.3;
+          var op = 0.35 + y * 0.6;
+          out += '<circle cx="' + x.toFixed(1) + '" cy="' + cy.toFixed(1) +
+                 '" r="' + r.toFixed(1) + '" fill="' + fill +
+                 '" fill-opacity="' + op.toFixed(2) + '"/>';
+        }
+        x0 += w;
+      }
+      out += '<line x1="0" y1="' + (H - 10) + '" x2="' + W + '" y2="' + (H - 10) +
+             '" stroke="#cfd6cf" stroke-width="1"/>';
+      svg.innerHTML = out;
+    })();
+  </script>
+
 </body>
 </html>
