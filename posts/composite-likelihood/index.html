@@ -22,14 +22,14 @@
       you get numbers that look reassuringly tight. They are lying to you, and
       not by a little. This post is about why, how much, and the correction
       that fixes it. I worked through all of this for a
-      <a href="https://github.com/timj-wood/wildcat_models">project on Scottish wildcats</a>, and the
+      <a href="../wildcat-dadi/">project on Scottish wildcats</a>, and the
       details below come from that fit.
     </p>
 
-    <h2>The issues with dadi</h2>
+    <h2>The trap</h2>
 
     <p>
-      <a href="https://dadi.readthedocs.io/en/latest/">dadi</a> fits a model by computing the expected site frequency spectrum
+      dadi fits a model by computing the expected site frequency spectrum
       under it and comparing that to the observed spectrum with a Poisson
       likelihood, one term per bin. The likelihood is a product over bins, and
       the count in each bin is a sum over sites. Every site contributes as if
@@ -179,9 +179,10 @@
 <pre><code>import numpy as np
 from dadi import Godambe
 
-# popt: fitted parameters; boots: list of bootstrap spectra
-G, H, J = Godambe.get_godambe(func_ex, pts, boots, popt, data,
-                              eps=0.01, log=False)
+# popt: fitted parameters (with theta appended if you want it included);
+# boots: list of bootstrap spectra
+G, H, J, _ = Godambe.get_godambe(func_ex, pts, boots, popt, data,
+                                 eps=0.01, log=False)
 
 # effective number of parameters and CLAIC
 k_eff  = np.trace(J @ np.linalg.inv(H))
@@ -200,9 +201,11 @@ lo, hi = popt * np.exp(-1.96 * se_log), popt * np.exp(1.96 * se_log)
 corr   = cov / np.outer(se, se)</code></pre>
 
     <p>
-      Check the return signature of <code>get_godambe</code> against your
-      dadi version, and pass <code>multinom=True</code> consistently if you
-      want θ included as a parameter.
+      Note that <code>get_godambe</code> works on whatever parameter vector
+      you hand it. To include θ, do what <code>GIM_uncert</code> does
+      internally with <code>multinom=True</code>: append the fitted θ to
+      <code>popt</code> and wrap <code>func_ex</code> so that it scales the
+      spectrum by the last parameter instead of optimising θ out.
     </p>
 
     <h2>Why the correlation matrix is not optional</h2>
