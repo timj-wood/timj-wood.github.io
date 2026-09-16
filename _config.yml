@@ -6,7 +6,7 @@ baseurl: ""
 author:
   name: Tim Wood
 lang: en_GB
-image: /assets/img/woodworks-logo-dark.png
+
 
 permalink: /posts/:slug/
 markdown: kramdown
@@ -25,7 +25,8 @@ defaults:
   - scope: { path: "", type: projects }
     values: { layout: project }
   - scope: { path: "" }
-    values: { layout: page }
+    values: { layout: page, image: /assets/img/woodworks-logo-dark.png }
+    
 
 plugins:
   - jekyll-seo-tag
