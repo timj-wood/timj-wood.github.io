@@ -4,7 +4,9 @@ summary: A literature-review style walk through self-exciting point processes, c
 category: lit review
 math: true
 ---
-Work in progress.
+Hawkes processes are a particularly interesting field of Mathematics - a stochastic process that bridges the gap between statistical and mechanistic models, and are extremely applicable to a diverse range of fields. Hawkes processes are very well deployed in finance, to analyse market volatility, but what I will focus on in this post is their applications to epidemiology. 
+
+
 
 A Hawkes process has conditional intensity
 
