@@ -1,0 +1,35 @@
+---
+layout: default
+---
+<section class="intro">
+  <p class="updated">Last updated {{ site.time | date: "%d/%m/%y" }}</p>
+  <h1>{{ site.tagline }}</h1>
+  {{ content }}
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+  <ol class="bench">
+  {% assign projects = site.projects | sort: "order" %}
+  {% for p in projects %}
+    <li>
+      <a href="{{ p.url | relative_url }}">{{ p.title }}</a>
+      <span class="when">{{ p.period }}</span>
+      <p>{{ p.summary }}</p>
+    </li>
+  {% endfor %}
+  </ol>
+</section>
+
+<section id="writing">
+  <h2>Writing</h2>
+  <ol class="feed">
+  {% for post in site.posts %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <span class="when">{{ post.date | date: "%-d %B %Y" }}{% if post.category %} · {{ post.category }}{% endif %}</span>
+      {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+    </li>
+  {% endfor %}
+  </ol>
+</section>

@@ -1,0 +1,99 @@
+/* Woodworks — one serif, one column, one green. */
+:root {
+  --paper: #17181a;
+  --ink: #ebe8e1;
+  --grain: #a09c92;
+  --rule: #2c2e31;
+  --moss: #8bc27f;
+  --moss-soft: #223124;
+  --measure: 38rem;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 106.25%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Literata", Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+  line-height: 1.6;
+  padding: 0 1.25rem;
+}
+body > * { max-width: var(--measure); margin-left: auto; margin-right: auto; }
+
+a { color: var(--moss); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; border-radius: 2px; }
+
+/* Header */
+.site-head {
+  display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+  padding: 2.5rem 0 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+.wordmark {
+  font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--ink); text-decoration: none;
+}
+.wordmark::after { content: "."; color: var(--moss); }
+.site-head nav { display: flex; gap: 1.25rem; font-size: 0.95rem; }
+.site-head nav a { color: var(--grain); text-decoration: none; }
+.site-head nav a:hover { color: var(--moss); }
+
+/* Home */
+.intro { padding: 3rem 0 1rem; }
+.intro h1 { font-size: 2rem; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 1rem; }
+.intro p { color: var(--grain); margin: 0 0 0.75rem; }
+
+section { padding: 2rem 0; }
+section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0 0.5rem; }
+
+.bench, .feed { list-style: none; margin: 0; padding: 0; }
+.bench li, .feed li { padding: 1rem 0; border-top: 1px solid var(--rule); }
+.bench li a, .feed li a { font-size: 1.2rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+.bench li a:hover, .feed li a:hover { color: var(--moss); }
+.when { font-style: italic; color: var(--grain); margin-left: 0.6rem; white-space: nowrap; }
+.bench p, .feed p { margin: 0.25rem 0 0; color: var(--grain); }
+
+/* Articles */
+.prose { padding: 3rem 0 4rem; }
+.prose .crumb { font-size: 0.9rem; color: var(--grain); margin: 0 0 1.5rem; }
+.prose h1 { font-size: 2.1rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.75rem; }
+.prose .standfirst { font-size: 1.15rem; color: var(--grain); margin: 0 0 0.5rem; }
+.prose .meta { font-style: italic; color: var(--grain); margin: 0 0 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
+.prose h2 { font-size: 1.4rem; margin: 2.5rem 0 0.75rem; font-weight: 500; }
+.prose h3 { font-size: 1.1rem; margin: 2rem 0 0.5rem; font-weight: 700; }
+.prose p, .prose li { max-width: 34rem; }
+.prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
+.prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
+.prose blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 3px solid var(--moss); color: var(--grain); }
+.prose code, .prose pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.88em; }
+.prose code { background: var(--moss-soft); padding: 0.1em 0.35em; border-radius: 3px; }
+.prose pre { background: var(--moss-soft); padding: 1rem; border-radius: 6px; overflow-x: auto; line-height: 1.5; }
+.prose pre code { background: none; padding: 0; }
+.prose table { border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; display: block; overflow-x: auto; }
+.prose th, .prose td { text-align: left; padding: 0.4rem 0.8rem 0.4rem 0; border-bottom: 1px solid var(--rule); }
+.prose hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+mjx-container { overflow-x: auto; overflow-y: hidden; }
+
+.site-foot { padding: 2rem 0 3rem; border-top: 1px solid var(--rule); color: var(--grain); font-size: 0.9rem; }
+.site-foot p { margin: 0; }
+
+@media (max-width: 480px) {
+  .intro h1 { font-size: 1.6rem; }
+  .prose h1 { font-size: 1.7rem; }
+  .when { display: block; margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) { a { transition: color 120ms; } }
+
+/* Portrait (used on About via page.portrait) */
+.portrait {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 0 1.5rem;
+}
+
+.updated { font-style: italic; color: var(--grain); font-size: 0.9rem; margin: 0 0 1rem; }

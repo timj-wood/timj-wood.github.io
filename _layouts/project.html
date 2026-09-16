@@ -1,0 +1,12 @@
+---
+layout: default
+---
+<article class="prose">
+  <p class="crumb"><a href="{{ '/#projects' | relative_url }}">projects</a></p>
+  <h1>{{ page.title }}</h1>
+  {% if page.summary %}<p class="standfirst">{{ page.summary }}</p>{% endif %}
+  <p class="meta">{{ page.period }}{% if page.with %} · with {{ page.with }}{% endif %}
+    {% if page.repo %} · <a href="{{ page.repo }}">code</a>{% endif %}
+    {% if page.pdf %} · <a href="{{ page.pdf | relative_url }}">report</a>{% endif %}</p>
+  {{ content }}
+</article>

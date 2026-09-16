@@ -1,0 +1,14 @@
+---
+layout: default
+---
+<article class="prose">
+  <p class="crumb"><a href="{{ '/#writing' | relative_url }}">writing</a>{% if page.category %} / {{ page.category }}{% endif %}</p>
+  <h1>{{ page.title }}</h1>
+  {% if page.summary %}<p class="standfirst">{{ page.summary }}</p>{% endif %}
+  <p class="meta">
+    {{ page.date | date: "%-d %B %Y" }}
+    · {% assign words = content | number_of_words %}{{ words }} words
+    · {{ words | divided_by: 200 | at_least: 1 }} min
+  </p>
+  {{ content }}
+</article>

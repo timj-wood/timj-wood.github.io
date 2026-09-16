@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>{% include head.html %}</head>
+<body>
+  <header class="site-head">
+    <a class="wordmark" href="{{ '/' | relative_url }}">Woodworks</a>
+    <nav>
+      <a href="{{ '/#projects' | relative_url }}">Projects</a>
+      <a href="{{ '/#writing' | relative_url }}">Writing</a>
+      <a href="{{ '/about/' | relative_url }}">About</a>
+      <a href="{{ '/assets/docs/cv.pdf' | relative_url }}">CV</a>
+    </nav>
+  </header>
+  <main>{{ content }}</main>
+  {% include footer.html %}
+</body>
+</html>
