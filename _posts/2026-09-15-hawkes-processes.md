@@ -14,7 +14,6 @@ Therefore, this post will be about a class of models built kind of evidence: **H
 
 Hawkes processes are a particularly interesting field of Mathematics - a stochastic process that bridges the gap between statistical and mechanistic models, and is extremely applicable to a diverse range of fields. Hawkes processes are very well deployed in finance, for example they are estimate [transactional data volatility](https://arxiv.org/html/1502.04592v2), but what I will focus on in this post is their applications to epidemiology. 
 
-
 A Hawkes process has conditional intensity
 
 $$\lambda(t) = \mu + \sum_{t_i < t} \phi(t - t_i),$$
