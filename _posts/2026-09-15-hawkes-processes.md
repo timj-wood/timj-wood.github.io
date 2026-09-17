@@ -1,5 +1,5 @@
 ---
-title: Hawkes processes and malaria
+title: Events that cause events: an application to epidemiology
 summary: A literature-review style walk through self-exciting point processes, centred on Juliette Unwin's malaria modelling.
 category: lit review
 math: true
@@ -10,10 +10,7 @@ Therefore, this post will be about a class of models built kind of evidence: **H
 
 # 1. Background
 
-Hawkes processes are a particularly interesting field of Mathematics - a stochastic process that bridges the gap between statistical and mechanistic models, and is extremely applicable to a diverse range of fields. Hawkes processes are very well deployed in finance, to analyse market volatility, but what I will focus on in this post is their applications to epidemiology. 
-
-
-
+Hawkes processes are a particularly interesting field of Mathematics - a stochastic process that bridges the gap between statistical and mechanistic models, and is extremely applicable to a diverse range of fields. Hawkes processes are very well deployed in finance, for example they are estimate [transactional dataa volatility](https://arxiv.org/html/1502.04592v2), but what I will focus on in this post is their applications to epidemiology. 
 
 
 A Hawkes process has conditional intensity
