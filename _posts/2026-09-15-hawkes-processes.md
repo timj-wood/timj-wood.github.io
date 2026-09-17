@@ -1,5 +1,5 @@
 ---
-title: Events that cause events
+title: Events that cause events':' an approach to epidemiology
 summary: A literature-review style walk through self-exciting point processes, centred on Juliette Unwin's malaria modelling.
 category: lit review
 math: true
