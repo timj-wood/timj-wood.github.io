@@ -1,5 +1,5 @@
 ---
-title: Events that cause events':' an approach to epidemiology
+title: Hawkes processes and malaria modelling
 summary: A literature-review style walk through self-exciting point processes, centred on Juliette Unwin's malaria modelling.
 category: lit review
 math: true
