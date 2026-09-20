@@ -13,10 +13,9 @@ Therefore, this post will be about a class of models built kind of evidence: **H
 
 # 2. Prerequisites
 ## 2.2 Point processes / counting processes
+A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a "staircase" that starts at 0 and increases by 1 at each sequential event (Laub *et al.,* 2015).
 
-A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a "staircase" that starts at 0 and increases by 1 at each sequential event (Laub *et al.,* 2015).
-
-Think of "point processes" as a list of times, and "counting processes" as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t)$$.
+Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t)$$.
 
 A biological example, for providence: imagine the events are mutations fixing along a lineage, where the point process is their positions (or times) and $$N(t)$$ is the cumulative mutation count. 
 
