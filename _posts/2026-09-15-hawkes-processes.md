@@ -36,7 +36,7 @@ $$\int_a^b \lambda(t)\,dt.$$
 Crucially, the rate varies because of external forces (seasons, weather), not because previous events change it. This distinction matters because a time-varying rate produces clusters of events, and so does self-excitation, so the two are easily confused in data. Fitting a self-exciting model to seasonally driven data, or vice versa, will lead to the incorrect conclusion for the driving processes.
 
 
-## 1.4 The conditional intensity function $$\lambda^*(t \mid \mathcal{H}_t)$$
+## 1.4 The conditional intensity function 
 
 The most important concept in this post is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
 
