@@ -24,7 +24,7 @@ A point process can be described as a random set of event times $$t_1, t_2, t_3,
 
 Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t)$$.
 
-A biological example, for providence: imagine the events are mutations fixing along a lineage, where the point process is their positions (or times) and $$N(t)$$ is the cumulative mutation count. 
+To give a biological example, imagine the events are mutations fixing along a lineage, where the point process is their positions (or times) and $$N(t)$$ is the cumulative mutation count. 
 
 ## 1.2. Homogeneous Poisson process
 
