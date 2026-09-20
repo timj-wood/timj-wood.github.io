@@ -8,10 +8,13 @@ Work in progress.
 
 **Note:** I am a biologist by background, so there is likely many errors in this post. I am by no means a mathematician, please bear with my elementary LaTeX skills. 
 
-## Epilogue
-Let's say you want to eradicate malaria - modelling the spread of a disease is crucial in doing so. However, it is always probable that a traveller, from a place where the disease is common, will bring it with them. Soon after, if there are no more recorded cases, then nothing has come of it - a dead end. If a handful of new cases appear within the same area/district, then you have a causality - mosquitoes have picked up the parasite and moved on. Deciding between these two outcomes is the decisive *'game'* which you must play, and often the only evidence is an unreliable list of travel dates. 
+Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might come from a traveller who was infected abroad and brought the parasite home with them. If nothing follows, it was a dead end. On the other hand, it may be the first visible link in a local chain, where a mosquito bites an infected person, then biting someone else, and transmission becomes widespread.
 
-Therefore, this post will be about a class of models built kind of evidence: **Hawkes processes**.
+These two situations require completely different responses, yet on the day the case is reported they look identical. Often the only evidence is a list of cases, the dates they occurred, and some patchy travel histories.
+
+However, what you can do is identify a temporal pattern. Imported cases arrive more or less at random. Locally transmitted cases arrive in clusters, because each one makes further cases more likely for a while. Distinguishing these two patterns, soley relying on the timing of events, is precisely what a Hawkes process has been developed for.
+
+This post introduces Hawkes processes from scratch, circling back to their applications in epidemiology. 
 
 # 1. Prerequisites
 ## 1.1 Point processes / counting processes
