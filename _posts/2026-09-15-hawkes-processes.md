@@ -50,7 +50,7 @@ The asterisk is shorthand for "conditional on the history". Breaking down the fo
 - $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of events, given the history $\mathcal{H}(t)$.
 - $\lim_{h \downarrow 0}$ shrinks the window to zero, thus detailing "the next instant".
 
-In practical terms, $\lambda^*(t)\,dt$ is approximately the probability of an event occurring in the next instant.
+In practical terms, $\lambda^*(t)\,dt$ is $$\approx$$ the probability of an event occurring in the next instant.
 
 For a homogeneous Poisson process the history is irrelevant, so $\lambda^*(t) = \lambda$. For a Hawkes process, $\lambda^*(t)$ jumps up at each event and then decays.
 
