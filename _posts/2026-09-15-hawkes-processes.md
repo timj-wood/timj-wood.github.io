@@ -43,7 +43,7 @@ Crucially, the rate varies because of external forces (seasons, weather), not be
 
 ## 1.4. The conditional intensity function 
 
-The most important concept in this post is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
+The most important concept in this post is the **conditional intensity**. This is the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
 
 $$
 \lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,\text{events in } (t,\, t+h] \;\big|\; \mathcal{H}(t)\,\big]}{h}
