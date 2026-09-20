@@ -119,3 +119,13 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .theme-toggle { background: none; border: 0; padding: 0; font: inherit; line-height: inherit; color: var(--grain); cursor: pointer; }
 .theme-toggle:hover { color: var(--moss); }
 .theme-toggle:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; border-radius: 2px; }
+
+.theme-toggle { display: inline-flex; align-self: center; }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+  :root:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+}
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
