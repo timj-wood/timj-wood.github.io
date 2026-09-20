@@ -17,7 +17,9 @@ However, what you can do is identify a temporal pattern. Imported cases arrive m
 This post introduces Hawkes processes from scratch, building up to their applications in epidemiology. 
 
 # 1. Prerequisites
+
 ## 1.1. Point processes / counting processes
+
 A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a staircase that starts at 0 and increases by 1 at each sequential event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)).
 
 Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t)$$.
