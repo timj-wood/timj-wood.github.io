@@ -36,25 +36,28 @@ $$\int_a^b \lambda(t)\,dt.$$
 Crucially, the rate varies because of external forces (seasons, weather), not because previous events change it. This distinction matters because a time-varying rate produces clusters of events, and so does self-excitation, so the two are easily confused in data. Fitting a self-exciting model to seasonally driven data, or vice versa, will lead to the incorrect conclusion for the driving processes.
 
 
-## 1.4 Conditional intensity $$\lambda^*(t \mid \mathcal{H}_t)$$ {#conditional-intensity}
+## 1.4 The conditional intensity function $$\lambda^*(t \mid \mathcal{H}_t)$$
 
-This concept is crucial in understanding Hawkes processes. The instantaneous expected event rate at time $$t$$, is given by the entire history of the process up to that point,
+The most important concept in this post is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
 
-$$\lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\left[\, N(t+h) - N(t) \mid \mathcal{H}_t \,\right]}{h}.$$
+$$
+\lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,\text{events in } (t,\, t+h] \;\big|\; \mathcal{H}(t)\,\big]}{h}
+$$
 
-The asterisk is shorthand for "conditional on history", so $$\lambda^*(t)$$ means $$\lambda^*(t \mid \mathcal{H}_t)$$. To break down the definition:
+The asterisk is shorthand for "conditional on the history". Breaking down the formula: 
 
-- The left-hand side, $$\lambda^*(t)$$, is the rate right now, given the past.
-- The expectation $$\mathbb{E}[\,\cdot \mid \mathcal{H}_t]$$ is taken given everything that has happened before $$t$$.
-- The quantity $$N(t+h) - N(t)$$ is the number of events in the interval $$(t, t+h]$$.
-- The limit $$h \downarrow 0$$ means "in the next instant".
+- $\lambda^*(t)$ is the present rate, given everything that has happened so far.
+- $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of events, given the history $\mathcal{H}(t)$.
+- $\lim_{h \downarrow 0}$ shrinks the window to zero, thus detailing "the next instant".
 
-Informally, $$\lambda^*(t)\,dt$$ is approximately the probability of an event in the next instant $$dt$$.
+In practical terms, $\lambda^*(t)\,dt$ is approximately the probability of an event occurring in the next instant.
 
-For a homogeneous Poisson process the history is irrelevant and $$\lambda^*(t) = \lambda$$. For a Hawkes process, $$\lambda^*(t)$$ jumps up at each event and then decays.
+For a homogeneous Poisson process the history is irrelevant, so $\lambda^*(t) = \lambda$. For a Hawkes process, $\lambda^*(t)$ jumps up at each event and then decays.
 
-The integral
+The integral of the intensity,
 
-$$\Lambda(t) = \int_0^t \lambda^*(s)\,ds$$
+$$
+\Lambda(t) = \int_0^t \lambda^*(s)\,ds,
+$$
 
-is called the **compensator**: the model's expected cumulative count up to time $$t$$.
+is called the **compensator**. It is the cumulative number of events the model expects to have seen by time $t$.
