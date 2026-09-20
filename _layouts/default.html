@@ -8,10 +8,20 @@
       <a href="{{ '/#projects' | relative_url }}">Projects</a>
       <a href="{{ '/#writing' | relative_url }}">Writing</a>
       <a href="{{ '/about/' | relative_url }}">About</a>
-      <a href="{{ '/assets/docs/cv.pdf' | relative_url }}">CV</a>
+      <button class="theme-toggle" type="button" aria-label="Switch colour theme">◐</button>
     </nav>
   </header>
   <main>{{ content }}</main>
   {% include footer.html %}
+  <script>
+    document.querySelector(".theme-toggle").addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.dataset.theme ||
+        (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      var next = current === "light" ? "dark" : "light";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    });
+  </script>
 </body>
 </html>
