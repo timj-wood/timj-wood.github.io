@@ -1,7 +1,7 @@
 ---
 title: "Hawkes processes in epidemiology"
 summary: A walkthrough of self-exciting point processes, inspired by Juliette Unwin's paper on malaria modelling.
-category: lit review
+category: hawkes-processes
 math: true
 ---
 Work in progress. 

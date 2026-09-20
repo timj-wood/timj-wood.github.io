@@ -2,7 +2,7 @@
 title: "Why dadi's confidence intervals are too narrow, and what to do about it"
 date: 2026-09-10
 summary: "Composite likelihood, the Godambe correction, and the mistakes I made applying it."
-category: stats
+category: dadi
 math: true
 ---
 
