@@ -1,6 +1,6 @@
 # Woodworks
 
-Tim Wood's site. Jekyll on GitHub Pages.
+Jekyll on GitHub Pages.
 
 ## Structure
 
