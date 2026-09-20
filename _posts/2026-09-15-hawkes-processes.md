@@ -4,6 +4,8 @@ summary: A walkthrough of self-exciting point processes, inspired by Juliette Un
 category: lit review
 math: true
 ---
+Work in progress. 
+
 **Note:** I am a biologist by background, so there is likely many errors in this post. I am by no means a mathematician, please bear with my elementary LaTeX skills. 
 
 ## Epilogue
