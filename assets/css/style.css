@@ -1,5 +1,6 @@
 /* Woodworks — one serif, one column, one green. */
 :root {
+  color-scheme: dark;
   --paper: #17181a;
   --ink: #ebe8e1;
   --grain: #a09c92;
@@ -7,6 +8,18 @@
   --moss: #8bc27f;
   --moss-soft: #223124;
   --measure: 38rem;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
+    --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
+  --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2;
 }
 
 * { box-sizing: border-box; }
@@ -102,3 +115,17 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .socials a { display: inline-flex; color: var(--grain); }
 .socials a:hover { color: var(--moss); }
 .socials svg { width: 22px; height: 22px; }
+
+.theme-toggle { background: none; border: 0; padding: 0; font: inherit; line-height: inherit; color: var(--grain); cursor: pointer; }
+.theme-toggle:hover { color: var(--moss); }
+.theme-toggle:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; border-radius: 2px; }
+
+.theme-toggle { display: inline-flex; align-self: center; }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+  :root:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+}
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
