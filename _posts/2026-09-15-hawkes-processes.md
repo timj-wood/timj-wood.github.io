@@ -60,4 +60,4 @@ $$
 \Lambda(t) = \int_0^t \lambda^*(s)\,ds,
 $$
 
-is called the **compensator**. It is the cumulative number of events the model expects to have seen by time $t$.
+is known as the **compensator**: the cumulative number of events the model expects to have seen by time $t$.
