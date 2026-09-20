@@ -1,6 +1,6 @@
 ---
 title: "Events that cause events: Hawkes processes and their applications"
-summary: A literature-review style walk through self-exciting point processes, centred on Juliette Unwin's malaria modelling.
+summary: A walkthrough of self-exciting point processes, inspired by Juliette Unwin's paper on malaria modelling.
 category: lit review
 math: true
 ---
@@ -21,7 +21,7 @@ A biological example, for providence: imagine the events are mutations fixing al
 
 ## 1.2 Homogeneous Poisson process
 
-The simplest point process and natural null model invovles events that occur at a completely random and constant rate $$\mu$$. There are three concrete facts associated with this process. First, the constant rate occurs in a tiny interval of width $$h$$, the chance of the event occuring is $$\approx \lambda h$$. Second, there is independence between non-overlapping intervals. Finally, exponential waiting times equate to a lack of memory in the process, this is because gaps are exponential ($$\lambda$$) with mean $$1/\lambda$$, and time already waited gives no indication about the remaining wait. The count in a window of length $$T$$ is Poisson with mean $$\lambda T$$. 
+The simplest point process and natural null model invovles events that occur at a completely random and constant rate $$\mu$$. There are three concrete facts associated with this process. First, the constant rate occurs in a small interval of width $$h$$, the chance of the event occuring is $$\approx \lambda h$$. Second, there is independence between non-overlapping intervals. Finally, exponential waiting times equate to a lack of memory in the process, this is because gaps are exponential ($$\lambda$$) with mean $$1/\lambda$$, and time already waited gives no indication about the remaining wait. The count in a window of length $$T$$ is Poisson with mean $$\lambda T$$. 
 
 Whilst this process is incredibly useful at modelling random events in various fields of STEM, such as queuing theory and reliability engineering; the key limitation is that, in real life, events tend to cluster - one event will lead to other events - which the Poisson process cannot capture. This is where Hawkes processes come into play.
 
