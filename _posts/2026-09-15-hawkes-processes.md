@@ -14,7 +14,7 @@ These two situations require completely different responses, yet on the day the 
 
 However, what you can do is identify a temporal pattern. Imported cases arrive more or less at random. Locally transmitted cases arrive in clusters, because each one makes further cases more likely for a while. Distinguishing these two patterns, soley relying on the timing of events, is precisely what a Hawkes process has been developed for.
 
-This post introduces Hawkes processes from scratch, circling back to their applications in epidemiology. 
+This post introduces Hawkes processes from scratch, building up to their applications in epidemiology. 
 
 # 1. Prerequisites
 ## 1.1 Point processes / counting processes
