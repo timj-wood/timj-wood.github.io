@@ -27,7 +27,9 @@ Whilst this process is incredibly useful at modelling random events in various f
 
 ## 1.3 Inhomogeneous Poisson process
 
-In this case of a Poisson process, the rate changes overtime. $$\lambda(t)$$ replaces $$\lambda$$. Events remain independent, but the background tendancy will rise and fall - for example, the magnitude of flu cases vary with the seasons.
+Here the rate changes over time: a function $$\lambda(t)$$ replaces the constant $$\lambda$$. Counts in disjoint intervals remain independent, but the background tendency rises and falls. For example, the number of flu cases varies with the seasons. The number of events between $$a$$ and $$b$$ is Poisson distributed with mean
 
-Expected events between a and b = $$\int_a^b \lambda(t)\,dt$$
+$$\int_a^b \lambda(t)\,dt.$$
+
+Crucially, the rate varies because of external forces (seasons, weather), not because previous events change it. This distinction matters: a time-varying rate produces clusters of events, and so does self-excitation, so the two are easily confused in data. Fitting a self-exciting model to seasonally driven data, or vice versa, leads to the wrong conclusion about what is driving the process.
 
