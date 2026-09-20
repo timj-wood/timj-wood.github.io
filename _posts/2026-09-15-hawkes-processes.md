@@ -1,5 +1,5 @@
 ---
-title: Hawkes processes and malaria modelling
+title: Hawkes processes and their applications to epidemiology
 summary: A literature-review style walk through self-exciting point processes, centred on Juliette Unwin's malaria modelling.
 category: lit review
 math: true
