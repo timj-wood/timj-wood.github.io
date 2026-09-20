@@ -16,7 +16,7 @@ However, what you can do is identify a temporal pattern. Imported cases arrive m
 
 This post introduces Hawkes processes from scratch, building up to their applications in epidemiology. 
 
-# 1. Prerequisites
+# 1 Prerequisites
 ## 1.1 Point processes / counting processes
 A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a staircase that starts at 0 and increases by 1 at each sequential event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)).
 
@@ -49,7 +49,7 @@ $$
 
 The asterisk is shorthand for "conditional on the history". Breaking down the formula: 
 
-- $\lambda^*(t)$ is the present rate, given everything that has previously occured.
+- $\lambda^*(t)$ denotes the present rate, given everything that has previously occured.
 - $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of events, given the history $\mathcal{H}(t)$.
 - $\lim_{h \downarrow 0}$ shrinks the window to zero, thus detailing "the next instant".
 
@@ -64,3 +64,7 @@ $$
 $$
 
 is known as the **compensator**: the cumulative number of events the model expects to have seen by time $t$.
+
+# 2 Hawkes processes
+
+## 2.1 History and motivation
