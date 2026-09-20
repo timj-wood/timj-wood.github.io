@@ -27,7 +27,7 @@ Whilst this process is incredibly useful at modelling random events in various f
 
 ## 1.3 Inhomogeneous Poisson process
 
+In this case of a Poisson process, the rate changes overtime. $$\lambda(t)$$ replaces $$\lambda$$. Events remain independent, but the background tendancy will rise and fall - for example, the magnitude of flu cases vary with the seasons.
 
-
-
+Expected events between a and b = $$\int_a^b \lambda(t)\,dt$$
 
