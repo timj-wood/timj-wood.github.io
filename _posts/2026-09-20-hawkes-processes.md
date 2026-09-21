@@ -95,11 +95,19 @@ This is the definition of **self-exciting**, where an event raises $$\lambda^*(t
 
 The kernel $$\phi$$ describes how an event's influence plays out overtime, and different choices of kernel will produce different model outcomes. In the context of this review, there are three worth stating. 
 
-**The exponential kernal** is the original and most common kernel:
+**The exponential kernel** is the original and most common kernel:
 
 $$
 \phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
 $$
 
 Each event instantly raises the intensity by $$\alpha$$, where the increase then decays at rate $$\beta$$, so an event's influence lasts for $$\approx$$ $$1/\beta$$ units of time. The popularity of this kernal lies in its practicality - the exponential's lack of memory means that the model can be quickly fitted to data. 
+
+**The power-law kernel** decays at a much slower rate:
+
+$$
+\phi(t) = \frac{k}{(c + t)^p}
+$$
+
+It is also "heavy-tailed", where an event's influence never fully decays; events that occured long ago can still trigger new ones. This kernel is adopted from seismology (known as Omori's law) for the decay of aftershocks, and it is applicable to any setting where triggering acts over long time scales. 
 
