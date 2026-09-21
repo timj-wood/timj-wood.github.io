@@ -101,4 +101,5 @@ $$
 \phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
 $$
 
-where $$\alpha$$ is the intensity of the kernal and $$\beta$$ is the decay. 
+Each event instantly raises the intensity by $$\alpha$$, where the increase then decays at rate $$\beta$$, so an event's influence lasts for $$\approx$$ $$1/\beta$$ units of time. The popularity of this kernal lies in its practicality - the exponential's lack of memory means that the model can be quickly fitted to data. 
+
