@@ -85,7 +85,7 @@ $$
 
 $$\mu > 0$$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
 
-$$\phi(\cdot) \geq 0$$ is the triggering kernel: the extra rate presently contributed by a past event. It's input, $$t-t_i$$, is the time elapsed since the event at $$t_i$$. Typically, a kernel will start high and decay, so an event's influence is strongest immediately afterwards and then fades. In the case of malaria, this is local transmission. 
+$$\phi(\cdot) \geq 0$$ is the triggering kernel: the extra rate presently contributed by a past event. It's input, $$t-t_i$$, is the time elapsed since the event at $$t_i$$. Typically, a kernel will start high and decay, so an event's influence is strongest immediately after its occurence, and then fades. In the case of malaria, this is local transmission. 
 
 The sum runs over every event before time $$t$$. Each past event adds a decaying spike to the rate, which stack on top of the background. 
 
