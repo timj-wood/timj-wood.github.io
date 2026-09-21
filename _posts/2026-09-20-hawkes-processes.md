@@ -113,7 +113,7 @@ Here $$k$$ sets the overall strength of triggering, $$p$$ controls how quickly a
 
 This kernel is "heavy-tailed", so its influence fades at such a slow rate that events from long ago can still trigger new ones, whereas an exponential kernel's influence is effectively gone after a few multiples of $$1/\beta$$.
 
-**A kernel can also be matched to a specific process.** Nothing forces $$\phi$$ to be a simple formula. It can be a flexible step function estimated from the data, or a shape chosen from prior knowledge. The second option is particularly important in epidemiology. 
+**A kernel can also be matched to a specific process.** $$\phi$$ is not necessarily a simple formula - it can be a flexible step function estimated from the data, or a shape chosen from prior knowledge. The second option is particularly important in epidemiology. 
 
 The time between one person becoming infected and them infecting someone else is called the *generation interval*, and for many diseases its distribution has been measured and is well described by a gamma or lognormal curve. Using this curve as the kernel integrates the disease's biology directly into model - improving its efficacy.
 
