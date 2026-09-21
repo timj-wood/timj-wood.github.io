@@ -99,3 +99,4 @@ The kernel $$\phi$$ describes how an event's influence plays out overtime, and d
 
 $$
 \phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0.
+$$
