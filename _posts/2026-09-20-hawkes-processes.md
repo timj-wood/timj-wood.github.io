@@ -95,7 +95,7 @@ This is the definition of **self-exciting**, where an event raises $$\lambda^*(t
 
 The kernel $$\phi$$ describes how an event's influence plays out overtime, and different choices of kernel will produce different models. In the context of this review, there are three worth stating. 
 
-**The exponential kernal** is the original kernel, and the most common:
+**The exponential kernal** is the original and most common kernel:
 
 $$
 \phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
