@@ -106,8 +106,9 @@ Each event instantly raises the intensity by $$\alpha$$, where the increase then
 **The power-law kernel** decays at a much slower rate:
 
 $$
-\phi(t) = \frac{k}{(c + t)^p}
+\phi(t) = \frac{k}{(c + t)^p}, \qquad k, c > 0, \; p > 1.
 $$
 
-It is also "heavy-tailed", where an event's influence never fully decays; events that occured long ago can still trigger new ones. This kernel is adopted from seismology (known as Omori's law) for the decay of aftershocks, and it is applicable to any setting where triggering acts over long time scales. 
+Here $$k$$ sets the overall strength of triggering, $$p$$ controls how quickly an event's influence fades (larger $$p$$ means faster decay), and $$c$$ is a small offset that keeps the kernel finite at $$t = 0$$, so that each event raises the intensity by $$k / c^p$$. The condition $$p > 1$$ ensures that the total influence of a single event is finite.
 
+This kernel is "heavy-tailed", so its influence fades at such a slow rate that events from long ago can still trigger new ones, whereas an exponential kernel's influence is effectively gone after a few multiples of $$1/\beta$$.
