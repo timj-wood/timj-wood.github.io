@@ -100,8 +100,5 @@ The kernel $$\phi$$ describes how an event's influence plays out overtime, and d
 $$
 \phi(t) = \alpha \beta exp(-\beta t), t > 0
 $$
-$$
-\phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
-$$
 
 where $$\alpha$$ is the intensity of the kernal and $$\beta$$ is the decay. 
