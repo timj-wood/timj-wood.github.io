@@ -6,7 +6,7 @@ math: true
 ---
 Work in progress. 
 
-**Note:** I am a biologist by background, it's likely there are many errors in this post (please let me know if you spot any). Please bear with my elementary LaTeX skills, I am by no means a mathematician.
+**Note:** I am a biologist by background, and by no means a mathematician. Please bear with my elementary LaTeX skills and let me know if you spot an mistakes.
 
 Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might come from a traveller who was infected abroad and brought the parasite home with them. If nothing follows, it was a dead end. On the other hand, it may be the first visible link in a local chain, where a mosquito bites an infected person, subsequently biting someone else, and transmission soon becomes widespread.
 
@@ -77,8 +77,12 @@ The model soon became famous for its applications in seismology. An earthquake t
 
 ## 2.2. Core definition 
 
-A Hawkes process has conditional intensity
+A Hawkes process is defined by its conditional intensity. In the simplest case, with a single stream of events, it is
 
-$$\lambda(t) = \mu + \sum_{t_i < t} \phi(t - t_i),$$
+$$
+\lambda(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
+$$
 
-where $\mu$ is the background rate and $\phi$ the excitation kernel.
+$$\mu > 0$$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
+
+$$\phi(\cdot) \geq 0$$ is the triggering kernel: the extra rate presently contributed by a past event. 
