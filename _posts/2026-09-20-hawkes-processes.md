@@ -119,3 +119,12 @@ The time between one person becoming infected and them infecting someone else is
 
 
 **Quick summary:** use the exponential when speed and simplicity matter, the power law when influence persists over long periods, and a bespoke kernel when you possess data regarding the delays.
+
+## 2.4. The branching ratio / reproduction number 
+
+The branching ratio quantifies how many further events that one event can cause. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $$\phi$$ to the rate, so the expected number of events it triggers is the area under the kernel: 
+
+$$
+n = \int_0^\infty \phi(t)\,dt.
+$$
+
