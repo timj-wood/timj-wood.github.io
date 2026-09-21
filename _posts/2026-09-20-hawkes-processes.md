@@ -118,4 +118,4 @@ This kernel is "heavy-tailed", so its influence fades at such a slow rate that e
 The time between one person becoming infected and them infecting someone else is called the *generation interval*, and for many diseases its distribution has been measured and is well described by a gamma or lognormal curve. Using this curve as the kernel integrates the disease's biology directly into model - improving its efficacy.
 
 
-**Quick summary:** use the exponential when speed and simplicity matter, the power law when influence persists over long periods, and a bespoke kernel when you know something about the delays involved.
+**Quick summary:** use the exponential when speed and simplicity matter, the power law when influence persists over long periods, and a bespoke kernel when you possess data regarding the delays.
