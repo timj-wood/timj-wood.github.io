@@ -80,7 +80,7 @@ The model soon became famous for its applications in seismology. An earthquake t
 A Hawkes process is defined by its conditional intensity. In the simplest case, with a single stream of events, it is
 
 $$
-\lambda(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
+\lambda^*(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
 $$
 
 $$\mu > 0$$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
