@@ -130,11 +130,11 @@ $$
 
 The sequential events triggered by another are described as the "offspring", in which each event has, on average, $$n$$ offspring. Each sequential event has its own offspring, so one spontaneous event is followed by $$\approx$$ $$n$$ events in the first generation, $$n^2$$ in the second, $$n^3$$ in the hitds, etc. The value of $$n$$ determines the subsequent response:
 
-When **$$n < 1$$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $$1 + n + n^2 + \cdots = 1/1(1-n)$$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $$n = 0.8$$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
+**When $$n < 1$$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $$1 + n + n^2 + \cdots = 1/1(1-n)$$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $$n = 0.8$$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
 
-When **$$n = 1$$** each event will replicate itself exactly (most of the time). In this case, individual chains will still die out, but they can reach enormous sizes before doing so. Even the slightest change in $$n$$ will tip it into one regime (e.g., settling) or the other (exploding). For example, in epidemiology, if $$R = 1$$, a disease is neither disappearing nor spreading. 
+**When $$n = 1$$** each event will replicate itself exactly (most of the time). In this case, individual chains will still die out, but they can reach enormous sizes before doing so. Even the slightest change in $$n$$ will tip it into one regime (e.g., settling) or the other (exploding). For example, in epidemiology, if $$R = 1$$, a disease is neither disappearing nor spreading. 
 
-When **$$n = 1$$** each generation of events is larger than the last, and the number of events grows without limit. 
+**When $$n = 1$$** each generation of events is larger than the last, and the number of events grows without limit. 
 
 As stated, this directly links to the example of the reproduction number $$R$$ in epidemiology. To make this correspondence, the kernel can be split into two 
 
@@ -144,4 +144,6 @@ $$
 
 where $$g(t)$$ is the generation interval distribution. $$g$$ is a probability distribution so its area is 1, meaning $$n = R$$. Therefore, applying the determinants above $$R < 1$$, $$R = 1$$, and $$R > 1$$. $$R$$ varying overtime produces the time varying reproduction number $$R_t$$. 
 
+
+## 2.5. Immigrant-offspring representation 
 
