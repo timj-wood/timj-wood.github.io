@@ -128,14 +128,6 @@ $$
 n = \int_0^\infty \phi(s)\,ds.
 $$
 
-Each event 
-
-
-
-$$
-n = \int_0^\infty \phi(t)\,dt.
-$$
-
 The sequential events triggered by another are described as the "offspring", in which each event has, on average, $$n$$ offspring. Each sequential event has its own offspring, so one spontaneous event is followed by $$\approx$$ $$n$$ events in the first generation, $$n^2$$ in the second, $$n^3$$ in the hitds, etc. The value of $$n$$ determines the subsequent response:
 
 When **$$n < 1$$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $$1 + n + n^2 + \cdots = 1/1(1-n)$$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $$n = 0.8$$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
