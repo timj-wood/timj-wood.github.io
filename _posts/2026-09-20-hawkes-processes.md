@@ -122,7 +122,7 @@ The time between one person becoming infected and them infecting someone else is
 
 ## 2.4. The branching ratio / reproduction number 
 
-The branching ratio quantifies how many further events that one event can cause. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $$\phi$$ to the rate, so the expected number of events it triggers is the area under the kernel: 
+The branching ratio quantifies the number of further events which one event can trigger. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $$\phi$$ to the rate, so the expected number of events it triggers is the area under the kernel: 
 
 $$
 n = \int_0^\infty \phi(t)\,dt.
