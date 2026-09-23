@@ -38,7 +38,7 @@ Three consequences are worth knowing:
 
 The key limitation is in the section title: events *ignore each other*. In an epidemic, that's exactly wrong, because each case can cause more cases.
 
-![A Poisson process and a Hawkes process with the same background rate. The Hawkes intensity jumps at each event and decays, and its events come in bursts.](figures/poisson_vs_hawkes.png)
+![A Poisson process and a Hawkes process with the same background rate. The Hawkes intensity jumps at each event and decays, and its events come in bursts.](assets/posts/hawkes/poisson_vs_hawkes.png)
 
 The figure above previews where we're heading. Both processes have the same background rate of 0.1 events per day, but in the Hawkes process each event gives the rate a jump that then fades away, so events arrive in bursts.
 
@@ -135,7 +135,7 @@ There are two natural ways to simulate a Hawkes process.
 
 I used the family-tree method for the outbreak (and thinning for the exponential-kernel example in the first figure). The run shown here produced 426 cases, 174 imported and 252 local, so 59% local, close to the expected 60%.
 
-![The simulated outbreak. The total intensity is split into the seasonal background (imported cases) and the triggered part (local transmission); below, each case is marked by its true origin.](figures/simulated_outbreak.png)
+![The simulated outbreak. The total intensity is split into the seasonal background (imported cases) and the triggered part (local transmission); below, each case is marked by its true origin.](assets/posts/hawkes/simulated_outbreak.png)
 
 Notice how the local cases lag behind each seasonal peak of importations, and how the triggered part of the intensity is often larger than the background itself.
 
@@ -176,7 +176,7 @@ Fitting the model by maximum likelihood (with the 15-day delay fixed, as Unwin *
 
 The branching ratio and the import pattern come back close to the truth. The spread of the delay is less well pinned down, which makes sense: with only a few hundred cases, many different delay shapes explain the data almost equally well.
 
-![Each case's estimated probability of being imported, split by its true origin.](figures/classification.png)
+![Each case's estimated probability of being imported, split by its true origin.](assets/posts/hawkes/classification.png)
 
 The classification results were the most interesting part for me. Adding up the probabilities gives an expected 185 imported cases, against a true 174, so the model gets the overall split roughly right. Individual cases are much harder: labelling each case as imported when its probability is above 0.5 gets 68% right, and the two groups overlap a lot in the figure. That's because an imported case arriving during a burst of local transmission looks, in timing alone, just like a local case. Timing tells you a lot about *how many* cases are imported, but much less about *which* ones, and this is exactly where partial travel histories become valuable.
 
@@ -184,7 +184,7 @@ The classification results were the most interesting part for me. Adding up the 
 
 The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, gives a neat goodness-of-fit check. If the model is right, the gaps $\Lambda(t_i) - \Lambda(t_{i-1})$ should look like independent draws from an exponential distribution with mean 1: stretching time by the fitted intensity turns the data into a plain Poisson process. You can check this with a Q–Q plot or a Kolmogorov–Smirnov test, which is the *residual analysis* Ogata (1988) introduced for earthquake models and Unwin *et al.* used for malaria. When the parameters were fitted to the same data, the test is lenient, so passing it is encouraging rather than conclusive.
 
-![Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.](figures/time_rescaling_qq.png)
+![Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.](assets/posts/hawkes/time_rescaling_qq.png)
 
 For the toy outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
 
