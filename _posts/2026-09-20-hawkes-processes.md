@@ -54,10 +54,16 @@ The Poisson process is widely used across STEM, from queuing theory to reliabili
 
 ## 1.3. Inhomogeneous Poisson process
 
-In this case, the constant rate $$\lambda$$ is replaced by a function of time, $$\lambda(t)$$, which is non-negative and deterministic (fixed in advance, rather than random). Counts in non-overlapping intervals remain independent, but the background tendency for events rises and falls. For example, the number of flu cases varies with the seasons. The number of events between $$a$$ and $$b$$ is Poisson distributed with mean
+In this case, the constant rate $$\lambda$$ is replaced by a function of time, $$\lambda(t)$$, which is non-negative and deterministic (fixed in advance, rather than random). Counts in non-overlapping intervals remain independent, but the background tendency for events rises and falls. For example, the number of flu cases varies with the seasons. The number of events in the interval $$(a, b]$$ is Poisson distributed,
 
 $$
-\int_a^b \lambda(t)\,dt.
+N(a, b] \sim \text{Poisson}\big(\Lambda(a, b)\big),
+$$
+
+with mean
+
+$$
+\Lambda(a, b) = \int_a^b \lambda(t)\,dt.
 $$
 
 Crucially, the rate varies because of external forces (i.e., change of seasons or the weather), not because previous events change it. This distinction matters because a time-varying rate produces clusters of events, and so does self-excitation, so the two are easily confused in data. Fitting a self-exciting model with a constant background to seasonally driven data will attribute the seasonal peaks to transmission, inflating the apparent strength of self-excitation ([Filimonov & Sornette, 2015](https://www-tandfonline-com.bris.idm.oclc.org/doi/full/10.1080/14697688.2015.1032544)). Conversely, fitting an inhomogeneous Poisson process to self-exciting data will attribute transmission to the background, underestimating it.
