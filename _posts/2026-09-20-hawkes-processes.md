@@ -32,8 +32,8 @@ The simplest point process, and the natural null model, is one in which events o
 
 $$
 \begin{aligned}
-P(\text{one event in } (t, t+h]) &= \lambda h + o(h), \\
-P(\text{two or more events in } (t, t+h]) &= o(h),
+&P(\text{one event in } (t, t+h]) = \lambda h + o(h), \\
+&P(\text{two or more events in } (t, t+h]) = o(h),
 \end{aligned}
 $$
 
