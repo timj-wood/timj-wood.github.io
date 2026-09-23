@@ -171,7 +171,7 @@ $$
 
 These probabilities add up to 1 for each case. They are exactly what the EM algorithm estimates on each pass: treat the unknown family tree as missing data, guess it given the current parameters, re-fit the parameters given the guess, and repeat. In seismology, labelling events this way is called *stochastic declustering* ([Zhuang, Ogata & Vere-Jones, 2002](https://doi.org/10.1198/016214502760046925)). For us, it is an imported-versus-local classifier that uses timing alone.
 
-In the toy outbreak we know the true labels, so we can check how well it works, just as Unwin *et al.* checked theirs against travel histories.
+In the simulated outbreak we know the true labels, so we can check how well it works, just as Unwin *et al.* checked theirs against travel histories.
 
 Fitting the model by maximum likelihood (with the 15-day delay fixed, as Unwin *et al.* did) recovered most parameters well:
 
@@ -201,7 +201,7 @@ The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, g
   <figcaption>Fig 4. Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.</figcaption>
 </figure>
 
-For the toy outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
+For the simulated outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
 
 # What changes with real data
 
