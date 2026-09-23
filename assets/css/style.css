@@ -7,7 +7,7 @@
   --rule: #2c2e31;
   --moss: #8bc27f;
   --moss-soft: #223124;
-  --measure: 38rem;
+  --measure: 42rem;
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
