@@ -22,7 +22,7 @@ This post introduces Hawkes processes from scratch, building up to their applica
 
 A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, where the process is simple: no two events occur at the same time, so $$N(t)$$ jumps by exactly 1 ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)).
 
-Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t) = {t_i:t_i<t}$$, with a strict inequality, The intensity at $$t$$ must not depend on whether an event happens at $$t$$ itself.
+Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t) = \{t_i:t_i<t\}$$, with a strict inequality, The intensity at $$t$$ must not depend on whether an event happens at $$t$$ itself.
 
 To give a biological example, imagine the events are mutations fixing along a lineage, where the point process is their positions (or times) and $$N(t)$$ is the cumulative mutation count. 
 
