@@ -31,7 +31,11 @@ Returning to the example of malaria, the events are the dates on which cases are
 The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $$\lambda$$. It is defined by two properties. First, in a small interval of width $$h$$,
 
 $$
-P(\text{one event in } (t, t+h]) = \lambda h + o(h), \qquad P(\text{two or more events in } (t, t+h]) = o(h),
+P(\text{one event in } (t, t+h]) = \lambda h + o(h), 
+$$
+
+$$
+\qquad P(\text{two or more events in } (t, t+h]) = o(h),
 $$
 
 where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to 0$$. The second condition says events occur one at a time. Second, the numbers of events in non-overlapping intervals are independent.
