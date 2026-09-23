@@ -12,7 +12,7 @@ Suppose you work in a country that has almost eliminated malaria, and a new case
 
 There are two temporal patterns. Imported cases arrive at a rate set by external factors such as holidays, pilgrimages and school terms, and are not caused by earlier local cases. Local cases are caused by earlier cases, so each one raises the chance of further cases for a while afterwards. In malaria this rise is delayed by weeks, because the parasite must develop in the mosquito and then incubate in the new host. Both patterns produce clusters, which is what makes them hard to separate.
 
-Hawkes processes are designed for exactly this problem. They treat events as a mix of background events (here, importations) and triggered events (local transmission), where every case, imported or not, can have "offspring". The average number of offspring per case, the branching ratio, plays the role of the reproduction number, and whether it sits below one is the key question for elimination. [Unwin et al. (2021)](https://www.researchgate.net/publication/350572708_Using_Hawkes_Processes_to_model_imported_and_local_malaria_cases_in_near-elimination_settings) used this approach to separate imported from locally acquired malaria in near-elimination settings.
+Hawkes processes are designed for this exact problem. They treat events as a mix of background events (e.g., importations) and triggered events (local transmission), where every case, imported or not, can have "offspring". The average number of offspring per case, the branching ratio, plays the role of the reproduction number, and whether it sits below one is the key question for elimination. [Unwin et al. (2021)](https://www.researchgate.net/publication/350572708_Using_Hawkes_Processes_to_model_imported_and_local_malaria_cases_in_near-elimination_settings) used this approach to separate imported from locally acquired malaria in near-elimination settings.
 
 This review introduces Hawkes processes from scratch, building up to their applications in epidemiology.
 
@@ -20,7 +20,7 @@ This review introduces Hawkes processes from scratch, building up to their appli
 
 ## 1.1. Point processes / counting processes
 
-A point process is a random set of event times $t_1, t_2, t_3, \ldots$ on a timeline. Examples are everywhere, such as reported cases in epidemiology, earthquakes, and neuron firings. The associated counting process $N(t)$ is the running tally of events up to time $t$, a staircase that starts at 0 and steps up by 1 at each event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). i.e., the point process is a list of times, and the counting process is a staircase.
+A point process is a random set of event times $t_1, t_2, t_3, \ldots$ on a timeline. Examples are everywhere, such as reported cases in epidemiology, earthquake aftershocks, and neuron firings. The associated counting process $N(t)$ is the running tally of events up to time $t$, a staircase that starts at 0 and steps up by 1 at each event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). i.e., the point process is a list of times, and the counting process is a staircase.
 
 Formally, a counting process satisfies $N(0) = 0$, takes non-negative integer values, is non-decreasing, and is right-continuous, meaning that at an event time $t_i$ the count already includes that event. We also assume only finitely many events occur in any bounded interval, and that the process is *simple*, meaning that no two events occur at exactly the same time, so every step of the staircase has height 1.
 
