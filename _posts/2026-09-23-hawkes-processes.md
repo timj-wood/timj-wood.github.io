@@ -1,6 +1,6 @@
 ---
 title: "Hawkes processes in epidemiology"
-summary: A beginner-friendly walkthrough of self-exciting point processes, working towards Juliette Unwin's method for separating imported and local malaria cases.
+summary: A beginner friendly walkthrough of self-exciting point processes, working towards Juliette Unwin's method for separating imported and local malaria cases.
 category: hawkes-processes
 math: true
 ---
