@@ -24,7 +24,7 @@ If you spot any mistakes (there are likely many), please let me know.
 
 A *point process* is a random list of event times $t_1, t_2, t_3, \ldots$ on a timeline, these are observed in many phenomena such as reported cases, earthquake aftershocks, and neurons firing. Its *counting process* $N(t)$ is the running tally of events up to and including time $t$, a staircase that starts at 0 and steps up by 1 at each event. Throughout, I'll assume no two events happen at exactly the same moment (the last section will cover why real surveillance data break this assumption).
 
-Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The strict inequality is required, because whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
+Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \\{t_i : t_i < t\\}$. The strict inequality is required, because whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
 
 ## The Poisson process
 
