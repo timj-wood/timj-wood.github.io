@@ -30,9 +30,9 @@ Returning to the example of malaria, the events are the dates on which cases are
 
 The simplest point process, and the natural null model, is one in which events occur at a completely random and constant rate $$\lambda$$. This process is defined by two properties:
 
-(1) Events occur one at a time, at a constant rate. In a small interval of width $$h$$, the probability of one event is $$\lambda h + o(h)$$, and the probability of two or more is $$o(h)$$, where $$o(h)$$ denotes terms that shrink faster than $$h$$ and so become negligible as $$h \to 0$$. 
+**(1)** Events occur one at a time, at a constant rate. In a small interval of width $$h$$, the probability of one event is $$\lambda h + o(h)$$, and the probability of two or more is $$o(h)$$, where $$o(h)$$ denotes terms that shrink faster than $$h$$ and so become negligible as $$h \to 0$$. 
 
-(2) The process has independent increments, where the numbers of events in non-overlapping intervals are independent. 
+**(2)** The process has independent increments, where the numbers of events in non-overlapping intervals are independent. 
 
 ## 1.3. Inhomogeneous Poisson process
 
