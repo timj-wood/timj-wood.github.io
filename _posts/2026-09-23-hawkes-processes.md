@@ -7,7 +7,7 @@ math: true
 
 Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might be a traveller infected abroad, a dead end if nothing follows. Or it might be the first visible link in a local chain, where a mosquito bites the infected person and later bites someone else. These situations need very different responses, yet on the day the case is reported they can look identical. Often the only evidence is a list of case dates and some incomplete travel histories.
 
-I'm an MSc bioinformatics student, and a biologist by background rather than a mathematician. I came across [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830), who tackled exactly this problem using something called a *Hawkes process*: they separated imported from locally acquired malaria in Yunnan (China) and Eswatini using nothing but the timing of cases, and kept the travel histories back to check their answer. I wanted to understand how that is possible, and this post is me working through it from scratch.
+I'm an MSc bioinformatics student, and a biologist by background; by no means a mathematician. I came across [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830), who tackled exactly this problem using something called a *Hawkes process*: they separated imported from locally acquired malaria in Yunnan (China) and Eswatini using nothing but the timing of cases, and kept the travel histories back to check their answer. I wanted to understand how that is possible, and this post is me working through it from scratch.
 
 The plan is:
 
