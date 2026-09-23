@@ -100,7 +100,7 @@ The asterisk is shorthand for "conditional on the history". Breaking down the fo
 
 In practical terms, $\lambda^*(t)\,dt$ is approximately the probability of an event in the next instant, given everything that has happened so far.
 
-The conditional intensity unifies the processes seen so far. For a homogeneous Poisson process, the history is irrelevant and $\lambda^*(t) = \lambda$. For an inhomogeneous Poisson process, the history is still irrelevant, but the rate varies with time: $\lambda^*(t) = \lambda(t)$. For a Hawkes process, the history matters:
+The conditional intensity unifies the processes seen so far. For a homogeneous Poisson process, the history is irrelevant and $\lambda^{\ast}(t) = \lambda$. For an inhomogeneous Poisson process, the history is still irrelevant, but the rate varies with time: $\lambda^{\ast}(t) = \lambda(t)$. For a Hawkes process, the history matters:
 
 $$
 \lambda^*(t) = \mu(t) + \sum_{t_i < t} \phi(t - t_i).
