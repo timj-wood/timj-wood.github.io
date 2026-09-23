@@ -35,6 +35,8 @@ The simplest point process, and the natural null model, is one in which events o
 
 These two properties can yield several results of use. First, the number of events in a window of length $$T$$ is Poisson distributed with mean $$\lambda T$$. The variance of a Poisson distribution is equal to its mean, so counts from a Poisson process have a variance to mean ratio of 1. Epidemiological counts usually exhibit variances which are greater than the mean, which indicates that there are more forces at play than *pure randomness* (more to follow on that later). The gaps between events are also independent and exponentially distributed with rate $$\lambda$$, where the mean is $$1/\lambda$$. The exponential is the only continuous distribution that is memoryless, where no matter how much time has elapsed, the distribution of the remaining wait is unchanged. Therefore, the process has no memory of when the last event occurred.
 
+Two further properties will be useful later:
+
 - **Superposition:** combining independent Poisson processes with rates $$\lambda_1$$ and $$\lambda_2$$ gives a Poisson process with rate $$\lambda_1 + \lambda_2$$. This underpins the branching representation of Hawkes processes.
 - **Thinning:** if each event of a Poisson process is independently kept with probability $$p$$, the kept events form a Poisson process with rate $$p\lambda$$. This is the basis of the standard algorithm for simulating Hawkes processes.
 
