@@ -28,19 +28,19 @@ Returning to the example of malaria, the events are the dates on which cases are
 
 ## 1.2. Homogeneous Poisson process
 
-The simplest point process, and the natural null model, is one in which events occur at a completely random and constant rate $$\lambda$$. This process is defined by two properties:
+The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $$\lambda$$. It is defined by two properties. First, in a small interval of width $$h$$,
 
-- Events occur one at a time, at a constant rate. In a small interval of width $$h$$, the probability of one event is $$\lambda h + o(h)$$, and the probability of two or more is $$o(h)$$, where $$o(h)$$ denotes terms that shrink faster than $$h$$ and so become negligible as $$h \to 0$$. 
-- The process has independent increments, where the numbers of events in non-overlapping intervals are independent. 
+$$
+P(\text{one event in } (t, t+h]) = \lambda h + o(h), \qquad P(\text{two or more events in } (t, t+h]) = o(h),
+$$
 
-These two properties can yield several results of use. First, the number of events in a window of length $$T$$ is Poisson distributed with mean $$\lambda T$$. The variance of a Poisson distribution is equal to its mean, so counts from a Poisson process have a variance to mean ratio of 1. Epidemiological counts usually exhibit variances which are greater than the mean, which indicates that there are more forces at play than *pure randomness*. The gaps between events are also independent and exponentially distributed with rate $$\lambda$$, where the mean is $$1/\lambda$$. The exponential is the only continuous distribution that is memoryless, where no matter how much time has elapsed, the distribution of the remaining wait is unchanged. Therefore, the process has no memory of when the last event occurred.
+where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to 0$$. The second condition says events occur one at a time. Second, the numbers of events in non-overlapping intervals are independent.
 
-There are two further properties of use, which will be briefly introduced and expanded upon later:
+Because the rate is constant and intervals are independent, the gaps between events are independent and exponentially distributed with rate $$\lambda$$ (mean $$1/\lambda$$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $$T$$ is $$N(T) \sim \text{Poisson}(\lambda T)$$, so its variance equals its mean. This gives a simple first diagnostic: clustered data, whatever the cause, are *overdispersed*, with variance greater than the mean.
 
-- Superposition: combining independent Poisson processes with rates $$\lambda_1$$ and $$\lambda_2$$ gives a Poisson process with rate $$\lambda_1 + \lambda_2$$. This underpins the branching representation of Hawkes processes.
-- Thinning: if each event of a Poisson process is independently kept with probability $$p$$, the kept events form a Poisson process with rate $$p\lambda$$. This is the basis of the standard algorithm for simulating Hawkes processes.
+Two further properties will be useful later. **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates. **Thinning**: keeping each event independently with probability $$p$$ gives a Poisson process with rate $$p\lambda$$. Superposition underpins the branching view of Hawkes processes, and thinning is the basis of Ogata's algorithm for simulating them.
 
-The Poisson process is widely used to model random events across STEM, such as queuing theory and reliability engineering. However, its key limitation is that events cannot influence one another, where an event occurring has no effect on the chance of future events. In an epidemic, for example, each case can cause further cases. Therefore, modelling this *self-excitation* is the core motivation for the application of Hawkes processes. 
+The Poisson process is widely used across STEM, from queuing theory to reliability engineering. Its key limitation is that events cannot influence one another. In an epidemic, however, each case can cause further cases. Capturing this *self-excitation* is the core motivation for Hawkes processes.
 
 ## 1.3. Inhomogeneous Poisson process
 
@@ -49,7 +49,6 @@ In this case of the Poisson process, the rate changes over time, where the funct
 $$\int_a^b \lambda(t)\,dt.$$
 
 Crucially, the rate varies because of external forces (seasons, weather), not because previous events change it. This distinction matters because a time-varying rate produces clusters of events, and so does self-excitation, so the two are easily confused in data. Fitting a self-exciting model to seasonally driven data, or vice versa, will lead to the incorrect conclusion for the driving processes.
-
 
 ## 1.4. The conditional intensity function 
 
