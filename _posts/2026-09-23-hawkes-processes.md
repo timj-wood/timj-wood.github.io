@@ -203,7 +203,7 @@ The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, g
 
 For the simulated outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
 
-# What changes with real data
+# Introducing real data
 
 A simulation is the best case: the model is correct by construction. Real surveillance data raise problems at every step, and most of the hard work in Unwin *et al.*'s paper is in handling them.
 
