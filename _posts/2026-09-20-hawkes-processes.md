@@ -58,7 +58,7 @@ This gives a simple first diagnostic. If you split the timeline into windows and
 Two further properties will be useful later:
 
 - **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates. This underpins the branching view of Hawkes processes, in which the full process is built from a background process plus the offspring processes triggered by each event.
-- **Thinning**: keeping each event independently with probability $p$ gives a Poisson process with rate $p\lambda$. More generally, keeping an event at time $t$ with probability $p(t)$ gives an inhomogeneous Poisson process (Section 1.3) with rate $p(t)\lambda$. This general form is the basis of Ogata's algorithm for simulating Hawkes processes: propose candidate events from a homogeneous process with rate $M$, an upper bound on the intensity, then keep each candidate at time $t$ with probability $\lambda^*(t)/M$, where $\lambda^*(t)$ is the intensity defined in Section 1.4.
+- **Thinning**: keeping each event independently with probability $p$ gives a Poisson process with rate $p\lambda$. More generally, keeping an event at time $t$ with probability $p(t)$ gives an inhomogeneous Poisson process (Section 1.3) with rate $p(t)\lambda$. This general form is the basis of Ogata's algorithm for simulating Hawkes processes: propose candidate events from a homogeneous process with rate $M$, an upper bound on the intensity, then keep each candidate at time $t$ with probability $\lambda^{\ast}(t)/M$, where $\lambda^{\ast}(t)$ is the intensity defined in Section 1.4.
 
 The Poisson process is widely used across STEM, from queueing theory to reliability engineering. Its key limitation is that events cannot influence one another. In an epidemic, however, each case can cause further cases. Capturing this *self-excitation* is the core motivation for Hawkes processes.
 
@@ -89,7 +89,7 @@ In practice, these mechanisms interact. In the near-elimination setting from the
 The most important concept in this review is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
 
 $$
-\lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}
+\lambda^{\ast}(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}
 $$
 
 The asterisk is shorthand for "conditional on the history". Breaking down the formula:
@@ -98,12 +98,12 @@ The asterisk is shorthand for "conditional on the history". Breaking down the fo
 - $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of those events, given the history $\mathcal{H}(t)$ of all events before $t$.
 - Dividing by $h$ turns this expected count into a rate, and $\lim_{h \downarrow 0}$ shrinks the window to zero, giving the rate at "the next instant".
 
-In practical terms, $\lambda^*(t)\,dt$ is approximately the probability of an event in the next instant, given everything that has happened so far.
+In practical terms, $\lambda^{\ast}(t)\,dt$ is approximately the probability of an event in the next instant, given everything that has happened so far.
 
 The conditional intensity unifies the processes seen so far. For a homogeneous Poisson process, the history is irrelevant and $\lambda^{\ast}(t) = \lambda$. For an inhomogeneous Poisson process, the history is still irrelevant, but the rate varies with time: $\lambda^{\ast}(t) = \lambda(t)$. For a Hawkes process, the history matters:
 
 $$
-\lambda^*(t) = \mu(t) + \sum_{t_i < t} \phi(t - t_i).
+\lambda^{\ast}(t) = \mu(t) + \sum_{t_i < t} \phi(t - t_i).
 $$
 
 Here $\mu(t)$ is the **background rate**, generating events that arrive independently of the past (importations, in our malaria example), and $\phi$ is the **kernel**, describing how much each past event at $t_i$ raises the intensity at a time $t - t_i$ later. Each event therefore adds its own contribution to the intensity, and events generated through the kernel are the *triggered* events, or *offspring*, of earlier ones. The shape of the kernel sets the timing. An exponentially decaying kernel raises the intensity immediately after each event, whereas a kernel that starts near zero and peaks weeks later captures the delay in malaria transmission described in the introduction. The total area under the kernel,
@@ -119,7 +119,7 @@ is the **branching ratio** $\eta$: the expected number of offspring per event, w
 For a simple point process, the conditional intensity completely specifies the process, and it gives the likelihood of an observed set of event times $t_1, \ldots, t_n$ on $[0, T]$ directly ([Rasmussen, 2018](https://arxiv.org/abs/1806.00221)):
 
 $$
-\log L = \sum_{i=1}^{n} \log \lambda^*(t_i) \;-\; \int_0^T \lambda^*(s)\,ds.
+\log L = \sum_{i=1}^{n} \log \lambda^{\ast}(t_i) \;-\; \int_0^T \lambda^{\ast}(s)\,ds.
 $$
 
 The first term rewards the model for assigning a high intensity at the times events actually occurred. The second term is the log-probability of seeing no events in the gaps between them, including the final stretch from the last event $t_n$ to the end of observation $T$. It penalises the model for predicting events that didn't happen.
@@ -131,7 +131,7 @@ One practical complication is **edge effects**. The Hawkes intensity depends on 
 The integral in the second term of the likelihood is known as the **compensator**:
 
 $$
-\Lambda(t) = \int_0^t \lambda^*(s)\,ds.
+\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds.
 $$
 
 It is the cumulative intensity up to time $t$. The difference $N(t) - \Lambda(t)$ is a *martingale*: given the history, its expected future change is zero, so on average the compensator "compensates" for the events that occur.
@@ -151,7 +151,7 @@ The model soon became famous for its applications in seismology. An earthquake t
 A Hawkes process is defined by its conditional intensity. In the simplest case, with a single stream of events, it is
 
 $$
-\lambda^*(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
+\lambda^{\ast}(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
 $$
 
 $\mu > 0$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
@@ -160,7 +160,7 @@ $\phi(\cdot) \geq 0$ is the triggering kernel: the extra rate presently contribu
 
 The sum runs over every event before time $t$. Each past event adds a decaying spike to the rate, which stack on top of the background. 
 
-This is the definition of **self-exciting**, where an event raises $\lambda^*(t)$, increasing the likelihood of another event occuring, thus raising $\lambda^*(t)$ again. This feedback is what produces clusters of events in time, and unlike the inhomogeneous Poisson process (Section 1.3), the clustering is generated by the actual events occuring, not external forces. 
+This is the definition of **self-exciting**, where an event raises $\lambda^{\ast}(t)$, increasing the likelihood of another event occuring, thus raising $\lambda^{\ast}(t)$ again. This feedback is what produces clusters of events in time, and unlike the inhomogeneous Poisson process (Section 1.3), the clustering is generated by the actual events occuring, not external forces. 
 
 ## 2.3. Formalising kernels 
 
