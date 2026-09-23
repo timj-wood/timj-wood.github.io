@@ -26,9 +26,9 @@ A *point process* is a random list of event times $t_1, t_2, t_3, \ldots$ on a t
 
 Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The strict inequality is required, because whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
 
-## The Poisson process: events that ignore each other
+## The Poisson process
 
-The simplest model is the homogeneous Poisson process, where events happen completely at random at a constant rate $\lambda$. In any tiny interval of width $h$, the chance of one event is about $\lambda h$, the chance of two or more is negligible, and what happens in one interval is independent of every other interval.
+The simplest point process model is the homogeneous Poisson process, where events happen completely at random at a constant rate $\lambda$. In any tiny interval of width $h$, the chance of one event is about $\lambda h$, the chance of two or more is negligible, and what happens in one interval is independent of every other interval.
 
 Three consequences are worth knowing:
 
@@ -73,7 +73,7 @@ $$
 \lambda^{\ast}(t) = \mu(t) + \sum_{t_i < t} \phi(t - t_i).
 $$
 
-There are only two ingredients:
+There are only two components:
 
 - $\mu(t) \geq 0$ is the **background rate**: events that arrive regardless of the past. In our example, these are imported cases.
 - $\phi(u) \geq 0$ is the **kernel**: how much a past event raises the rate $u$ days later. Only past events count, so $\phi(u) = 0$ for $u \leq 0$. In our example, this is local transmission.
