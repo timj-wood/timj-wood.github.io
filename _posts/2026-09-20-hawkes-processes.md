@@ -138,7 +138,7 @@ It is the cumulative intensity up to time $t$. The difference $N(t) - \Lambda(t)
 
 The compensator also provides a goodness-of-fit check, via the **time-rescaling theorem**. If the model is correct, the transformed event times $\Lambda(t_1), \Lambda(t_2), \ldots$ form a homogeneous Poisson process with rate 1. Equivalently, the rescaled gaps $\Lambda(t_i) - \Lambda(t_{i-1})$ are independent and exponentially distributed with mean 1, which can be checked with a Q–Q plot or a Kolmogorov–Smirnov test. This form of residual analysis was introduced for self-exciting models by [Ogata (1988)](https://doi.org/10.1080/01621459.1988.10478560). When the parameters have been estimated from the same data, the test is only approximate.
 
-# 2. What is a Hawkes processes?
+# 2. Defining Hawkes processes
 
 ## 2.1. History and motivation
 
