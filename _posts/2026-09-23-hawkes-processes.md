@@ -40,7 +40,7 @@ The key limitation is in the section title: events *ignore each other*. In an ep
 
 <figure>
   <img src="/assets/posts/hawkes/poisson_vs_hawkes.png" alt="A Poisson process and a Hawkes process with the same background rate">
-  <figcaption>A Poisson process and a Hawkes process with the same background rate. The Hawkes intensity jumps at each event and decays, and its events come in bursts.</figcaption>
+  <figcaption>Fig 1. A Poisson process and a Hawkes process with the same background rate. The Hawkes intensity jumps at each event and decays, and its events come in bursts.</figcaption>
 </figure>
 
 The figure above previews where we're heading. Both processes have the same background rate of 0.1 events per day, but in the Hawkes process each event gives the rate a jump that then fades away, so events arrive in bursts.
@@ -140,7 +140,7 @@ I used the family-tree method for the outbreak (and thinning for the exponential
 
 <figure>
   <img src="/assets/posts/hawkes/simulated_outbreak.png" alt="Simulated outbreak split into imported and local cases">
-  <figcaption>The simulated outbreak. The total intensity is split into the seasonal background (imported cases) and the triggered part (local transmission); below, each case is marked by its true origin.</figcaption>
+  <figcaption>Fig 2. The simulated outbreak. The total intensity is split into the seasonal background (imported cases) and the triggered part (local transmission); below, each case is marked by its true origin.</figcaption>
 </figure>
 
 Notice how the local cases lag behind each seasonal peak of importations, and how the triggered part of the intensity is often larger than the background itself.
@@ -187,7 +187,7 @@ The branching ratio and the import pattern come back close to the truth. The spr
 
 <figure>
   <img src="/assets/posts/hawkes/classification.png" alt="Estimated probability of being imported, by true origin">
-  <figcaption>Each case's estimated probability of being imported, split by its true origin.</figcaption>
+  <figcaption>Fig 3. Each case's estimated probability of being imported, split by its true origin.</figcaption>
 </figure>
 
 The classification results were the most interesting part for me. Adding up the probabilities gives an expected 185 imported cases, against a true 174, so the model gets the overall split roughly right. Individual cases are much harder: labelling each case as imported when its probability is above 0.5 gets 68% right, and the two groups overlap a lot in the figure. That's because an imported case arriving during a burst of local transmission looks, in timing alone, just like a local case. Timing tells you a lot about *how many* cases are imported, but much less about *which* ones, and this is exactly where partial travel histories become valuable.
@@ -198,7 +198,7 @@ The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, g
 
 <figure>
   <img src="/assets/posts/hawkes/time_rescaling_qq.png" alt="Q–Q plot of rescaled gaps against an exponential distribution">
-  <figcaption>Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.</figcaption>
+  <figcaption>Fig 4. Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.</figcaption>
 </figure>
 
 For the toy outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
