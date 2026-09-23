@@ -80,7 +80,6 @@ section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0
 .prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
 .prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
 .prose figure { margin: 1.5rem 0; }
-.prose figure.small img { max-width: 24rem; }
 .prose figure img { margin: 0 0 0.5rem; border-radius: 4px; filter: var(--img-dim); }
 .prose blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 3px solid var(--moss); color: var(--grain); }
 .prose code, .prose pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.88em; }
