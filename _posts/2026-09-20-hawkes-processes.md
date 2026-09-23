@@ -41,7 +41,9 @@ where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to
 
 Because the rate is constant and intervals are independent, the gaps between events are independent and exponentially distributed with rate $$\lambda$$ (mean $$1/\lambda$$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $$T$$ is $$N(T) \sim \text{Poisson}(\lambda T)$$, so its variance equals its mean. This gives a simple first diagnostic: clustered data, whatever the cause, are *overdispersed*, with variance greater than the mean.
 
-Two further properties will be useful later. **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates. **Thinning**: keeping each event independently with probability $$p$$ gives a Poisson process with rate $$p\lambda$$. Superposition underpins the branching view of Hawkes processes, and thinning is the basis of Ogata's algorithm for simulating them.
+Two further properties will be useful later:
+- **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates.
+- **Thinning**: keeping each event independently with probability $$p$$ gives a Poisson process with rate $$p\lambda$$. Superposition underpins the branching view of Hawkes processes, and thinning is the basis of Ogata's algorithm for simulating them.
 
 The Poisson process is widely used across STEM, from queuing theory to reliability engineering. Its key limitation is that events cannot influence one another. In an epidemic, however, each case can cause further cases. Capturing this *self-excitation* is the core motivation for Hawkes processes.
 
