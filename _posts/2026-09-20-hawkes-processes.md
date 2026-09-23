@@ -20,23 +20,23 @@ This post introduces Hawkes processes from scratch, building up to their applica
 
 ## 1.1. Point processes / counting processes
 
-A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a staircase that starts at 0 and increases by 1 at each sequential event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). Formally, a counting process satisfies $$N(0) = 0$$, takes non-negative integer values, is non-decreasing, and is right-continuous, meaning that at an event time $$t_i$$, the count already includes that event. We also assume that the process is simple, where no two events occur at the exact same time, so each step of the staircase has a height of 1. 
+A point process can be described as a random set of event times $t_1, t_2, t_3, ...$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $N(t)$ is the running tally up to $t$, which is essentially a staircase that starts at 0 and increases by 1 at each sequential event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). Formally, a counting process satisfies $N(0) = 0$, takes non-negative integer values, is non-decreasing, and is right-continuous, meaning that at an event time $t_i$, the count already includes that event. We also assume that the process is simple, where no two events occur at the exact same time, so each step of the staircase has a height of 1. 
 
-Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t) = \{t_i:t_i<t\}$$, with a strict inequality. The intensity at $$t$$ must not depend on whether an event happens at $$t$$ itself.
+Think of point processes as a list of times, and counting processes as the staircase. Everything before time $t$ is known as the *history*, which is wrriten as $\mathcal{H}(t) = \{t_i:t_i<t\}$, with a strict inequality. The intensity at $t$ must not depend on whether an event happens at $t$ itself.
 
-Returning to the example of malaria, the events are the dates on which cases are reported. The point process is the list of those dates, and $$N(t)$$ is the total number of cases reported by time $$t$$.
+Returning to the example of malaria, the events are the dates on which cases are reported. The point process is the list of those dates, and $N(t)$ is the total number of cases reported by time $t$.
 
 ## 1.2. Homogeneous Poisson process
 
-The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $$\lambda$$. It is defined by two properties.
+The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $\lambda$. It is defined by two properties.
 
-First, events occur at a constant rate and one at a time. In a small interval of width $$h$$, the probability of exactly one event is
+First, events occur at a constant rate and one at a time. In a small interval of width $h$, the probability of exactly one event is
 
 $$
 P(\text{one event in } (t, t+h]) = \lambda h + o(h),
 $$
 
-where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to 0$$. Meanwhile, the probability of more than one event is negligible:
+where $o(h)$ denotes terms that become negligible relative to $h$ as $h \to 0$. Meanwhile, the probability of more than one event is negligible:
 
 $$
 P(\text{two or more events in } (t, t+h]) = o(h).
@@ -44,17 +44,17 @@ $$
 
 Second, the numbers of events in non-overlapping intervals are independent.
 
-Because the rate is constant and intervals are independent, the gaps between events are independent and exponentially distributed with rate $$\lambda$$ (mean $$1/\lambda$$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $$T$$ is $$N(T) \sim \text{Poisson}(\lambda T)$$, so its variance equals its mean. This gives a simple first diagnostic: clustered data, whatever the cause, are *overdispersed*, with variance greater than the mean.
+Because the rate is constant and intervals are independent, the gaps between events are independent and exponentially distributed with rate $\lambda$ (mean $1/\lambda$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $T$ is $N(T) \sim \text{Poisson}(\lambda T)$, so its variance equals its mean. This gives a simple first diagnostic: clustered data, whatever the cause, are *overdispersed*, with variance greater than the mean.
 
 Two further properties will be useful later:
 - **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates.
-- **Thinning**: keeping each event independently with probability $$p$$ gives a Poisson process with rate $$p\lambda$$. Superposition underpins the branching view of Hawkes processes, and thinning is the basis of Ogata's algorithm for simulating them.
+- **Thinning**: keeping each event independently with probability $p$ gives a Poisson process with rate $p\lambda$. Superposition underpins the branching view of Hawkes processes, and thinning is the basis of Ogata's algorithm for simulating them.
 
 The Poisson process is widely used across STEM, from queuing theory to reliability engineering. Its key limitation is that events cannot influence one another. In an epidemic, however, each case can cause further cases. Capturing this *self-excitation* is the core motivation for Hawkes processes.
 
 ## 1.3. Inhomogeneous Poisson process
 
-In this case, the constant rate $$\lambda$$ is replaced by a function of time, $$\lambda(t)$$, which is non-negative and deterministic (fixed in advance, rather than random). Counts in non-overlapping intervals remain independent, but the background tendency for events rises and falls. For example, the number of flu cases varies with the seasons. The number of events in the interval $$(a, b]$$ is Poisson distributed,
+In this case, the constant rate $\lambda$ is replaced by a function of time, $\lambda(t)$, which is non-negative and deterministic (fixed in advance, rather than random). Counts in non-overlapping intervals remain independent, but the background tendency for events rises and falls. For example, the number of flu cases varies with the seasons. The number of events in the interval $(a, b]$ is Poisson distributed,
 
 $$
 N(a, b] \sim \text{Poisson}\big(\Lambda(a, b)\big),
@@ -72,29 +72,40 @@ If the rate is itself random, for example driven by unobserved fluctuations in m
 
 ## 1.4. The conditional intensity function 
 
-The most important concept in this post is the **conditional intensity**. This is the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
+The most important concept in this post is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
 
 $$
-\lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,\text{events in } (t,\, t+h] \;\big|\; \mathcal{H}(t)\,\big]}{h}
+\lambda^*(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}
 $$
 
-The asterisk is shorthand for "conditional on the history". Breaking down the formula: 
+The asterisk is shorthand for "conditional on the history". Breaking down the formula:
 
-- $\lambda^*(t)$ denotes the present rate, given everything that has previously occured.
-- $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of events, given the history $\mathcal{H}(t)$.
-- $\lim_{h \downarrow 0}$ shrinks the window to zero, thus detailing "the next instant".
+- $N(t+h) - N(t)$ is the number of events in the short window $(t, t+h]$.
+- $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of those events, given the history $\mathcal{H}(t)$ of all events before $t$.
+- Dividing by $h$ turns this expected count into a rate, and $\lim_{h \downarrow 0}$ shrinks the window to zero, giving the rate at "the next instant".
 
-In practical terms, $$\lambda^*(t)\,dt$$ is $$\approx$$ the probability of an event occurring in the next instant.
+In practical terms, $\lambda^*(t)\,dt$ is approximately the probability of an event in the next instant.
 
-For a homogeneous Poisson process the history is irrelevant, so $$\lambda^*(t) = \lambda$$. For a Hawkes process, $$\lambda^*(t)$$ increases at each event and then decays.
+The conditional intensity unifies the processes seen so far. For a homogeneous Poisson process, the history is irrelevant and $\lambda^*(t) = \lambda$. For an inhomogeneous Poisson process, the history is still irrelevant, but the rate varies with time: $\lambda^*(t) = \lambda(t)$. For a Hawkes process, the history matters: $\lambda^*(t)$ is raised for a period following each event, before returning towards a baseline.
 
-The integral of the intensity,
+### Why it matters
+
+The conditional intensity completely specifies the process, and gives the likelihood of an observed set of event times $t_1, \ldots, t_n$ on $[0, T]$ directly ([Rasmussen, 2018](https://arxiv.org/abs/1806.00221)):
 
 $$
-\Lambda(t) = \int_0^t \lambda^*(s)\,ds,
+\log L = \sum_{i=1}^{n} \log \lambda^*(t_i) \;-\; \int_0^T \lambda^*(s)\,ds.
 $$
 
-is known as the **compensator**: the cumulative number of events the model expects to have seen by time $t$.
+The first term rewards the model for assigning a high intensity at the times events actually occurred. The second term is the log-probability of seeing no events in the gaps between them, which penalises the model for predicting events that didn't happen. Maximising this likelihood is how Hawkes models are fitted to data.
+
+The integral in the second term is known as the **compensator**:
+
+$$
+\Lambda(t) = \int_0^t \lambda^*(s)\,ds.
+$$
+
+It is the cumulative intensity up to time $t$, and $N(t) - \Lambda(t)$ has mean zero: on average, the compensator "compensates" for the events that occur. It also provides a goodness-of-fit check. If the model is correct, the transformed event times $\Lambda(t_1), \Lambda(t_2), \ldots$ form a homogeneous Poisson process with rate 1, which is easy to test.
+
 
 # 2. What is a Hawkes processes?
 
@@ -112,17 +123,17 @@ $$
 \lambda^*(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
 $$
 
-$$\mu > 0$$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
+$\mu > 0$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
 
-$$\phi(\cdot) \geq 0$$ is the triggering kernel: the extra rate presently contributed by a past event. It's input, $$t-t_i$$, is the time elapsed since the event at $$t_i$$. Typically, a kernel will start high and decay, so an event's influence is strongest immediately after its occurence, and then fades. In the case of malaria, this is local transmission. 
+$\phi(\cdot) \geq 0$ is the triggering kernel: the extra rate presently contributed by a past event. It's input, $t-t_i$, is the time elapsed since the event at $t_i$. Typically, a kernel will start high and decay, so an event's influence is strongest immediately after its occurence, and then fades. In the case of malaria, this is local transmission. 
 
-The sum runs over every event before time $$t$$. Each past event adds a decaying spike to the rate, which stack on top of the background. 
+The sum runs over every event before time $t$. Each past event adds a decaying spike to the rate, which stack on top of the background. 
 
-This is the definition of **self-exciting**, where an event raises $$\lambda^*(t)$$, increasing the likelihood of another event occuring, thus raising $$\lambda^*(t)$$ again. This feedback is what produces clusters of events in time, and unlike the inhomogeneous Poisson process (Section 1.3), the clustering is generated by the actual events occuring, not external forces. 
+This is the definition of **self-exciting**, where an event raises $\lambda^*(t)$, increasing the likelihood of another event occuring, thus raising $\lambda^*(t)$ again. This feedback is what produces clusters of events in time, and unlike the inhomogeneous Poisson process (Section 1.3), the clustering is generated by the actual events occuring, not external forces. 
 
 ## 2.3. Formalising kernels 
 
-The kernel $$\phi$$ describes how an event's influence plays out overtime, and different choices of kernel will produce different model outcomes. In the context of this review, there are three worth stating. 
+The kernel $\phi$ describes how an event's influence plays out overtime, and different choices of kernel will produce different model outcomes. In the context of this review, there are three worth stating. 
 
 **The exponential kernel** is the original and most common kernel:
 
@@ -130,7 +141,7 @@ $$
 \phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
 $$
 
-Each event instantly raises the intensity by $$\alpha$$, where the increase then decays at rate $$\beta$$, so an event's influence lasts for $$\approx$$ $$1/\beta$$ units of time. The popularity of this kernal lies in its practicality - the exponential's lack of memory means that the model can be quickly fitted to data. 
+Each event instantly raises the intensity by $\alpha$, where the increase then decays at rate $\beta$, so an event's influence lasts for $\approx 1/\beta$ units of time. The popularity of this kernal lies in its practicality - the exponential's lack of memory means that the model can be quickly fitted to data. 
 
 **The power-law kernel** decays at a much slower rate:
 
@@ -138,11 +149,11 @@ $$
 \phi(t) = \frac{k}{(c + t)^p}, \qquad k, c > 0, \; p > 1.
 $$
 
-Here $$k$$ sets the overall strength of triggering, $$p$$ controls how quickly an event's influence fades (larger $$p$$ means faster decay), and $$c$$ is a small offset that keeps the kernel finite at $$t = 0$$, so that each event raises the intensity by $$k / c^p$$. The condition $$p > 1$$ ensures that the total influence of a single event is finite.
+Here $k$ sets the overall strength of triggering, $p$ controls how quickly an event's influence fades (larger $p$ means faster decay), and $c$ is a small offset that keeps the kernel finite at $t = 0$, so that each event raises the intensity by $k / c^p$. The condition $p > 1$ ensures that the total influence of a single event is finite.
 
-This kernel is "heavy-tailed", so its influence fades at such a slow rate that events from long ago can still trigger new ones, whereas an exponential kernel's influence is effectively gone after a few multiples of $$1/\beta$$.
+This kernel is "heavy-tailed", so its influence fades at such a slow rate that events from long ago can still trigger new ones, whereas an exponential kernel's influence is effectively gone after a few multiples of $1/\beta$.
 
-**A kernel can also be matched to a specific process.** $$\phi$$ is not necessarily a simple formula - it can be a flexible step function estimated from the data, or a shape chosen from prior knowledge. The second option is particularly important in epidemiology. 
+**A kernel can also be matched to a specific process.** $\phi$ is not necessarily a simple formula - it can be a flexible step function estimated from the data, or a shape chosen from prior knowledge. The second option is particularly important in epidemiology. 
 
 The time between one person becoming infected and them infecting someone else is called the *generation interval*, and for many diseases its distribution has been measured and is well described by a gamma or lognormal curve. Using this curve as the kernel integrates the disease's biology directly into model - improving its efficacy.
 
@@ -151,28 +162,27 @@ The time between one person becoming infected and them infecting someone else is
 
 ## 2.4. The branching ratio / reproduction number 
 
-The branching ratio quantifies the number of further events which one event can trigger. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $$\phi$$ to the rate, so the expected number of events it triggers is the area under the kernel: 
+The branching ratio quantifies the number of further events which one event can trigger. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $\phi$ to the rate, so the expected number of events it triggers is the area under the kernel: 
 
 $$
 n = \int_0^\infty \phi(s)\,ds.
 $$
 
-The sequential events triggered by another are described as the "offspring", in which each event has, on average, $$n$$ offspring. Each sequential event has its own offspring, so one spontaneous event is followed by $$\approx$$ $$n$$ events in the first generation, $$n^2$$ in the second, $$n^3$$ in the hitds, etc. The value of $$n$$ determines the subsequent response:
+The sequential events triggered by another are described as the "offspring", in which each event has, on average, $n$ offspring. Each sequential event has its own offspring, so one spontaneous event is followed by $\approx n$ events in the first generation, $n^2$ in the second, $n^3$ in the hitds, etc. The value of $n$ determines the subsequent response:
 
-**When $$n < 1$$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $$1 + n + n^2 + \cdots = 1/1(1-n)$$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $$n = 0.8$$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
+**When $n < 1$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $1 + n + n^2 + \cdots = 1/1(1-n)$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $n = 0.8$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
 
-**When $$n = 1$$** each event will replicate itself exactly (most of the time). In this case, individual chains will still die out, but they can reach enormous sizes before doing so. Even the slightest change in $$n$$ will tip it into one regime (e.g., settling) or the other (exploding). For example, in epidemiology, if $$R = 1$$, a disease is neither disappearing nor spreading. 
+**When $n = 1$** each event will replicate itself exactly (most of the time). In this case, individual chains will still die out, but they can reach enormous sizes before doing so. Even the slightest change in $n$ will tip it into one regime (e.g., settling) or the other (exploding). For example, in epidemiology, if $R = 1$, a disease is neither disappearing nor spreading. 
 
-**When $$n = 1$$** each generation of events is larger than the last, and the number of events grows without limit. 
+**When $n = 1$** each generation of events is larger than the last, and the number of events grows without limit. 
 
-As stated, this directly links to the example of the reproduction number $$R$$ in epidemiology. To make this correspondence, the kernel can be split into two 
+As stated, this directly links to the example of the reproduction number $R$ in epidemiology. To make this correspondence, the kernel can be split into two 
 
 $$
 \phi(t) = R \, g(t), 
 $$
 
-where $$g(t)$$ is the generation interval distribution. $$g$$ is a probability distribution so its area is 1, meaning $$n = R$$. Therefore, applying the determinants above $$R < 1$$, $$R = 1$$, and $$R > 1$$. $$R$$ varying overtime produces the time varying reproduction number $$R_t$$. 
+where $g(t)$ is the generation interval distribution. $g$ is a probability distribution so its area is 1, meaning $n = R$. Therefore, applying the determinants above $R < 1$, $R = 1$, and $R > 1$. $R$ varying overtime produces the time varying reproduction number $R_t$. 
 
 
-## 2.5. Immigrant-offspring representation 
-
+## 2.5. Immigrant-offspring representation
