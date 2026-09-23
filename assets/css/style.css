@@ -8,18 +8,21 @@
   --moss: #8bc27f;
   --moss-soft: #223124;
   --measure: 38rem;
+  --img-dim: brightness(0.88);
 }
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
     color-scheme: light;
     --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
     --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2;
+    --img-dim: none;
   }
 }
 :root[data-theme="light"] {
   color-scheme: light;
   --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
   --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2;
+  --img-dim: none;
 }
 
 * { box-sizing: border-box; }
@@ -79,6 +82,8 @@ section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0
 .prose h3 { font-size: 1.1rem; margin: 2rem 0 0.5rem; font-weight: 700; }
 .prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
 .prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
+.prose figure { margin: 1.5rem 0; }
+.prose figure img { margin: 0 0 0.5rem; border-radius: 4px; filter: var(--img-dim); }
 .prose blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 3px solid var(--moss); color: var(--grain); }
 .prose code, .prose pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.88em; }
 .prose code { background: var(--moss-soft); padding: 0.1em 0.35em; border-radius: 3px; }
