@@ -197,7 +197,7 @@ The classification results were the most interesting part for me. Adding up the 
 The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, gives a neat goodness-of-fit check. If the model is right, the gaps $\Lambda(t_i) - \Lambda(t_{i-1})$ should look like independent draws from an exponential distribution with mean 1: stretching time by the fitted intensity turns the data into a plain Poisson process. You can check this with a Q–Q plot or a Kolmogorov–Smirnov test, which is the *residual analysis* Ogata (1988) introduced for earthquake models and Unwin *et al.* used for malaria. When the parameters were fitted to the same data, the test is lenient, so passing it is encouraging rather than conclusive.
 
 <figure>
-  <img src="/assets/posts/hawkes/time_rescaling_qq.png" alt="Q–Q plot of rescaled gaps against an exponential distribution" style="max-width: 24rem;">
+  <img src="/assets/posts/hawkes/time_rescaling_qq.png" alt="Q–Q plot of rescaled gaps against an exponential distribution" style="max-width: 24rem; margin: 0 auto 0.5rem;">
   <figcaption>Fig 4. Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.</figcaption>
 </figure>
 
