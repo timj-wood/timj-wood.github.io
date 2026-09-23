@@ -111,7 +111,7 @@ Think of the family tree again. One imported case has on average $\eta$ children
 
 Two consequences matter for the malaria question. First, with a constant background rate $\mu$ and $\eta < 1$, the process settles to an average rate of $\mu/(1-\eta)$ ([Laub *et al.*, 2015](https://arxiv.org/abs/1507.02822)). So $\eta < 1$ does *not* mean zero cases: as long as importations continue, cases continue ([Routledge *et al.*, 2018](https://doi.org/10.1038/s41467-018-04577-y)). Second, in that settled state a randomly chosen case is locally acquired with probability $\eta$ and imported with probability $1 - \eta$. The branching ratio is therefore also the expected *fraction* of cases that are local.
 
-# A toy malaria outbreak
+# Simulating a malaria outbreak
 
 The best way I found to understand all this is to simulate an outbreak where I know the truth, and then see whether the model can recover it. All the code for this section is in a single Python script, [hawkes_malaria.py](/assets/posts/hawkes/hawkes_malaria.py), which uses only NumPy, SciPy and Matplotlib.
 
