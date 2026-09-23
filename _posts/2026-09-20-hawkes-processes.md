@@ -8,7 +8,7 @@ Work in progress.
 
 **Note:** I am a biologist by background, and by no means a mathematician. Please bear with my elementary LaTeX skills and let me know if you spot any mistakes.
 
-Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might come from a traveller who was infected abroad and brought the parasite home with them. If nothing follows, it was a dead end. On the other hand, it may be the first visible link in a local chain, where a mosquito bites an infected person, subsequently biting someone else, and transmission soon becomes widespread. Notably, local transmission doesn't yield an immediate increase in the likelihood of further cases - accounted through the kernel (Section 1.4).
+Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might come from a traveller who was infected abroad and brought the parasite home with them. If nothing follows, it was a dead end. On the other hand, it may be the first visible link in a local chain, where a mosquito bites an infected person, subsequently biting someone else, and transmission soon becomes widespread. Notably, local transmission doesn't yield an immediate increase in the likelihood of further cases - which the kernel informs (Section 1.4).
 
 These two situations require completely different responses, yet on the day the case is reported they look identical. Often the only evidence is a list of cases, the dates they occurred, and some travel histories - partial labels of which cases are imported, which Hawkes models can exploit.
 
