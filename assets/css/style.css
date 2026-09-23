@@ -77,6 +77,7 @@ section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0
 .prose .meta { font-style: italic; color: var(--grain); margin: 0 0 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
 .prose h2 { font-size: 1.4rem; margin: 2.5rem 0 0.75rem; font-weight: 500; }
 .prose h3 { font-size: 1.1rem; margin: 2rem 0 0.5rem; font-weight: 700; }
+.prose p, .prose li { max-width: 34rem; }
 .prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
 .prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
 .prose blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 3px solid var(--moss); color: var(--grain); }
