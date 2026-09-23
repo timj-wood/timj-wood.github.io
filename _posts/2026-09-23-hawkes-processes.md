@@ -42,7 +42,7 @@ The key limitation is in the section title: events *ignore each other*. In an ep
 
 The figure above previews where we're heading. Both processes have the same background rate of 0.1 events per day, but in the Hawkes process each event gives the rate a jump that then fades away, so events arrive in bursts.
 
-## The conditional intensity: the one idea to hold on to
+## The conditional intensity
 
 The way out is to let the rate depend on what has already happened. The **conditional intensity** is the expected rate of events at time $t$, given the history:
 
