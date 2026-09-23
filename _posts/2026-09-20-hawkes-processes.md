@@ -1,219 +1,212 @@
 ---
 title: "Hawkes processes in epidemiology"
-summary: A walkthrough of self-exciting point processes, inspired by Juliette Unwin's paper on malaria modelling.
+summary: A beginner-friendly walkthrough of self-exciting point processes, working towards Juliette Unwin's method for separating imported and local malaria cases.
 category: hawkes-processes
 math: true
 ---
-Work in progress. 
 
-**Note:** I am a biologist by background, and by no means a mathematician. Please bear with my elementary LaTeX skills and let me know if you spot any mistakes.
+Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might be a traveller infected abroad, a dead end if nothing follows. Or it might be the first visible link in a local chain, where a mosquito bites the infected person and later bites someone else. These situations need very different responses, yet on the day the case is reported they can look identical. Often the only evidence is a list of case dates and some incomplete travel histories.
 
-Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might be a traveller infected abroad, a dead end if nothing follows. Or it might be the first visible link in a local chain, where a mosquito bites the infected person and later bites someone else. These situations need very different responses, yet on the day the case is reported they look identical. Often the only evidence is a list of case dates and incomplete travel histories, so the timing of cases has to do much of the work.
+I'm an MSc bioinformatics student, and a biologist by background rather than a mathematician. I came across [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830), who tackled exactly this problem using something called a *Hawkes process*: they separated imported from locally acquired malaria in Yunnan (China) and Eswatini using nothing but the timing of cases, and kept the travel histories back to check their answer. I wanted to understand how that is possible, and this post is me working through it from scratch.
 
-There are two temporal patterns. Imported cases arrive at a rate set by external factors such as holidays, pilgrimages and school terms, and are not caused by earlier local cases. Local cases are caused by earlier cases, so each one raises the chance of further cases for a while afterwards. In malaria this rise is delayed by weeks, because the parasite must develop in the mosquito and then incubate in the new host. Both patterns produce clusters, which is what makes them hard to separate.
+The plan is:
 
-Hawkes processes are designed for this exact problem. They treat events as a mix of background events (e.g., importations) and triggered events (local transmission), where every case, imported or not, can have "offspring". The average number of offspring per case, the branching ratio, plays the role of the reproduction number, and whether it sits below one is the key question for elimination. [Unwin et al. (2021)](https://www.researchgate.net/publication/350572708_Using_Hawkes_Processes_to_model_imported_and_local_malaria_cases_in_near-elimination_settings) used this approach to separate imported from locally acquired malaria in near-elimination settings.
+1. just enough background on random events in time;
+2. the Hawkes process itself;
+3. a toy malaria outbreak, simulated and then untangled;
+4. what changes when the data are real.
 
-This review introduces Hawkes processes from scratch, building up to their applications in epidemiology.
+If you spot a mistake, please let me know.
 
-# 1. Prerequisites
+# Just enough background
 
-## 1.1. Point processes / counting processes
+## Events in time
 
-A point process is a random set of event times $t_1, t_2, t_3, \ldots$ on a timeline. Examples are everywhere, such as reported cases in epidemiology, earthquake aftershocks, and neuron firings. The associated counting process $N(t)$ is the running tally of events up to time $t$, a staircase that starts at 0 and steps up by 1 at each event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). i.e., the point process is a list of times, and the counting process is a staircase.
+A *point process* is a random list of event times $t_1, t_2, t_3, \ldots$ on a timeline: reported cases, earthquake aftershocks, neurons firing. Its *counting process* $N(t)$ is the running tally of events up to and including time $t$, a staircase that starts at 0 and steps up by 1 at each event. Throughout, I'll assume no two events happen at exactly the same moment (we'll see in the last section why real surveillance data break this).
 
-Formally, a counting process satisfies $N(0) = 0$, takes non-negative integer values, is non-decreasing, and is right-continuous, meaning that at an event time $t_i$ the count already includes that event. We also assume only finitely many events occur in any bounded interval, and that the process is *simple*, meaning that no two events occur at exactly the same time, so every step of the staircase has height 1.
+Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The strict inequality matters: whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
 
-Everything that has happened before time $t$ is called the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The inequality is strict on purpose. When we define the intensity of a process in Section 1.4, it must depend only on the past, not on whether an event happens at $t$ itself.
+## The Poisson process: events that ignore each other
 
-In the case of malaria, the events are the dates on which cases occur, the point process is the list of those dates, and $N(t)$ is the total number of cases by time $t$. However, there are two practical limitations to this:
- 
- - Surveillance data are usually recorded to the day, so several cases often share a date, which breaks the simplicity assumption. Common fixes include spreading tied events randomly within the day, or using discrete-time versions of the models. 
- - The recorded date is usually the date of diagnosis or reporting, not of infection, so the observed timeline is a shifted and blurred version of the transmission timeline. Both issues resurface when we fit Hawkes models to real data.
+The simplest model is the homogeneous Poisson process, where events happen completely at random at a constant rate $\lambda$. In any tiny interval of width $h$, the chance of one event is about $\lambda h$, the chance of two or more is negligible, and what happens in one interval is independent of every other interval.
 
-## 1.2. Homogeneous Poisson process
+Three consequences are worth knowing:
 
-The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $\lambda$. It is defined by two properties.
+- The gaps between events are exponentially distributed with mean $1/\lambda$. The process has no memory: however long since the last event, the wait for the next is the same.
+- The number of events in a window of length $T$ is $\text{Poisson}(\lambda T)$, so its variance equals its mean. Counts that vary *more* than their mean (overdispersion) are a first hint that events cluster, although not a hint about why.
+- If the rate changes over time but is fixed in advance, say $\lambda(t)$ rising around holidays when more people travel, we get an *inhomogeneous* Poisson process. The expected number of events between $a$ and $b$ is then the area under the rate curve, $\int_a^b \lambda(t)\,dt$.
 
-First, events occur at a constant rate and one at a time. In a small interval of width $h$, the probability of exactly one event is
+The key limitation is in the section title: events *ignore each other*. In an epidemic, that's exactly wrong, because each case can cause more cases.
 
-$$
-P(\text{one event in } (t, t+h]) = \lambda h + o(h),
-$$
+![A Poisson process and a Hawkes process with the same background rate. The Hawkes intensity jumps at each event and decays, and its events come in bursts.](figures/poisson_vs_hawkes.png)
 
-where $o(h)$ denotes terms that become negligible relative to $h$ as $h \to 0$. The probability of more than one event is negligible:
+The figure above previews where we're heading. Both processes have the same background rate of 0.1 events per day, but in the Hawkes process each event gives the rate a jump that then fades away, so events arrive in bursts.
 
-$$
-P(\text{two or more events in } (t, t+h]) = o(h),
-$$
+## The conditional intensity: the one idea to hold on to
 
-so the probability of no event is $1 - \lambda h + o(h)$.
-
-Second, the numbers of events in non-overlapping intervals are independent.
-
-Together, these imply that the gaps between events are independent and exponentially distributed with rate $\lambda$ (mean $1/\lambda$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $T$ is $N(T) \sim \text{Poisson}(\lambda T)$, so its variance equals its mean.
-
-This gives a simple first diagnostic. If you split the timeline into windows and the counts vary more than their mean (*overdispersion*), the data are not a homogeneous Poisson process. Two caveats apply: the result depends on the window length you choose, and overdispersion only tells you that events cluster, not *why*. As Section 1.3 shows, several different mechanisms produce clustering.
-
-Two further properties will be useful later:
-
-- **Superposition**: combining independent Poisson processes gives a Poisson process whose rate is the sum of their rates. This underpins the branching view of Hawkes processes, in which the full process is built from a background process plus the offspring processes triggered by each event.
-- **Thinning**: keeping each event independently with probability $p$ gives a Poisson process with rate $p\lambda$. More generally, keeping an event at time $t$ with probability $p(t)$ gives an inhomogeneous Poisson process (Section 1.3) with rate $p(t)\lambda$. This general form is the basis of Ogata's algorithm for simulating Hawkes processes: propose candidate events from a homogeneous process with rate $M$, an upper bound on the intensity, then keep each candidate at time $t$ with probability $\lambda^{\ast}(t)/M$, where $\lambda^{\ast}(t)$ is the intensity defined in Section 1.4.
-
-The Poisson process is widely used across STEM, from queueing theory to reliability engineering. Its key limitation is that events cannot influence one another. In an epidemic, however, each case can cause further cases. Capturing this *self-excitation* is the core motivation for Hawkes processes.
-
-## 1.3. Inhomogeneous Poisson process
-
-In this case, the constant rate $\lambda$ is replaced by a function of time, $\lambda(t)$, which is non-negative and deterministic (fixed in advance, rather than random). Counts in non-overlapping intervals remain independent, but the background tendency for events rises and falls. For example, the number of flu cases varies with the seasons. The number of events in the interval $(a, b]$ is Poisson distributed,
+The way out is to let the rate depend on what has already happened. The **conditional intensity** is the expected rate of events at time $t$, given the history:
 
 $$
-N(a, b] \sim \text{Poisson}\big(\Lambda(a, b)\big),
+\lambda^{\ast}(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}.
 $$
 
-with mean
+Read it from the inside out: count the events in a short window after $t$, take the expected value given everything so far, divide by the window width to turn a count into a rate, and shrink the window to zero. The asterisk is shorthand for "given the history". For small $dt$, $\lambda^{\ast}(t)\,dt$ is roughly the probability of an event in the next instant. (It is a rate, such as cases per day, not a probability, so it can exceed 1.)
 
-$$
-\Lambda(a, b) = \int_a^b \lambda(t)\,dt.
-$$
+For a Poisson process, the history doesn't matter: $\lambda^{\ast}(t) = \lambda$, or $\lambda(t)$ in the inhomogeneous case. For a Hawkes process, it does.
 
-This integrated rate reappears in Section 1.4 as the *compensator*; for an inhomogeneous Poisson process, the compensator $\Lambda(t)$ is simply $\Lambda(0, t)$.
+# The Hawkes process
 
-Crucially, the rate varies because of external forces (the seasons, the weather, travel patterns), not because previous events change it. This distinction matters because a time-varying rate and self-excitation both produce clusters of events, so the two are easily confused in data. Fitting a self-exciting model with a constant background to data with an unmodelled time-varying rate will attribute the peaks to self-excitation, inflating its apparent strength. [Filimonov & Sornette (2015)](https://doi.org/10.1080/14697688.2015.1032544) demonstrated this bias in financial data. The reverse problem also occurs: if a Hawkes model is given a very flexible background, the background can absorb genuine transmission clusters, and the strength of self-excitation is underestimated.
+## Where it comes from
 
-If the rate is itself random, for example driven by unobserved fluctuations in mosquito abundance, the result is a *Cox* (or doubly stochastic) process. This is a third route to clustering, and arguably the hardest to separate from self-excitation.
+Hawkes processes are named after the statistician Alan Hawkes, who introduced point processes in which each event temporarily raises the rate of future events ([Hawkes, 1971](https://doi.org/10.1093/biomet/58.1.83)). A few years later, [Hawkes & Oakes (1974)](https://doi.org/10.2307/3212693) showed that the same process can be viewed as a family tree: some events arrive spontaneously, and every event can have "offspring" of its own. That family-tree view turns out to be the most intuitive way to think about the model.
 
-In practice, these mechanisms interact. In the near-elimination setting from the introduction, the background rate of importations is driven mainly by travel, whereas the wet season acts mainly on transmission, increasing how many onward cases each case generates. Seasonality may therefore belong in the self-exciting part of the model rather than the background. We return to this when discussing time-varying baselines and kernels in Hawkes models.
+The model became famous in seismology, where earthquakes trigger aftershocks that trigger aftershocks of their own. Ogata built this into the Epidemic-Type Aftershock Sequence (ETAS) model ([Ogata, 1988](https://doi.org/10.1080/01621459.1988.10478560)). Seismologists borrowed the language of contagion to describe earthquakes, and decades later epidemiologists borrowed the seismologists' model to describe contagion.
 
-## 1.4. The conditional intensity function
+## The definition
 
-The most important concept in this review is the **conditional intensity**: the instantaneous expected rate of events at time $t$, given the entire history of the process up to that point.
-
-$$
-\lambda^{\ast}(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}
-$$
-
-The asterisk is shorthand for "conditional on the history". Breaking down the formula:
-
-- $N(t+h) - N(t)$ is the number of events in the short window $(t, t+h]$.
-- $\mathbb{E}[\,\cdots \mid \mathcal{H}(t)\,]$ is the expected number of those events, given the history $\mathcal{H}(t)$ of all events before $t$.
-- Dividing by $h$ turns this expected count into a rate, and $\lim_{h \downarrow 0}$ shrinks the window to zero, giving the rate at "the next instant".
-
-In practical terms, $\lambda^{\ast}(t)\,dt$ is approximately the probability of an event in the next instant, given everything that has happened so far.
-
-The conditional intensity unifies the processes seen so far. For a homogeneous Poisson process, the history is irrelevant and $\lambda^{\ast}(t) = \lambda$. For an inhomogeneous Poisson process, the history is still irrelevant, but the rate varies with time: $\lambda^{\ast}(t) = \lambda(t)$. For a Hawkes process, the history matters:
+A Hawkes process is defined by its conditional intensity:
 
 $$
 \lambda^{\ast}(t) = \mu(t) + \sum_{t_i < t} \phi(t - t_i).
 $$
 
-Here $\mu(t)$ is the **background rate**, generating events that arrive independently of the past (importations, in our malaria example), and $\phi$ is the **kernel**, describing how much each past event at $t_i$ raises the intensity at a time $t - t_i$ later. Each event therefore adds its own contribution to the intensity, and events generated through the kernel are the *triggered* events, or *offspring*, of earlier ones. The shape of the kernel sets the timing. An exponentially decaying kernel raises the intensity immediately after each event, whereas a kernel that starts near zero and peaks weeks later captures the delay in malaria transmission described in the introduction. The total area under the kernel,
+There are only two ingredients:
+
+- $\mu(t) \geq 0$ is the **background rate**: events that arrive regardless of the past. In our example, these are imported cases.
+- $\phi(u) \geq 0$ is the **kernel**: how much a past event raises the rate $u$ days later. Only past events count, so $\phi(u) = 0$ for $u \leq 0$. In our example, this is local transmission.
+
+Every past case adds its own bump to the rate, and the bumps stack on top of the background. That is what *self-exciting* means: an event raises $\lambda^{\ast}(t)$, making further events more likely, which raise $\lambda^{\ast}(t)$ again. Unlike the holiday-driven clusters of an inhomogeneous Poisson process, these clusters are generated by the events themselves.
+
+## Choosing a kernel
+
+The kernel controls how an event's influence plays out over time. It helps to split it into "how many" and "when":
+
+$$
+\phi(u) = \eta \, g(u),
+$$
+
+where $\eta$ is a number (more on it below) and $g$ is a probability density describing the delay between a case and the cases it causes. Three choices come up again and again.
+
+**Exponential.** $\phi(u) = \alpha e^{-\beta u}$, with $\alpha, \beta > 0$. Each event immediately raises the rate by $\alpha$, and the bump fades at rate $\beta$, lasting roughly $1/\beta$. It is the most common kernel because it is fast to work with: the intensity at any moment can be updated from its value at the previous event, so fitting scales with the number of events rather than its square. Its total area is $\eta = \alpha/\beta$.
+
+**Power law.** $\phi(u) = k/(c+u)^p$, with $k, c > 0$ and $p > 1$. This decays much more slowly, so events from long ago can still matter. $c$ keeps the kernel finite at $u = 0$, and $p > 1$ is needed for the total area, $\eta = k / \big((p-1)c^{p-1}\big)$, to be finite. It is standard for aftershocks.
+
+**Built from biology.** Both kernels above peak the instant an event happens, which is wrong for malaria. A newly infected person must first become infectious to mosquitoes, the parasite must develop inside the mosquito, and it must then incubate in the next person ([Huber *et al.*, 2016](https://doi.org/10.1186/s12936-016-1537-6)). So in malaria, $g$ should be close to zero for the first couple of weeks, then rise and fall. Unwin *et al.* used a kernel that is exactly zero for the first 15 days and then follows a hump-shaped (Rayleigh) curve. If the event times are symptom-onset dates, $g$ is essentially the *serial interval* distribution: the time from one person's symptoms to the next person's.
+
+## The branching ratio
+
+The number $\eta$ is the area under the kernel,
 
 $$
 \eta = \int_0^\infty \phi(u)\,du,
 $$
 
-is the **branching ratio** $\eta$: the expected number of offspring per event, which plays the role of the reproduction number.
+and it is the **branching ratio**: the expected number of cases each case directly causes. In epidemiological terms, it is a reproduction number. Unwin *et al.* call it the *case reproduction number* $R_c$, the reproduction number with whatever interventions are in place.
 
-### Why it matters
+Think of the family tree again. One imported case has on average $\eta$ children, $\eta^2$ grandchildren, $\eta^3$ great-grandchildren, and so on:
 
-For a simple point process, the conditional intensity completely specifies the process, and it gives the likelihood of an observed set of event times $t_1, \ldots, t_n$ on $[0, T]$ directly ([Rasmussen, 2018](https://arxiv.org/abs/1806.00221)):
+- **If $\eta < 1$**, each generation is smaller than the last and every chain dies out. The expected size of a whole chain, including the first case, is $1 + \eta + \eta^2 + \cdots = 1/(1-\eta)$. With $\eta = 0.8$, each imported case leads to a chain of 5 cases on average.
+- **If $\eta = 1$**, each case replaces itself on average. Chains still die out eventually, but they can grow very large first; the process is balanced on a knife-edge.
+- **If $\eta > 1$**, each generation is larger than the last, and chains can grow without limit.
+
+Two consequences matter for the malaria question. First, with a constant background rate $\mu$ and $\eta < 1$, the process settles to an average rate of $\mu/(1-\eta)$ ([Laub *et al.*, 2015](https://arxiv.org/abs/1507.02822)). So $\eta < 1$ does *not* mean zero cases: as long as importations continue, cases continue ([Routledge *et al.*, 2018](https://doi.org/10.1038/s41467-018-04577-y)). Second, in that settled state a randomly chosen case is locally acquired with probability $\eta$ and imported with probability $1 - \eta$. The branching ratio is therefore also the expected *fraction* of cases that are local.
+
+# A toy malaria outbreak
+
+The best way I found to understand all this is to simulate an outbreak where I know the truth, and then see whether the model can recover it. All the code for this section is in a single Python script, [hawkes_malaria.py](hawkes_malaria.py), which uses only NumPy, SciPy and Matplotlib.
+
+## Setting it up
+
+For illustration (these are made-up numbers, not estimates), I simulated five years of cases in which:
+
+- imported cases arrive at a seasonal background rate, $\mu(t) = m\,\big(1 + a\cos(2\pi(t - t_{\text{peak}})/365)\big)$, averaging $m = 0.1$ per day (about 3 per month), with a strong annual cycle ($a = 0.8$) peaking around day 200 of each year;
+- each case causes on average $\eta = 0.6$ local cases;
+- the delay kernel $g$ is zero for the first 15 days and then follows a Rayleigh curve with spread $\sigma = 20$ days, so onward cases are most likely about five weeks later.
+
+Because $\eta = 0.6$, we expect about 60% of cases to be local, and every chain eventually dies out.
+
+## Simulating it
+
+There are two natural ways to simulate a Hawkes process.
+
+**Family tree.** First draw the imported cases from the background rate. Then, for each case, draw its number of children from a Poisson distribution with mean $\eta$, and give each child a delay drawn from $g$. Repeat for the children, the grandchildren, and so on, until a generation has no children. This is the Hawkes & Oakes picture turned directly into an algorithm, and it has a bonus: we know exactly which cases are imported and who infected whom.
+
+**Thinning.** [Ogata (1981)](https://doi.org/10.1109/TIT.1981.1056305) gave the standard general-purpose method. Propose candidate events at a rate $m$ that is an upper bound on $\lambda^{\ast}(s)$ over a short window ahead, given the events so far, and accept a candidate at time $s$ with probability $\lambda^{\ast}(s)/m$. After each step, update the history and the bound. For kernels that only decay, the current intensity is a valid bound until the next event, but for a delayed kernel like ours it is not, which is why Unwin *et al.* had to design their own version.
+
+I used the family-tree method for the outbreak (and thinning for the exponential-kernel example in the first figure). The run shown here produced 426 cases, 174 imported and 252 local, so 59% local, close to the expected 60%.
+
+![The simulated outbreak. The total intensity is split into the seasonal background (imported cases) and the triggered part (local transmission); below, each case is marked by its true origin.](figures/simulated_outbreak.png)
+
+Notice how the local cases lag behind each seasonal peak of importations, and how the triggered part of the intensity is often larger than the background itself.
+
+## Fitting it
+
+Now pretend we only have the case dates. The conditional intensity gives us the likelihood of the observed times $t_1, \ldots, t_n$ on $[0, T]$ directly ([Rasmussen, 2018](https://arxiv.org/abs/1806.00221)):
 
 $$
 \log L = \sum_{i=1}^{n} \log \lambda^{\ast}(t_i) \;-\; \int_0^T \lambda^{\ast}(s)\,ds.
 $$
 
-The first term rewards the model for assigning a high intensity at the times events actually occurred. The second term is the log-probability of seeing no events in the gaps between them, including the final stretch from the last event $t_n$ to the end of observation $T$. It penalises the model for predicting events that didn't happen.
+The first term rewards the model for putting a high rate where cases actually happened. The second is the log-probability of seeing no cases in all the gaps, including the stretch after the last case, and penalises the model for predicting cases that didn't happen.
 
-Maximising this likelihood is a common way to fit Hawkes models to data. Bayesian methods, which place priors on the parameters and sample from the posterior, and expectation–maximisation (EM) algorithms, which exploit the branching structure by estimating which events triggered which, are also widely used.
+Maximising this over the parameters is how Unwin *et al.* fitted their model. The likelihood can have several peaks, so it is worth repeating the fit from different starting points. The alternatives are Bayesian methods and the EM algorithm, which comes next.
 
-One practical complication is **edge effects**. The Hawkes intensity depends on all past events, including any that occurred before observation began at time 0. If surveillance starts partway through ongoing transmission, the earliest local cases have no recorded "parents" and may be wrongly attributed to the background.
+## Telling imported from local
 
-The integral in the second term of the likelihood is known as the **compensator**:
-
-$$
-\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds.
-$$
-
-It is the cumulative intensity up to time $t$. The difference $N(t) - \Lambda(t)$ is a *martingale*: given the history, its expected future change is zero, so on average the compensator "compensates" for the events that occur.
-
-The compensator also provides a goodness-of-fit check, via the **time-rescaling theorem**. If the model is correct, the transformed event times $\Lambda(t_1), \Lambda(t_2), \ldots$ form a homogeneous Poisson process with rate 1. Equivalently, the rescaled gaps $\Lambda(t_i) - \Lambda(t_{i-1})$ are independent and exponentially distributed with mean 1, which can be checked with a Q–Q plot or a Kolmogorov–Smirnov test. This form of residual analysis was introduced for self-exciting models by [Ogata (1988)](https://doi.org/10.1080/01621459.1988.10478560). When the parameters have been estimated from the same data, the test is only approximate.
-
-# 2. Defining Hawkes processes
-
-## 2.1. History and motivation
-
-Hawkes processes are named after the British statistician Alan G. Hawkes, who introduced them in a pair of papers ([Hawkes, 1971a](https://academic-oup-com.bris.idm.oclc.org/biomet/article/58/1/83/224809); [Hawkes, 1971b](https://academic-oup-com.bris.idm.oclc.org/jrsssb/article/33/3/438/7027167)). His idea was to write down a point process in which events are "self-exciting", where each event temporarily raises the rate of future events. Soon after, [Hawkes and Oakes (1974)](https://www-cambridge-org.bris.idm.oclc.org/core/journals/journal-of-applied-probability/article/abs/cluster-process-representation-of-a-selfexciting-process/E836A3D07D808068E2F9F3E7E366B081) demonstrated that the same process can be viewed as a family tree, in which some events arrive spontaneously and each event goes on to produce "offspring" events of its own. This concept of branching has turned out to be the most intuitive way to think about the model.
-
-The model soon became famous for its applications in seismology. An earthquake triggers aftershocks, which can trigger aftershocks of their own, and this idea was built into the Epidemic-Type Aftershock Sequence (ETAS) model ([Ogata, 1988](https://www-tandfonline-com.bris.idm.oclc.org/doi/abs/10.1080/01621459.1988.10478560?casa_token=W-srgC9krLYAAAAA:3HduSWc9el-inU3aIGRQcXjM6qyHG7mSpMB156f02R4JE8XDi_soQjGcxtBbyL8VQozYUJWXgp6IxQ); [Ogata, 1998](https://link-springer-com.bris.idm.oclc.org/article/10.1023/A:1003403601725)). To describe earthquakes, seisomologists borrowed the language of contagion from epidemiology. Decades later, epidemiologists would adopt this seismological model to describe contagion. 
-
-## 2.2. Core definition 
-
-A Hawkes process is defined by its conditional intensity. In the simplest case, with a single stream of events, it is
+This is the payoff. Once we have a fitted model, look at the intensity at the moment a case $i$ occurred. It is a sum of pieces: the background, plus one bump from each earlier case. Each piece's share of the total is the probability that it "caused" case $i$:
 
 $$
-\lambda^{\ast}(t) = \mu + \sum_{t_i < t} \phi(t - t_i).
+P(\text{case } i \text{ is imported}) = \frac{\mu(t_i)}{\lambda^{\ast}(t_i)}, \qquad
+P(\text{case } i \text{ was caused by case } j) = \frac{\phi(t_i - t_j)}{\lambda^{\ast}(t_i)}.
 $$
 
-$\mu > 0$ is the background rate: the rate at which events occur spontaneously, regardless of what has occured previously. For example, in malaria, this would be the reported cases. 
+These probabilities add up to 1 for each case. They are exactly what the EM algorithm estimates on each pass: treat the unknown family tree as missing data, guess it given the current parameters, re-fit the parameters given the guess, and repeat. In seismology, labelling events this way is called *stochastic declustering* ([Zhuang, Ogata & Vere-Jones, 2002](https://doi.org/10.1198/016214502760046925)). For us, it is an imported-versus-local classifier that uses timing alone.
 
-$\phi(\cdot) \geq 0$ is the triggering kernel: the extra rate presently contributed by a past event. It's input, $t-t_i$, is the time elapsed since the event at $t_i$. Typically, a kernel will start high and decay, so an event's influence is strongest immediately after its occurence, and then fades. In the case of malaria, this is local transmission. 
+In the toy outbreak we know the true labels, so we can check how well it works, just as Unwin *et al.* checked theirs against travel histories.
 
-The sum runs over every event before time $t$. Each past event adds a decaying spike to the rate, which stack on top of the background. 
+Fitting the model by maximum likelihood (with the 15-day delay fixed, as Unwin *et al.* did) recovered most parameters well:
 
-This is the definition of **self-exciting**, where an event raises $\lambda^{\ast}(t)$, increasing the likelihood of another event occuring, thus raising $\lambda^{\ast}(t)$ again. This feedback is what produces clusters of events in time, and unlike the inhomogeneous Poisson process (Section 1.3), the clustering is generated by the actual events occuring, not external forces. 
+| Parameter | True | Fitted |
+|---|---|---|
+| Average import rate $m$ (per day) | 0.100 | 0.102 |
+| Seasonal strength $a$ | 0.80 | 0.75 |
+| Seasonal peak (day of year) | 200 | 203 |
+| Branching ratio $\eta$ | 0.60 | 0.57 |
+| Delay spread $\sigma$ (days) | 20 | 14 |
 
-## 2.3. Formalising kernels 
+The branching ratio and the import pattern come back close to the truth. The spread of the delay is less well pinned down, which makes sense: with only a few hundred cases, many different delay shapes explain the data almost equally well.
 
-The kernel $\phi$ describes how an event's influence plays out overtime, and different choices of kernel will produce different model outcomes. In the context of this review, there are three worth stating. 
+![Each case's estimated probability of being imported, split by its true origin.](figures/classification.png)
 
-**The exponential kernel** is the original and most common kernel:
+The classification results were the most interesting part for me. Adding up the probabilities gives an expected 185 imported cases, against a true 174, so the model gets the overall split roughly right. Individual cases are much harder: labelling each case as imported when its probability is above 0.5 gets 68% right, and the two groups overlap a lot in the figure. That's because an imported case arriving during a burst of local transmission looks, in timing alone, just like a local case. Timing tells you a lot about *how many* cases are imported, but much less about *which* ones, and this is exactly where partial travel histories become valuable.
 
-$$
-\phi(t) = \alpha e^{-\beta t}, \qquad \alpha, \beta > 0
-$$
+## Checking the fit
 
-Each event instantly raises the intensity by $\alpha$, where the increase then decays at rate $\beta$, so an event's influence lasts for $\approx 1/\beta$ units of time. The popularity of this kernal lies in its practicality - the exponential's lack of memory means that the model can be quickly fitted to data. 
+The integral in the likelihood, $\Lambda(t) = \int_0^t \lambda^{\ast}(s)\,ds$, gives a neat goodness-of-fit check. If the model is right, the gaps $\Lambda(t_i) - \Lambda(t_{i-1})$ should look like independent draws from an exponential distribution with mean 1: stretching time by the fitted intensity turns the data into a plain Poisson process. You can check this with a Q–Q plot or a Kolmogorov–Smirnov test, which is the *residual analysis* Ogata (1988) introduced for earthquake models and Unwin *et al.* used for malaria. When the parameters were fitted to the same data, the test is lenient, so passing it is encouraging rather than conclusive.
 
-**The power-law kernel** decays at a much slower rate:
+![Q–Q plot of the rescaled gaps against an exponential distribution with mean 1. The points lie close to the diagonal.](figures/time_rescaling_qq.png)
 
-$$
-\phi(t) = \frac{k}{(c + t)^p}, \qquad k, c > 0, \; p > 1.
-$$
+For the toy outbreak, the points lie close to the diagonal and the Kolmogorov–Smirnov test finds no evidence against the model ($p = 0.70$), as it should, since the model is correct by construction.
 
-Here $k$ sets the overall strength of triggering, $p$ controls how quickly an event's influence fades (larger $p$ means faster decay), and $c$ is a small offset that keeps the kernel finite at $t = 0$, so that each event raises the intensity by $k / c^p$. The condition $p > 1$ ensures that the total influence of a single event is finite.
+# What changes with real data
 
-This kernel is "heavy-tailed", so its influence fades at such a slow rate that events from long ago can still trigger new ones, whereas an exponential kernel's influence is effectively gone after a few multiples of $1/\beta$.
+A simulation is the best case: the model is correct by construction. Real surveillance data raise problems at every step, and most of the hard work in Unwin *et al.*'s paper is in handling them.
 
-**A kernel can also be matched to a specific process.** $\phi$ is not necessarily a simple formula - it can be a flexible step function estimated from the data, or a shape chosen from prior knowledge. The second option is particularly important in epidemiology. 
+**Tied dates.** Cases are recorded to the day, so several often share a date, which breaks the one-event-at-a-time assumption. Unwin *et al.* spread tied cases randomly within the day ("jittering"). That is reasonable when the kernel changes little within a day, as with malaria's multi-week delay, but with a kernel that peaks immediately, same-day cases would wrongly appear to cause each other. The alternative is to model daily counts directly with a discrete-time version of the model.
 
-The time between one person becoming infected and them infecting someone else is called the *generation interval*, and for many diseases its distribution has been measured and is well described by a gamma or lognormal curve. Using this curve as the kernel integrates the disease's biology directly into model - improving its efficacy.
+**Which date?** The recorded date is usually symptom onset, diagnosis or reporting, not infection. The observed timeline is shifted relative to transmission and, because delays vary between people, blurred. With onset dates, the kernel describes the serial interval rather than the time between infections ([Huber *et al.*, 2016](https://doi.org/10.1186/s12936-016-1537-6)).
 
+**Other routes to clustering.** Holiday travel produces clusters of imported cases that look, in a list of dates, much like a burst of transmission. If the background is assumed constant when it really varies, the model blames the peaks on transmission: [Filimonov & Sornette (2015)](https://doi.org/10.1080/14697688.2015.1032544) showed that a Hawkes fit to simulated data with shifting rates, and no self-excitation at all, can report a branching ratio close to 1. The reverse can happen too: a very flexible background can soak up genuine transmission clusters. Hidden drivers cause similar trouble. An unobserved reservoir of asymptomatic infections produces reported cases that seem to have no parent, and look imported. Even with the right model, labelling individual events as background or triggered is harder than it looks ([Sornette & Utkin, 2009](https://doi.org/10.1103/PhysRevE.79.061110)).
 
-**Quick summary:** use the exponential when speed and simplicity matter, the power law when influence persists over long periods, and a bespoke kernel when you possess data regarding the delays.
+**Seasonality.** Seasonality can act on importations (seasonal travel, and seasonal transmission where travellers come from) and on local transmission (more mosquitoes in the wet season means more onward cases, and even changes their timing). Unwin *et al.* put it in the background rate, as an annual cycle plus a long-term trend. Putting it in the kernel instead, as a reproduction number that varies through the year, is also defensible. Which is right depends on the setting.
 
-## 2.4. The branching ratio / reproduction number 
+**Edge effects.** The intensity depends on all past cases, including any before surveillance began, but the likelihood assumes there were none. So if data start partway through ongoing transmission, the earliest local cases have no recorded parents and look imported. With a multi-week kernel, this affects the first weeks to months of data. A common fix is to use an initial period as a burn-in: its cases feed into the intensity but not the likelihood ([Reinhart, 2018](https://doi.org/10.1214/17-STS629)). At the other end, cases near the end of the data have children that haven't happened yet, so naive counts of offspring per case are too low.
 
-The branching ratio quantifies the number of further events which one event can trigger. As previously defined, the expected number of events produced by a rate was the area under the rate curve. An event adds $\phi$ to the rate, so the expected number of events it triggers is the area under the kernel: 
+**Under-reporting and the reproduction number.** $\eta$ counts *reported* offspring, so missed cases pull it down. Unwin *et al.* explored this by randomly deleting simulated cases. Reading $\eta$ as a reproduction number also assumes a large pool of susceptible people, which is reasonable at near-elimination but not in a large epidemic.
 
-$$
-n = \int_0^\infty \phi(s)\,ds.
-$$
+# Further reading
 
-The sequential events triggered by another are described as the "offspring", in which each event has, on average, $n$ offspring. Each sequential event has its own offspring, so one spontaneous event is followed by $\approx n$ events in the first generation, $n^2$ in the second, $n^3$ in the hitds, etc. The value of $n$ determines the subsequent response:
-
-**When $n < 1$** each generation is smaller than the previous, so each chain of events will eventually die out. The expected size of the entire cluster (including original event) is $1 + n + n^2 + \cdots = 1/1(1-n)$ ([Laub *et al.*, 2025](https://arxiv.org/pdf/1507.02822)) For example, when $n = 0.8$ each spontaneous event leads to a cluster of five events, on average. The process has a steady state that it typically returns to.
-
-**When $n = 1$** each event will replicate itself exactly (most of the time). In this case, individual chains will still die out, but they can reach enormous sizes before doing so. Even the slightest change in $n$ will tip it into one regime (e.g., settling) or the other (exploding). For example, in epidemiology, if $R = 1$, a disease is neither disappearing nor spreading. 
-
-**When $n = 1$** each generation of events is larger than the last, and the number of events grows without limit. 
-
-As stated, this directly links to the example of the reproduction number $R$ in epidemiology. To make this correspondence, the kernel can be split into two 
-
-$$
-\phi(t) = R \, g(t), 
-$$
-
-where $g(t)$ is the generation interval distribution. $g$ is a probability distribution so its area is 1, meaning $n = R$. Therefore, applying the determinants above $R < 1$, $R = 1$, and $R > 1$. $R$ varying overtime produces the time varying reproduction number $R_t$. 
-
-
-## 2.5. Immigrant-offspring representation
+- [Laub, Taimre & Pollett (2015), *Hawkes processes*](https://arxiv.org/abs/1507.02822): a free, readable introduction to the maths, including the family-tree view. (Note that they use $\lambda$ for the background and $\mu$ for the kernel, the reverse of this post.)
+- [Rasmussen (2018), *Temporal point processes and the conditional intensity function*](https://arxiv.org/abs/1806.00221): short lecture notes on the conditional intensity, the likelihood and simulation.
+- [Reinhart (2018), *A review of self-exciting spatio-temporal point processes and their applications*](https://doi.org/10.1214/17-STS629): a broader review, including fitting methods and applications beyond seismology.
+- [Unwin *et al.* (2021), *Using Hawkes Processes to model imported and local malaria cases in near-elimination settings*](https://doi.org/10.1371/journal.pcbi.1008830): the paper this post builds towards (open access).
