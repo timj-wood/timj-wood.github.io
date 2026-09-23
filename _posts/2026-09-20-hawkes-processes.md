@@ -20,7 +20,7 @@ This post introduces Hawkes processes from scratch, building up to their applica
 
 ## 1.1. Point processes / counting processes
 
-A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$, where $$N(0) = 0%%, non-decreasing, integer-valued, and right-continuous, is the running tally up to $$t$$, where the process is simple: no two events occur at the same time, so $$N(t)$$ jumps by exactly 1 ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). 
+A point process can be described as a random set of event times $$t_1, t_2, t_3, ...$$ on a timeline. These can be found everywhere, for example reported case times in epidemiology, earthquakes, and neuron firings. The counting process $$N(t)$$ is the running tally up to $$t$$, which is essentially a staircase that starts at 0 and increases by 1 at each sequential event ([Laub *et al.,* 2015](https://arxiv.org/pdf/1507.02822)). Formally, a counting process satisfies $$N(0)$$, takes non-negative integer values, is non-decreasing, and is right-continuous, meaning that at an event time $$t_i$$, the count already includes that event. We also assume that the process is simple, where no two events occur at the exact same time, so each step of the staircase has a height of 1. 
 
 Think of point processes as a list of times, and counting processes as the staircase. Everything before time $$t$$ is known as the *history*, which is wrriten as $$\mathcal{H}(t) = \{t_i:t_i<t\}$$, with a strict inequality. The intensity at $$t$$ must not depend on whether an event happens at $$t$$ itself.
 
