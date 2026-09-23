@@ -28,16 +28,21 @@ Returning to the example of malaria, the events are the dates on which cases are
 
 ## 1.2. Homogeneous Poisson process
 
-The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $$\lambda$$. It is defined by two properties. First, in a small interval of width $$h$$,
+The simplest point process, and the natural null model, is one in which events occur completely at random at a constant rate $$\lambda$$. It is defined by two properties.
+
+First, events occur at a constant rate and one at a time. In a small interval of width $$h$$, the probability of exactly one event is
 
 $$
-\begin{aligned}
-&P(\text{one event in } (t, t+h]) = \lambda h + o(h), \\
-&P(\text{two or more events in } (t, t+h]) = o(h),
-\end{aligned}
+P(\text{one event in } (t, t+h]) = \lambda h + o(h),
 $$
 
-where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to 0$$. The second condition says events occur one at a time. Second, the numbers of events in non-overlapping intervals are independent.
+where $$o(h)$$ denotes terms that become negligible relative to $$h$$ as $$h \to 0$$. Meanwhile, the probability of more than one event is negligible:
+
+$$
+P(\text{two or more events in } (t, t+h]) = o(h).
+$$
+
+Second, the numbers of events in non-overlapping intervals are independent.
 
 Because the rate is constant and intervals are independent, the gaps between events are independent and exponentially distributed with rate $$\lambda$$ (mean $$1/\lambda$$). The exponential is the only continuous distribution that is *memoryless*: however long you have already waited, the remaining wait has the same distribution. The count in a window of length $$T$$ is $$N(T) \sim \text{Poisson}(\lambda T)$$, so its variance equals its mean. This gives a simple first diagnostic: clustered data, whatever the cause, are *overdispersed*, with variance greater than the mean.
 
