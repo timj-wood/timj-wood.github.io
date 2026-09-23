@@ -156,7 +156,10 @@ Maximising this over the parameters is how Unwin *et al.* fitted their model. Th
 This is the payoff. Once we have a fitted model, look at the intensity at the moment a case $i$ occurred. It is a sum of pieces: the background, plus one bump from each earlier case. Each piece's share of the total is the probability that it "caused" case $i$:
 
 $$
-P(\text{case } i \text{ is imported}) = \frac{\mu(t_i)}{\lambda^{\ast}(t_i)}, \qquad
+P(\text{case } i \text{ is imported}) = \frac{\mu(t_i)}{\lambda^{\ast}(t_i)},
+$$
+
+$$
 P(\text{case } i \text{ was caused by case } j) = \frac{\phi(t_i - t_j)}{\lambda^{\ast}(t_i)}.
 $$
 
