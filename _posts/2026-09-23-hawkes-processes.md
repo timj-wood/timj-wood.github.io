@@ -169,7 +169,7 @@ $$
 P(\text{case } i \text{ was caused by case } j) = \frac{\phi(t_i - t_j)}{\lambda^{\ast}(t_i)}.
 $$
 
-These probabilities add up to 1 for each case. They are exactly what the EM algorithm estimates on each pass: treat the unknown family tree as missing data, guess it given the current parameters, re-fit the parameters given the guess, and repeat. In seismology, labelling events this way is called *stochastic declustering* ([Zhuang, Ogata & Vere-Jones, 2002](https://doi.org/10.1198/016214502760046925)). For us, it is an imported-versus-local classifier that uses timing alone.
+These probabilities add up to 1 for each case. They are exactly what the EM algorithm estimates on each pass: treat the unknown family tree as missing data, guess it given the current parameters, re-fit the parameters given the guess, and repeat. In seismology, labelling events this way is called *stochastic declustering* ([Zhuang *et al.*, 2002](https://doi.org/10.1198/016214502760046925)). For us, it is an imported-versus-local classifier that uses timing alone.
 
 In the simulated outbreak we know the true labels, so we can check how well it works, just as Unwin *et al.* checked theirs against travel histories.
 
