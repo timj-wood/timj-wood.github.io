@@ -37,7 +37,7 @@ These two properties can yield several results of use. First, the number of even
 
 There are two further properties of use, which will be briefly introduced and expanded upon later:
 
-- Superposition: combining independent Poisson processes with rates $$/lambda_1$$ and $$\lambda_2$$ gives a Poisson process with rate $$\lambda_1 + /lambda_2$$. This underpins the branching representation of Hawkes processes.
+- Superposition: combining independent Poisson processes with rates $$\lambda_1$$ and $$\lambda_2$$ gives a Poisson process with rate $$\lambda_1 + \lambda_2$$. This underpins the branching representation of Hawkes processes.
 - Thinning: if each event of a Poisson process is independently kept with probability $$p$$, the kept events form a Poisson process with rate $$p\lambda$$. This is the basis of the standard algorithm for simulating Hawkes processes.
 
 The Poisson process is widely used to model random events across STEM, such as queuing theory and reliability engineering. However, its key limitation is that events cannot influence one another, where an event occurring has no effect on the chance of future events. In an epidemic, for example, each case can cause further cases. Therefore, modelling this *self-excitation* is the core motivation for the application of Hawkes processes. 
