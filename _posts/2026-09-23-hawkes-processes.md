@@ -7,24 +7,24 @@ math: true
 
 Suppose you work in a country that has almost eliminated malaria, and a new case is reported. It might be a traveller infected abroad, a dead end if nothing follows. Or it might be the first visible link in a local chain, where a mosquito bites the infected person and later bites someone else. These situations need very different responses, yet on the day the case is reported they can look identical. Often the only evidence is a list of case dates and some incomplete travel histories.
 
-I'm an MSc bioinformatics student, and a biologist by background; by no means a mathematician. I came across [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830), who tackled exactly this problem using something called a *Hawkes process*: they separated imported from locally acquired malaria in Yunnan (China) and Eswatini using nothing but the timing of cases, and kept the travel histories back to check their answer. I wanted to understand how that is possible, and this post is me working through it from scratch.
+I'm an MSc bioinformatics student, and a biologist by background; by no means a mathematician. I came across [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830), who aimed to address this exact problem using something called a *Hawkes process*: they separated imported from locally acquired malaria in Yunnan (China) and Eswatini, only using the timing of cases, and kept the travel histories back to check their answer. I wanted to understand how that is possible, and this post is me working through it from scratch.
 
-The plan is:
+The plan is to provide:
 
-1. just enough background on random events in time;
-2. the Hawkes process itself;
-3. a toy malaria outbreak, simulated and then untangled;
-4. what changes when the data are real.
+1. Enough background on random events for understanding. 
+2. A definition for a Hawkes process itself.
+3. A simulated malaria outbreak.
+4. Information of what changes when the data are real.
 
-If you spot a mistake, please let me know.
+If you spot any mistakes (there are likely many), please let me know.
 
-# Just enough background
+# Some background
 
 ## Events in time
 
-A *point process* is a random list of event times $t_1, t_2, t_3, \ldots$ on a timeline: reported cases, earthquake aftershocks, neurons firing. Its *counting process* $N(t)$ is the running tally of events up to and including time $t$, a staircase that starts at 0 and steps up by 1 at each event. Throughout, I'll assume no two events happen at exactly the same moment (we'll see in the last section why real surveillance data break this).
+A *point process* is a random list of event times $t_1, t_2, t_3, \ldots$ on a timeline, these are observed in many phenomena such as reported cases, earthquake aftershocks, and neurons firing. Its *counting process* $N(t)$ is the running tally of events up to and including time $t$, a staircase that starts at 0 and steps up by 1 at each event. Throughout, I'll assume no two events happen at exactly the same moment (the last section will cover why real surveillance data break this assumption).
 
-Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The strict inequality matters: whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
+Everything that happened before time $t$ is the *history*, written $\mathcal{H}(t) = \{t_i : t_i < t\}$. The strict inequality is required, because whatever we predict for time $t$ may use the past, but not the event we are trying to predict.
 
 ## The Poisson process: events that ignore each other
 
