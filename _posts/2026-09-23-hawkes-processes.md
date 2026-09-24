@@ -35,7 +35,7 @@ Three key points:
 - The number of events in a window of length $T$ is $\text{Poisson}(\lambda T)$, so the variance is equal to the mean. Counts which vary more than the mean (known as overdispersion) are an early indicator that events cluster, though the cause cannot be deciphered from this. 
 - If the rate changes overtime but is fixed in advance, for example $\lambda(t)$ rising around the holidays when more people travel, this produces an *inhomogeneous* Poisson process. The expected number of events between $a$ and $b$ is then the area under the rate curve, $\int_a^b \lambda(t)\,dt$.
 
-The key limitation of the Poisson process is taht events essentially ignore each other. During an epidemic, where each case causes more transmission, this is not the applicable.
+The key limitation of the Poisson process is that events essentially ignore each other. During an epidemic, where each case causes more transmission, this is not the applicable.
 
 <figure>
   <img src="/assets/posts/hawkes/poisson_vs_hawkes.png" alt="A Poisson process and a Hawkes process with the same background rate">
@@ -52,9 +52,20 @@ $$
 \lambda^{\ast}(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}.
 $$
 
+To give a brief overview of what this means: count the events in a short window after $t$, take the expected value given everything that has occurred so far, divide by the window width to turn a count into a rate, and shrink the window to zero. The asterisk is shorthand for "given the history". For small $dt$, $\lambda^{\ast}(t)\,dt$ is $\approx$ the probability of an event in the next instant. Since this function is a rate, it can exceed 1.
+
+In the case of a Poisson process, where events are independently occurring: $\lambda^{\ast}(t) = \lambda$, or $\lambda(t)$ for inhomogeneous Poisson process. For a Hawkes process, history is accounted for. 
+
+# The Hawkes process
+
+## History
 
 
 
 
+# Further reading
 
-
+- [Laub, Taimre & Pollett (2015), *Hawkes processes*](https://arxiv.org/abs/1507.02822): a free, readable introduction to the maths, including the family-tree view. (Note that they use $\lambda$ for the background and $\mu$ for the kernel, the reverse of this post.)
+- [Rasmussen (2018), *Temporal point processes and the conditional intensity function*](https://arxiv.org/abs/1806.00221): short lecture notes on the conditional intensity, the likelihood and simulation.
+- [Reinhart (2018), *A review of self-exciting spatio-temporal point processes and their applications*](https://doi.org/10.1214/17-STS629): a broader review, including fitting methods and applications beyond seismology.
+- [Unwin *et al.* (2021), *Using Hawkes Processes to model imported and local malaria cases in near-elimination settings*](https://doi.org/10.1371/journal.pcbi.1008830): the paper this post builds towards (open access).
