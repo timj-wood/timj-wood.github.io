@@ -46,11 +46,15 @@ Fig 1 provides an illustration of the Poisson process, and alludes to the Hawkes
 
 ## The conditional intensity 
 
-The way around *memorylessness* is to let the rate depend on what has previously occurred. This is the **conditional intensity**, where the expected rate of events at time $t$, given the history: 
+The way around *memorylessness* is to let the rate depend on what has previously occurred. The **conditional intensity** is the expected rate of events at time $t$, given the history: 
 
 $$
 \lambda^{\ast}(t) = \lim_{h \downarrow 0} \frac{\mathbb{E}\big[\,N(t+h) - N(t) \;\big|\; \mathcal{H}(t)\,\big]}{h}.
 $$
+
+
+
+
 
 
 
