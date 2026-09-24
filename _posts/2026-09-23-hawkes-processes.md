@@ -19,7 +19,7 @@ The rough plan is to cover:
 
 # (Some) Background
 
-# Events in time: point processes
+## Events in time: point processes
 
 To start off: a point process is a random list of event times $t_1, t_2, t_3, \ldots$ on a timeline. Point processes are observed in everywhere, for example reported disease cases, earthquakes, and neuron firings. The counting process $N(t)$ is the running tally of events up to and including time $t$, essentially a staircase that starts at 0 and sequentially increases by 1 at each event. Throughout, we'll assume that no two events can occur at the same moment (final section will cover why, in epidemiology, this is discredited). 
 
