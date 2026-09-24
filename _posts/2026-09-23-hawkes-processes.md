@@ -10,12 +10,12 @@ Let's suppose you work in a country that has almost eliminated malaria, and a ne
 
 This is the exact problem which [Unwin *et al.* (2021)](https://doi.org/10.1371/journal.pcbi.1008830) aimed to address using *Hawkes processes*. To do so, they separated imported from locally acquired malaria in Yunnan (China) and Eswatini, only using the timing of cases, demoting travel histories to a simple check to their answers. Subsequently, I wanted to understand how this is possible, so here we are.
 
-The rough plan is to cover: 
+Aims: 
 
-1. Enough background on random events (point processes) for understanding.
-2. The definition of Hawkes processes themselves.
-3. Simulation of a "fake" malaria outbreak.
-4. What can occur when you apply real data.
+1. Cover enough background on random events (point processes) to understand Hawkes processes.
+2. Define Hawkes processes.
+3. Simulate a malaria outbreak.
+4. Discuss what can occur when you apply real data.
 
 # (Some) Background
 
