@@ -17,7 +17,7 @@ Aims:
 3. Simulate a malaria outbreak.
 4. Discuss what can occur when you apply real data.
 
-# (Some) Background
+# Background
 
 ## Events in time: point processes
 
