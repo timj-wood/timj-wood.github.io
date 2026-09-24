@@ -77,6 +77,10 @@ section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0
 .prose .meta { font-style: italic; color: var(--grain); margin: 0 0 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
 .prose h2 { font-size: 1.4rem; margin: 2.5rem 0 0.75rem; font-weight: 500; }
 .prose h3 { font-size: 1.1rem; margin: 2rem 0 0.5rem; font-weight: 700; }
+/* Section-level h1s in the post body (after the meta line), not the post title */
+.prose .meta ~ h1 { font-size: 1.75rem; margin: 3.5rem 0 0.75rem; }
+/* A heading directly after another heading gets a small gap, not the full one */
+.prose h1 + h2, .prose h2 + h3 { margin-top: 1rem; }
 .prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem 0; }
 .prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
 .prose figure { margin: 1.5rem 0; }
@@ -97,6 +101,7 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 @media (max-width: 480px) {
   .intro h1 { font-size: 1.6rem; }
   .prose h1 { font-size: 1.7rem; }
+  .prose .meta ~ h1 { font-size: 1.45rem; margin-top: 2.75rem; }
   .when { display: block; margin-left: 0; }
 }
 @media (prefers-reduced-motion: no-preference) { a { transition: color 120ms; } }
