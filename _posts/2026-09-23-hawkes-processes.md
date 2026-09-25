@@ -114,6 +114,23 @@ Let's go back to the family tree visualisation for a second. One imported case h
 
 In the context of malaria, there are two consequences to this. First, with a constant background rate $\mu$ and $\eta < 1$, the process settles to an average rate of $\mu/(1-\eta)$ ([Laub *et al.*, 2015](https://arxiv.org/abs/1507.02822)). So $\eta < 1$ doesn't mean that there are zero cases, because as long as importations continue, cases continue ([Routledge *et al.*, 2018](https://doi.org/10.1038/s41467-018-04577-y)). Second, in a settled state, a randomly chosen case is locally acquired with probability $\eta$ and imported with probability $1 - \eta$. The branching ratio is therefore also the expected fraction of cases that are local. 
 
+# Simulating a malaria outbreak 
+
+The best method I have found to understanding Hawkes processes in malaria modelling, is simulating an outbreak where the true dispersal patterns are known, and then running the model to try and recover it. All the code from this section can be found in [hawkes_malaria.py](/assets/posts/hawkes/hawkes_malaria.py), which only uses NumPy, SciPy, and Matplotlib.
+
+## Setup
+
+**Notes:** These numbers are made up, used for the purposes of illustration. 
+
+Five years of cases were simulated, in which: 
+- Imported cases arrive at a seasonal background rate, $\mu(t) = m\,\big(1 + a\cos(2\pi(t - t_{\text{peak}})/365)\big)$, averaging $m = 0.1$ per day ($\approx$ 3 months), with a strong annual cycle ($a = 0.8$) peaking around day 200 of each year. 
+- Each case causes, on average, $\eta = 0.6$ local cases
+- The delay kernel $g$ is zero for the first 15 days, and then follows a Rayleigh curve with spread $\sigma = 20$ days, as in Unwin *et al.* (2021), so onward cases are most likely about five weeks later. 
+
+Bevause $\eta = 0.6$, you would expect about 60% of cases to be localised, and every chain will eventually die out. 
+
+## Simulation
+
 
 
 # Further reading
