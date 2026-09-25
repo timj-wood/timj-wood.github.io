@@ -4,7 +4,7 @@ summary: A beginner friendly walkthrough of self-exciting point processes, worki
 category: hawkes-processes
 math: true
 ---
-**Note:** I am an MSc Bioinformatics student, and a biologist by background; by no means a mathematician. If you spot any mistakes then please let me know!
+**Note:** I am a biologist by background; by no means a mathematician. If you spot any mistakes then please let me know!
 
 Let's suppose you work in a country that has almost eliminated malaria, and a new case is reported. This could be from a traveller, who was infected abroad. If there are no subsequent infections, it's a dead end. However, the case might be the first visible link in a local chain where a mosquito bites the infected person and later bites someone else, and so on. These situations obviouslt require different different responses, but the day the initial case is reported they cannot be distinguished.
 
