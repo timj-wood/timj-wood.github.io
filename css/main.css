@@ -208,3 +208,10 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .entry-title { font-weight: 700; color: var(--ink); }
 .page-intro + .entry, .page-intro ~ .entry { border-bottom: 0; padding-bottom: 0; }
 .entry-figure-link { display: block; }
+/* Research / Projects: figure beside a short card (when, summary, links), stmorse-style */
+.entry-body.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.75rem; align-items: center; }
+.entry-body.split.wide { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.entry-card > :first-child { margin-top: 0; }
+.entry-card > :last-child { margin-bottom: 0; }
+.entry-summary { margin: 0.5rem 0; }
+@media (max-width: 600px) { .entry-body.split, .entry-body.split.wide { grid-template-columns: 1fr; gap: 1rem; } }
