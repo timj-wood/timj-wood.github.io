@@ -1,0 +1,22 @@
+{%- comment -%}
+  Shown at the bottom of every post, Lagrange-style:
+  a "written on" line, then a short list of other posts (same category first).
+{%- endcomment -%}
+<footer class="end-matter">
+  <p class="byline">Written on {{ page.date | date: "%-d %B %Y" }} by {{ site.author.name }}</p>
+  {% assign others = site.posts | where_exp: "p", "p.url != page.url" %}
+  {% if page.category %}
+    {% assign same = others | where: "category", page.category %}
+    {% assign others = same | concat: others | uniq %}
+  {% endif %}
+  {% assign heading = "Related posts" %}
+
+  {% if others.size > 0 %}
+  <h2>{{ heading }}</h2>
+  <ul class="related">
+    {% for p in others limit: 3 %}
+    <li><a href="{{ p.url | relative_url }}">{{ p.title }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</footer>

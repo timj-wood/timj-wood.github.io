@@ -1,0 +1,210 @@
+/* Woodworks — one serif, one column, one green. */
+:root {
+  color-scheme: dark;
+  --paper: #17181a;
+  --ink: #ebe8e1;
+  --grain: #a09c92;
+  --rule: #2c2e31;
+  --moss: #8bc27f;
+  --moss-soft: #223124;
+  --code-bg: #222326;
+  --measure: 700px; /* same content width as stmorse.github.io (Lagrange) */
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
+    --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2; --code-bg: #efece5;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #faf8f3; --ink: #1f2021; --grain: #66635b;
+  --rule: #e2dfd6; --moss: #35702c; --moss-soft: #e6efe2; --code-bg: #efece5;
+}
+
+* { box-sizing: border-box; }
+html { font-size: 106.25%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Literata", Georgia, "Times New Roman", serif;
+  font-optical-sizing: auto;
+  line-height: 1.6;
+  padding: 0 1.25rem;
+}
+body > * { max-width: var(--measure); margin-left: auto; margin-right: auto; }
+
+a { color: var(--moss); text-decoration-thickness: 1px; text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+a:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; border-radius: 2px; }
+
+/* Header */
+.site-head {
+  display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+  padding: 2.5rem 0 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+.wordmark {
+  font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+  color: var(--ink); text-decoration: none;
+}
+.wordmark-tree { height: 0.72em; width: auto; margin-right: 0.3em; }
+.site-head nav { display: flex; gap: 1.25rem; font-size: 0.95rem; }
+.site-head nav a { color: var(--grain); text-decoration: none; }
+.site-head nav a:hover { color: var(--moss); }
+
+/* Home */
+.intro { padding: 3rem 0 1rem; }
+.intro h1 { font-size: 2rem; line-height: 1.2; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 1rem; }
+.intro p { color: var(--grain); margin: 0 0 0.75rem; }
+
+section { padding: 2rem 0; }
+section h2 { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 0 0 0.5rem; }
+
+.bench, .feed { list-style: none; margin: 0; padding: 0; }
+.bench li, .feed li { padding: 1rem 0; border-top: 1px solid var(--rule); }
+.bench li a, .feed li a { font-size: 1.2rem; font-weight: 500; color: var(--ink); text-decoration: none; }
+.bench li a:hover, .feed li a:hover { color: var(--moss); }
+.when { font-style: italic; color: var(--grain); margin-left: 0.6rem; white-space: nowrap; }
+.bench p, .feed p { margin: 0.25rem 0 0; color: var(--grain); }
+
+/* Articles */
+.prose { padding: 3rem 0 4rem; }
+.prose .crumb { font-size: 0.9rem; color: var(--grain); margin: 0 0 1.5rem; }
+.prose h1 { font-size: 2.1rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.75rem; }
+.prose .standfirst { font-size: 1.15rem; color: var(--grain); margin: 0 0 0.5rem; }
+.prose .meta { font-style: italic; color: var(--grain); margin: 0 0 2.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule); }
+.prose h2 { font-size: 1.4rem; margin: 2.5rem 0 0.75rem; font-weight: 500; }
+.prose h3 { font-size: 1.1rem; margin: 2rem 0 0.5rem; font-weight: 700; }
+/* Section-level h1s in the post body (after the meta line), not the post title */
+.prose .meta ~ h1, .prose .post-body h1 { font-size: 1.75rem; margin: 3.5rem 0 0.75rem; }
+/* A heading directly after another heading gets a small gap, not the full one */
+.prose h1 + h2, .prose h2 + h3 { margin-top: 1rem; }
+.prose img { max-width: 100%; height: auto; display: block; margin: 1.5rem auto; border-radius: 4px; filter: var(--img-dim); }
+.prose figcaption { font-size: 0.9rem; color: var(--grain); font-style: italic; }
+.prose figure { margin: 1.5rem 0; }
+.prose figure img { margin: 0 0 0.5rem; border-radius: 4px; filter: var(--img-dim); }
+.prose blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 3px solid var(--moss); color: var(--grain); }
+.prose code, .prose pre { font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 0.88em; }
+.prose code { background: var(--code-bg); padding: 0.1em 0.35em; border-radius: 3px; }
+.prose pre { background: var(--code-bg); padding: 1rem; border-radius: 6px; overflow-x: auto; line-height: 1.5; }
+.prose pre code { background: none; padding: 0; }
+.prose table { border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; display: block; overflow-x: auto; }
+.prose th, .prose td { text-align: left; padding: 0.4rem 0.8rem 0.4rem 0; border-bottom: 1px solid var(--rule); }
+.prose hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+mjx-container { overflow-x: auto; overflow-y: hidden; }
+
+.site-foot { padding: 2rem 0 3rem; border-top: 1px solid var(--rule); color: var(--grain); font-size: 0.9rem; }
+.site-foot p { margin: 0; }
+
+@media (max-width: 480px) {
+  .intro h1 { font-size: 1.6rem; }
+  .prose h1 { font-size: 1.7rem; }
+  .prose .meta ~ h1, .prose .post-body h1 { font-size: 1.45rem; margin-top: 2.75rem; }
+  .when { display: block; margin-left: 0; }
+}
+@media (prefers-reduced-motion: no-preference) { a { transition: color 120ms; } }
+
+/* Portrait (used on About via page.portrait) */
+.portrait {
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 0 1.5rem;
+}
+
+.updated { font-style: italic; color: var(--grain); font-size: 0.9rem; margin: 0 0 1rem; }
+
+.socials { list-style: none; display: flex; gap: 1rem; padding: 0; margin: 0.5rem 0 0; }
+.socials a { display: inline-flex; color: var(--grain); }
+.socials a:hover { color: var(--moss); }
+.socials svg { width: 22px; height: 22px; }
+
+.theme-toggle { background: none; border: 0; padding: 0; font: inherit; line-height: inherit; color: var(--grain); cursor: pointer; }
+.theme-toggle:hover { color: var(--moss); }
+.theme-toggle:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; border-radius: 2px; }
+
+.theme-toggle { display: inline-flex; align-self: center; }
+.theme-toggle svg { width: 18px; height: 18px; }
+.theme-toggle .icon-moon { display: none; }
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-toggle .icon-sun { display: none; }
+  :root:not([data-theme="dark"]) .theme-toggle .icon-moon { display: block; }
+}
+:root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+:root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
+
+/* ---------- Redesign: About landing page, nav state, end-of-post links ---------- */
+
+.site-head nav { align-items: baseline; flex-wrap: wrap; }
+.site-head nav a.active { color: var(--ink); text-decoration: underline; text-decoration-color: var(--moss); text-underline-offset: 0.35em; }
+.wordmark { font-size: 1.5rem; }
+
+/* About (home) */
+.about { padding: 3rem 0 1rem; }
+.about-top { display: flex; align-items: center; gap: 1.75rem; margin-bottom: 1.75rem; }
+.about-top .portrait { width: 150px; height: 150px; margin: 0; flex-shrink: 0; }
+.about-id h1 { font-size: 2rem; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; margin: 0 0 0.25rem; }
+.about-id .role { color: var(--grain); font-style: italic; margin: 0 0 0.5rem; }
+.about-id .contact { margin: 0; font-size: 0.95rem; color: var(--grain); }
+.bio p { margin: 0 0 1rem; }
+.more { margin: 0.75rem 0 0; font-size: 0.95rem; }
+.more a { text-decoration: none; }
+
+/* Blog archive year headings */
+.prose h2.year { font-size: 1rem; font-weight: 500; color: var(--grain); margin: 2rem 0 0.25rem; }
+.prose h2.year:first-of-type { margin-top: 0; }
+.prose .feed, .prose .bench { margin-top: 0.5rem; }
+
+/* End of post / project (Lagrange-style) */
+.end-matter { margin-top: 3rem; }
+.end-matter .byline { font-size: 0.9rem; color: var(--grain); margin: 0 0 2.5rem; }
+.end-matter h2 { font-size: 1.6rem; font-weight: 400; margin: 0 0 0.75rem; }
+.end-matter .related { list-style: none; padding: 0 0 0 1.5rem; margin: 0; }
+.end-matter .related li { padding: 0.4rem 0; font-size: 1.1rem; }
+.end-matter .related a { text-decoration: none; }
+.end-matter .related a:hover { text-decoration: underline; }
+
+/* Site footer: centred icons, small credit line */
+.site-foot { text-align: center; border-top: 0; padding: 3rem 0; display: flex; flex-direction: column; align-items: center; }
+/* Icons always above the name, whatever order the HTML has them in */
+.site-foot .socials { order: 1; }
+.site-foot p { order: 2; }
+.site-foot .socials { justify-content: center; margin: 0 0 0.6rem; gap: 1.5rem; }
+.site-foot p { font-size: 0.85rem; }
+
+@media (max-width: 480px) {
+  .about-top { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .about-top .portrait { width: 120px; height: 120px; }
+  .about-id h1 { font-size: 1.7rem; }
+}
+/* Kept for screen readers and search engines; not shown. */
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* About page: larger square photo */
+.about-top .portrait { width: 200px; height: 200px; border-radius: 4px; }
+@media (max-width: 480px) { .about-top .portrait { width: 160px; height: 160px; } }
+/* Post header, stmorse-style: title then a small "Written on" line, no divider */
+.prose .post-head { margin: 0 0 2rem; }
+.prose .post-head h1 { margin-bottom: 0.5rem; }
+.prose .post-head .byline { font-size: 0.9rem; color: var(--grain); margin: 0; }
+.prose .post-body > :first-child { margin-top: 0; }
+/* Research / Projects: every entry shown in full, stmorse-style (figure left, text right) */
+.entry { padding: 0; margin: 0 0 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--rule); }
+.entry:last-of-type { border-bottom: 0; }
+.prose .entry h2 { font-size: 1.4rem; font-weight: 500; color: var(--ink); margin: 0 0 1.25rem; }
+.entry-body.has-figure { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 1.75rem; align-items: start; }
+.prose .entry-figure { margin: 0; width: 100%; }
+.entry-text > :first-child { margin-top: 0; }
+.entry-meta { font-style: italic; color: var(--grain); }
+.entry-links { margin-bottom: 0; }
+.entry-empty { color: var(--grain); font-style: italic; }
+@media (max-width: 600px) { .entry-body.has-figure { grid-template-columns: 1fr; gap: 1rem; } }
+.prose h1 + .entry { margin-top: 2.25rem; }
+/* Projects page: intro line and rule, then entries with the bold title leading the text */
+.page-intro { margin: 0 0 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--rule); }
+.entry-title { font-weight: 700; color: var(--ink); }
+.page-intro + .entry, .page-intro ~ .entry { border-bottom: 0; padding-bottom: 0; }
+.entry-figure-link { display: block; }

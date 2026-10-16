@@ -1,0 +1,17 @@
+---
+layout: default
+---
+{%- comment -%} The landing page: an About page with a photo, name, role, contact address and bio. {%- endcomment -%}
+<article class="about">
+  <div class="about-top">
+    {% if page.portrait %}<img class="portrait" src="{{ page.portrait | relative_url }}" alt="{{ site.author.name }}">{% endif %}
+    <div class="about-id">
+      <h1>{{ site.author.name }}</h1>
+      {% if page.role %}<p class="role">{{ page.role }}</p>{% endif %}
+      {% assign email = site.author.email | split: "@" %}
+      <p class="contact">Contact: tim [dot] jwood [at] outlook</p>
+    </div>
+  </div>
+
+  <div class="bio">{{ content }}</div>
+</article>

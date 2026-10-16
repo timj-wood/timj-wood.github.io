@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>{% include head.html %}</head>
+<body>
+  <header class="site-head">
+    <a class="wordmark" href="{{ '/' | relative_url }}"><svg class="wordmark-tree" viewBox="0 0 814 700" aria-hidden="true"><path d="M0 414H150M440 94H720M440 350H720M150 606H720M150 222H440" fill="none" stroke="currentColor" stroke-width="100"/><path d="M150 222V606M440 94V350" fill="none" stroke="currentColor" stroke-width="100" stroke-linecap="square"/><circle cx="720" cy="94" r="94" style="fill: var(--moss)"/><circle cx="720" cy="350" r="94" style="fill: var(--moss)"/><circle cx="720" cy="606" r="94" style="fill: var(--moss)"/></svg>{{ site.title }}</a>
+    <nav>
+      {% for item in site.data.navigation %}
+        {% assign active = false %}
+        {% if item.url == '/' %}
+          {% if page.url == '/' %}{% assign active = true %}{% endif %}
+        {% elsif page.url contains item.url %}
+          {% assign active = true %}
+        {% elsif item.url == '/blog/' and page.collection == 'posts' %}
+          {% assign active = true %}
+        {% endif %}
+        <a href="{{ item.url | relative_url }}"{% if active %} class="active" aria-current="page"{% endif %}>{{ item.title }}</a>
+      {% endfor %}
+      <button class="theme-toggle" type="button" aria-label="Switch colour theme">
+  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+</button>
+    </nav>
+  </header>
+  <main>{{ content }}</main>
+  {% include footer.html %}
+  <script>
+    document.querySelector(".theme-toggle").addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.dataset.theme ||
+        (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      var next = current === "light" ? "dark" : "light";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    });
+  </script>
+</body>
+</html>
