@@ -252,3 +252,5 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .prose .archive .tag-year:not([hidden]) ~ .tag-year h2.year { margin-top: 2.25rem; }
 .prose .archive .tag-year h2.year { margin-top: 0; }
 .tag-year[hidden], .archive-list li[hidden] { display: none; }
+.tag-instruction { text-align: center; color: var(--grain); font-style: italic; }
+.tag-instruction[hidden] { display: none; }

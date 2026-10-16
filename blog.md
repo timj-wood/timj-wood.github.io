@@ -36,6 +36,7 @@ hide_title: true
       <button type="button" class="tag-chip" data-tag="{{ tag | escape }}" aria-pressed="false">{{ tag }} ({{ count }})</button>
       {% endfor %}
     </div>
+    <p class="tag-instruction" hidden>Click a tag above to see related posts.</p>
     {% for year in by_year %}
     <div class="tag-year">
       <h2 class="year">{{ year.name }}</h2>
@@ -57,12 +58,14 @@ hide_title: true
   (function () {
     var view = document.getElementById("by-tag");
     var chips = view.querySelectorAll(".tag-chip");
+    var hint = view.querySelector(".tag-instruction");
     function select(tag) {
+      hint.hidden = tag !== null;
       chips.forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.tag === tag ? "true" : "false"); });
       view.querySelectorAll(".tag-year").forEach(function (group) {
         var shown = 0;
         group.querySelectorAll("li").forEach(function (li) {
-          var match = li.dataset.tags.indexOf("|" + tag + "|") !== -1;
+          var match = tag !== null && li.dataset.tags.indexOf("|" + tag + "|") !== -1;
           li.hidden = !match;
           if (match) shown++;
         });
@@ -70,6 +73,6 @@ hide_title: true
       });
     }
     chips.forEach(function (c) { c.addEventListener("click", function () { select(c.dataset.tag); }); });
-    if (chips.length) select(chips[0].dataset.tag);
+    select(null);
   })();
 </script>
