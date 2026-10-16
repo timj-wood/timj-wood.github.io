@@ -243,3 +243,12 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 @media (max-width: 480px) {
   .archive-list li { flex-direction: column; gap: 0.1rem; }
 }
+/* Blog "By tag": chip per tag (with post count); the chosen one is filled */
+.tag-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin: 0 0 2.75rem; }
+.tag-chip { font: inherit; font-size: 0.95rem; line-height: 1.2; padding: 0.55rem 0.95rem; border: 0; border-radius: 3px; background: var(--code-bg); color: var(--grain); cursor: pointer; }
+.tag-chip:hover { color: var(--ink); }
+.tag-chip[aria-pressed="true"] { background: var(--moss); color: var(--paper); }
+.tag-chip:focus-visible { outline: 2px solid var(--moss); outline-offset: 2px; }
+.prose .archive .tag-year:not([hidden]) ~ .tag-year h2.year { margin-top: 2.25rem; }
+.prose .archive .tag-year h2.year { margin-top: 0; }
+.tag-year[hidden], .archive-list li[hidden] { display: none; }

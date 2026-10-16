@@ -26,17 +26,50 @@ hide_title: true
   </div>
 
   <div id="by-tag" class="archive-view view-tag">
-    {% assign tags = site.categories | sort %}
-    {% for tag in tags %}
-    <h2 class="year">{{ tag[0] }}</h2>
-    <ul class="archive-list">
-      {% for post in tag[1] %}
-      <li>
-        <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d, %Y" }}</time>
-      </li>
+    {% assign all_tags = "" | split: "" %}
+    {% for post in site.posts %}{% assign all_tags = all_tags | concat: post.categories | concat: post.tags %}{% endfor %}
+    {% assign all_tags = all_tags | uniq | sort_natural %}
+    <div class="tag-chips">
+      {% for tag in all_tags %}
+      {% assign count = 0 %}
+      {% for post in site.posts %}{% if post.categories contains tag or post.tags contains tag %}{% assign count = count | plus: 1 %}{% endif %}{% endfor %}
+      <button type="button" class="tag-chip" data-tag="{{ tag | escape }}" aria-pressed="false">{{ tag }} ({{ count }})</button>
       {% endfor %}
-    </ul>
+    </div>
+    {% for year in by_year %}
+    <div class="tag-year">
+      <h2 class="year">{{ year.name }}</h2>
+      <ul class="archive-list">
+        {% for post in year.items %}
+        {% assign post_tags = post.categories | concat: post.tags | uniq %}
+        <li data-tags="|{{ post_tags | join: '|' | escape }}|">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %-d" }}</time>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
     {% endfor %}
   </div>
 </div>
+
+<script>
+  (function () {
+    var view = document.getElementById("by-tag");
+    var chips = view.querySelectorAll(".tag-chip");
+    function select(tag) {
+      chips.forEach(function (c) { c.setAttribute("aria-pressed", c.dataset.tag === tag ? "true" : "false"); });
+      view.querySelectorAll(".tag-year").forEach(function (group) {
+        var shown = 0;
+        group.querySelectorAll("li").forEach(function (li) {
+          var match = li.dataset.tags.indexOf("|" + tag + "|") !== -1;
+          li.hidden = !match;
+          if (match) shown++;
+        });
+        group.hidden = shown === 0;
+      });
+    }
+    chips.forEach(function (c) { c.addEventListener("click", function () { select(c.dataset.tag); }); });
+    if (chips.length) select(chips[0].dataset.tag);
+  })();
+</script>
