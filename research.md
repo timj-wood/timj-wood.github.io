@@ -14,7 +14,7 @@ redirect_from:
 <section class="entry" id="wildcat-models">
   <h2>Scottish wildcat demographic models</h2>
   <div class="entry-body split">
-    <img class="entry-figure" src="{{ '/images/corr.png' | relative_url }}" alt="Parameter correlation matrix from the Godambe-corrected covariance">
+    <img class="entry-figure" src="{{ '/images/jsfs.png' | relative_url }}" alt="Parameter correlation matrix from the Godambe-corrected covariance">
     <div class="entry-card">
       <p class="entry-meta">Jun - Sept 2026 · with Mark Beaumont, Dennis Prangle and Grace Yan</p>
       <p class="entry-summary">Summer internship fitting 2D dadi models to the joint site frequency spectrum of wildcat and domestic cat, with Godambe-corrected confidence intervals. The preferred model puts their split at roughly 485,000 years ago.</p>
