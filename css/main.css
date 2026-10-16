@@ -220,3 +220,26 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .entry-body.stacked .entry-figure-link { display: block; width: fit-content; max-width: 100%; margin: 0 auto 1.25rem; }
 .entry-body.stacked .entry-figure-link .entry-figure { margin: 0; }
 .entry-body.stacked > :last-child { margin-bottom: 0; }
+/* Blog archive, stmorse-style: "By date | By tag" switch, year headings,
+   titles on the left and small-caps dates on the right. */
+.archive-switch { text-align: center; margin: 0 0 2.5rem; font-size: 1.05rem; }
+.archive-switch a { color: var(--grain); text-decoration: none; }
+.archive-switch a:hover { color: var(--moss); }
+.archive-switch span { color: var(--rule); margin: 0 0.9rem; }
+.archive-switch .switch-date { color: var(--ink); font-weight: 500; }
+.archive:has(#by-tag:target) .switch-date { color: var(--grain); font-weight: 400; }
+.archive:has(#by-tag:target) .switch-tag { color: var(--ink); font-weight: 500; }
+.archive .view-tag { display: none; }
+.archive:has(#by-tag:target) .view-tag { display: block; }
+.archive:has(#by-tag:target) .view-date { display: none; }
+.archive-view { scroll-margin-top: 100vh; }
+.prose .archive h2.year { font-size: 1.4rem; font-weight: 400; color: var(--ink); margin: 2.25rem 0 0.5rem; }
+.prose .archive .archive-view > h2.year:first-child { margin-top: 0; }
+.archive-list { list-style: none; margin: 0; padding: 0; }
+.archive-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; padding: 0.55rem 0; }
+.archive-list a { font-size: 1.15rem; text-decoration: none; }
+.archive-list a:hover { text-decoration: underline; }
+.archive-list time { flex-shrink: 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--grain); white-space: nowrap; }
+@media (max-width: 480px) {
+  .archive-list li { flex-direction: column; gap: 0.1rem; }
+}
