@@ -214,7 +214,9 @@ mjx-container { overflow-x: auto; overflow-y: hidden; }
 .entry-card > :last-child { margin-bottom: 0; }
 .entry-summary { margin: 0.5rem 0; }
 @media (max-width: 600px) { .entry-body.split { grid-template-columns: 1fr; gap: 1rem; } }
-/* Projects: wide figure on its own row under the title, text underneath */
-.entry-body.stacked .entry-figure { display: block; width: 100%; margin: 0 0 1.25rem; }
-.entry-body.stacked .entry-figure-link { display: block; }
+/* Projects: figure on its own row under the title, text underneath.
+   Wide figures fill the column; square or tall ones stop at 22rem high and sit centred. */
+.entry-body.stacked .entry-figure { display: block; width: auto; max-width: 100%; max-height: 22rem; margin: 0 auto 1.25rem; }
+.entry-body.stacked .entry-figure-link { display: block; width: fit-content; max-width: 100%; margin: 0 auto 1.25rem; }
+.entry-body.stacked .entry-figure-link .entry-figure { margin: 0; }
 .entry-body.stacked > :last-child { margin-bottom: 0; }
