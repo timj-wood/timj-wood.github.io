@@ -84,7 +84,7 @@ Note that `get_godambe` works on whatever parameter vector you hand it. To inclu
 
 The last line of that snippet is the one I'd argue for hardest. Even corrected intervals are marginal: each describes one parameter with all the others free to move. That hides a lot. Here's the correlation matrix for the wildcat model:
 
-![Parameter correlation matrix from the sandwich covariance](/assets/img/corr.png)
+![Parameter correlation matrix from the sandwich covariance](/images/corr.png)
 
 The three deepest parameters, the two ancestral sizes ($N_S$, $N_L$) and the split time ($T_A$), each had intervals spanning a factor of five to seven, which sounds like three separately uncertain quantities. The block in the top left says otherwise: they correlate above 0.97 with each other and below −0.99 with $\theta$, so they move together along a single ridge, and the data constrain one direction in that three-dimensional space, not three. Meanwhile two of my four "well determined" parameters correlate at 0.987, so what is actually pinned down is their product. Neither fact is visible in a table of intervals. If you report one, report both.
 

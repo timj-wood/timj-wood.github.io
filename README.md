@@ -1,33 +1,32 @@
 # Woodworks
 
-Jekyll on GitHub Pages.
+Tim Wood's site. Jekyll on GitHub Pages, with the folder layout of [stmorse.github.io](https://github.com/stmorse/stmorse.github.io).
 
 ## Structure
 
 ```
-index.md              landing page = About: photo, name, role, contact address, bio  (layout: home)
-about.md              redirects old /about/ links to /
-blog.md               /blog/ — all posts grouped by year
-research.md           /research/ — research entries, shown in full on one page
-projects.md           /projects/ — other projects, same format
-_data/navigation.yml  header links and the links at the end of every post
-_posts/               YYYY-MM-DD-slug.md → /posts/slug/
-_drafts/              unpublished posts (no date needed)
-_research/            one file per research entry (no page of its own)
-_projects/            one file per project (no page of its own)
-_layouts/             default, home, page, post
-_includes/            head (fonts, SEO tags, MathJax), footer, entries (research/projects listing), end-matter ("written on" line + related posts under each post)
-assets/css/style.css  the one stylesheet
-assets/docs/          cv.pdf, report PDFs
-assets/img/           images
+index.html         About page (landing page): photo, name, role, contact, bio
+blog.md            /blog/ — all posts grouped by year
+research.md        /research/ — research entries, written straight into the page
+projects.md        /projects/ — side projects, same format
+404.html           not-found page
+_config.yml        title, author links, plugins
+_layouts/          default, page, post
+_includes/         head, header, menu (header links), footer, social-icons, related-posts
+_posts/            YYYY-MM-DD-slug.md → /posts/slug/
+_drafts/           unpublished posts
+css/main.css       the one stylesheet
+images/            images; post figures in images/<post>/
+docs/              CV, report PDFs, supporting scripts
 ```
 
 ## Front matter
 
-Posts: `title`, `summary` (shown on home + as standfirst), `category` (free text), `math: true` to load MathJax.
-About (index.md): `portrait`, `role`.
-Posts in the same `category` are listed under each other as "More on …".
-Research / projects: `title`, `period`, `order` (sort), `with`, and optional `repo`, `report` (PDF path), `blog` (post URL), `figure` + `figure_alt` (figure shown on the left). The body text is shown in full.
+Posts: `title`, `summary`, `category` (posts in the same category are listed first under "Related posts"), `math: true` to load MathJax.
+
+## Adding research or a project
+
+Copy one of the `<section class="entry">` blocks in `research.md` or `projects.md`.
 
 ## Local preview
 
@@ -35,7 +34,3 @@ Research / projects: `title`, `period`, `order` (sort), `with`, and optional `re
 bundle install
 bundle exec jekyll serve --drafts --livereload
 ```
-
-## Deploy
-
-Push to `main` of `timj-wood/timj-wood.github.io`. GitHub Pages builds it. Custom domain: add a `CNAME` file containing the domain and point DNS at GitHub.

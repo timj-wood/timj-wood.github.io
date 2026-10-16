@@ -10,26 +10,17 @@ author:
   linkedin: timj-wood
 lang: en_GB
 
-
 permalink: /posts/:slug/
 markdown: kramdown
 kramdown:
   math_engine: mathjax
   input: GFM
 
-# Research and projects are shown in full on /research/ and /projects/, not as separate pages.
-collections:
-  research:
-    output: false
-  projects:
-    output: false
-
 defaults:
   - scope: { path: "", type: posts }
     values: { layout: post }
   - scope: { path: "" }
-    values: { layout: page, image: /assets/img/woodworks-logo-dark.png }
-    
+    values: { layout: page, image: /images/woodworks-logo-dark.png }
 
 plugins:
   - jekyll-seo-tag

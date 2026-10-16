@@ -26,7 +26,7 @@ The simplest model is the homogeneous Poisson process, where events occur at a c
 
 The catch is that events ignore each other. That's exactly wrong for an epidemic, where each case causes more transmission. Here's a Poisson process next to a Hawkes process with the same background rate of 0.1 events per day. In the Hawkes process each event bumps the rate up, the bump fades, and events arrive in bursts:
 
-![A Poisson process and a Hawkes process with the same background rate](/assets/posts/hawkes/poisson_vs_hawkes.png)
+![A Poisson process and a Hawkes process with the same background rate](/images/hawkes/poisson_vs_hawkes.png)
 
 ## The conditional intensity
 
@@ -146,7 +146,7 @@ imported <- tree$parent == 0    # the truth, for marking later
 
 This run had 178 imported and 288 local cases, a local fraction of 0.62 against the 0.60 expected. Here's the intensity from the package's `plot_intensity_imported()`, with each case sitting on the curve, coloured imported (red) or local (blue, which the package calls "within country"):
 
-![Conditional intensity with imported and local cases marked](/assets/posts/hawkes/simulated_outbreak_r.png)
+![Conditional intensity with imported and local cases marked](/images/hawkes/simulated_outbreak_r.png)
 
 ## Fitting the model
 
@@ -189,7 +189,7 @@ The background is too high and $\eta$ too low, so naturally I assumed I'd done s
 
 To see how much of this is chance, I repeated the whole thing on twenty simulated datasets (dashed lines are the true values):
 
-![Parameter estimates across twenty simulated datasets](/assets/posts/hawkes/replicates_r.png)
+![Parameter estimates across twenty simulated datasets](/images/hawkes/replicates_r.png)
 
 The estimates scatter around the truth, with $\eta$ anywhere from 0.1 to 0.7 and the background pulled up whenever $\eta$ is pulled down. The two trade off against each other, and 450 cases isn't enough to pin both down tightly. The paper dealt with this by comparing fits across background terms, and it's worth remembering whenever you read an $R_c$ from this kind of model.
 
@@ -212,7 +212,7 @@ p_imported <- mu_i / (mu_i + rowSums(contrib))
 
 This is a probability, and should be treated as one. A case in the off-season with nothing in the preceding five weeks gets $P(\text{imported})$ near 1. A case at the peak of the season, five weeks after a cluster, is ambiguous, and the model says so. Here's how the estimates split against what actually happened:
 
-![Estimated probability of importation, split by the truth](/assets/posts/hawkes/classification_r.png)
+![Estimated probability of importation, split by the truth](/images/hawkes/classification_r.png)
 
 The two histograms overlap heavily: thresholding at 0.5 labels fewer than half the cases correctly, so you may as well guess. Case timing tells you how much transmission there is, in aggregate and over years, but very little about where any individual case came from. That's why the paper kept the travel histories: to check the population-level answer, which the model nails quite nicely.
 
