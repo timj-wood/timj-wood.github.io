@@ -1,7 +1,7 @@
 ---
 title: "Hawkes processes in epidemiology"
 summary: A beginner friendly walkthrough of self-exciting point processes, working towards Juliette Unwin's method for separating imported and local malaria cases.
-category: hawkes
+category: stats
 math: true
 ---
 Let's suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it's a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they look identical.
