@@ -1,20 +1,20 @@
 ---
-title: "Correcting dadi's narrow confidence intervals"
-date: 2026-09-10
+title: "Composite likelihood corrections in dadi"
+date: 2026-09-03
 summary: "Composite likelihood, the Godambe correction, and the mistakes I made applying it."
 category: stats
 math: true
 ---
 
-If you fit a demographic model in dadi and ask for confidence intervals, you get numbers that look reassuringly tight. They're lying to you, by quite a lot. This post covers why, how much, and the correction that fixes it, using numbers from a project I did on Scottish wildcats.
+For my first post I will, briefly, cover the issues that I was experiencing whilst creating demographic models for lineage splits between Scottish wildcats and domestic cats. All fits were done using the [dadi](https://dadi.readthedocs.io/en/latest/) package. After an initial model, dadi produces, convincingly, narrow confidence intervals. However, I quickly discovered this reassurance to be a lie. 
 
 ## Why dadi lies to you
 
-dadi fits a model by computing the expected site frequency spectrum under it and comparing that to the observed spectrum with a Poisson likelihood, one term per bin. The likelihood is a product over bins, and the count in each bin is a sum over sites. Every site contributes as if it were an independent draw.
+dadi fits a model by computing the expected site frequency spectrum under it and comparing that to the observed spectrum with a Poisson likelihood, with one term per bin. The likelihood is a product over bins, and the count in each bin is a sum over sites. Every site contributes as if it were an independent draw.
 
 Sites aren't independent. Neighbouring positions on a chromosome share a genealogy, so they carry nearly the same information about the demographic history, and a run of a thousand linked SNPs tells you far less than a thousand independent ones would. dadi's likelihood counts them all. The technical name for this is *composite likelihood*: it has the form of a likelihood and is maximised like one, but it is not the probability of the data under the model.
 
-The consequence is that the likelihood surface is much sharper than the data justify. Everything you'd normally derive from curvature inherits the problem: Wald intervals come out too narrow, and AIC penalises complexity too lightly, so it favours over-fitted models — a major issue when comparing multiple models with differing parameters.
+The consequence is that the likelihood surface is much sharper than the data can justify. Everything you'd normally derive from curvature inherits the problem: Wald intervals come out too narrow, and AIC penalises complexity too lightly, so it favours over-fitted models, which is a major issue when comparing multiple models with differing parameters.
 
 ## How much does it matter?
 
