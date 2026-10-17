@@ -12,7 +12,7 @@ For my first post I will, briefly, cover the issues that I was experiencing whil
 
 dadi fits a model by computing the expected site frequency spectrum under it and comparing that to the observed spectrum with a Poisson likelihood, with one term per bin. The likelihood is a product over bins, and the count in each bin is a sum over sites. Every site contributes as if it were an independent draw.
 
-Sites aren't independent. Neighbouring positions on a chromosome share a genealogy, so they carry nearly the same information about the demographic history, and a run of a thousand linked SNPs tells you far less than a thousand independent ones would. dadi's likelihood counts them all. The technical name for this is *composite likelihood*: it has the form of a likelihood and is maximised like one, but it is not the probability of the data under the model.
+The sites aren't independent. Neighbouring positions on a chromosome share a genealogy, so they carry nearly the same information about the demographic history, and a run of a thousand linked SNPs tells you far less than a thousand independent ones would. dadi's likelihood counts them all. The technical name for this is *composite likelihood*: it has the form of a likelihood and is maximised like one, but it is not the probability of the data under the model.
 
 The consequence is that the likelihood surface is much sharper than the data can justify. Everything you'd normally derive from curvature inherits the problem: Wald intervals come out too narrow, and AIC penalises complexity too lightly, so it favours over-fitted models, which is a major issue when comparing multiple models with differing parameters.
 
