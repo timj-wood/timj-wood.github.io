@@ -28,7 +28,9 @@ There are two things you can measure about a likelihood at its maximum. One is h
 
 For a true likelihood these two agree, which is why you can get away with using only $H$. For a composite likelihood they don't: $H$ says the peak is sharp, while $J$, measured across independent blocks of genome, says the location of the peak jumps around from block to block far more than the curvature implies. The ratio between them is the correction. Formally the sandwich covariance is $H^{-1} J H^{-1}$, and the effective parameter count is $\operatorname{tr}(J H^{-1})$, which replaces $k$ in AIC:
 
-$$\mathrm{CLAIC} = -2\,\ell_{\mathrm{CL}}(\hat\Theta) + 2\,\operatorname{tr}\!\left(J H^{-1}\right).$$
+$$
+\mathrm{CLAIC} = -2\,\ell_{\mathrm{CL}}(\hat\Theta) + 2\,\operatorname{tr}\!\left(J H^{-1}\right).
+$$
 
 This is the composite-likelihood AIC of [Varin and Vidoni (2005)](https://doi.org/10.1093/biomet/92.3.519), and [Coffman *et al.* (2016)](https://doi.org/10.1093/molbev/msv255) showed that the Godambe approach works well for dadi specifically.
 
@@ -82,7 +84,7 @@ Note that `get_godambe` works on whatever parameter vector you hand it. To inclu
 
 ## Why the correlation matrix is not optional
 
-The last line of that snippet is the one I'd argue for hardest. Even corrected intervals are marginal: each describes one parameter with all the others free to move. That hides a lot. Here's the correlation matrix for the wildcat model:
+I would consdier the last line of that code block as a none negotiable. Even corrected intervals are marginal, because each describes one parameter with all the others free to move. This can heavily skew "the bigger picture". Here's the correlation matrix for the wildcat model:
 
 ![Parameter correlation matrix from the sandwich covariance](/images/corr.png)
 
