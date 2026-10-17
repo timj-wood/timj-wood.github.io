@@ -90,4 +90,4 @@ I would consdier the last line of that code block as a none negotiable. Even cor
 
 The three deepest parameters, the two ancestral sizes ($N_S$, $N_L$) and the split time ($T_A$), each had intervals spanning a factor of five to seven, which sounds like three separately uncertain quantities. The block in the top left says otherwise: they correlate above 0.97 with each other and below −0.99 with $\theta$, so they move together along a single ridge, and the data constrain one direction in that three-dimensional space, not three. Meanwhile two of my four "well determined" parameters correlate at 0.987, so what is actually pinned down is their product. Neither fact is visible in a table of intervals. If you report one, report both.
 
-If you're aware of any other potential fixes to this issue, then please let me know!
+I'll leave it there for now. If you're aware of any other potential fixes to this issue, then please let me know!
