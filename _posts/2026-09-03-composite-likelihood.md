@@ -6,7 +6,7 @@ category: stats
 math: true
 ---
 
-For my first post I will, briefly, cover the issues that I was experiencing whilst creating demographic models for lineage splits between Scottish wildcats and domestic cats. All models were fit using the [dadi](https://dadi.readthedocs.io/en/latest/) package. After an initial model, dadi produces, convincingly, narrow confidence intervals. However, I quickly discovered this reassurance to be a lie. 
+For my first post I will, briefly, cover the issues that I was experiencing whilst creating demographic models for lineage splits between Scottish wildcats and domestic cats; all fits were carried out using the [dadi](https://dadi.readthedocs.io/en/latest/) package. After an initial model, dadi produces, convincingly, narrow confidence intervals. However, I quickly discovered this reassurance to be a lie. 
 
 ## Why dadi lies to you
 
