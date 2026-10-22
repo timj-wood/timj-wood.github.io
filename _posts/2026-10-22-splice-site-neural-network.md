@@ -6,11 +6,9 @@ tags: [neural-networks, genomics]
 
 And so I return to the lands of familiarity. For my next post, I wanted to have a go at something involving my favourite [buzzwords](https://en.wikipedia.org/wiki/Buzzword) in bioinformatics, **machine learning** and **genomics**, which both lead to the *holy grail*: ***neural networks***. I hadn't touched machine learning before this year, but the more I read into it the more interesting it gets, so I've been wanting to build (_some_) sort of neural network skillset.
 
-I'm not going to go into much of the mathematical theory here, partly because I'm still learning it myself. If you want the theory done properly, 3Blue1Brown's series is fantastic:
+I'm not going to go into much of the mathematical theory here, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
-<iframe align="center" width="560" height="315" src="https://www.youtube.com/embed/aircAruvnKk" frameborder="0" allowfullscreen></iframe>
-
-For the code, I followed the Jean Golding Institute's [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) course, plus their [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) course for the baseline. All the figures and numbers here come from the notebooks in [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
+For the code, I used the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses as a rough guide. All the figures and numbers here come from the notebooks in [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
 
 ## What is splicing?
 
