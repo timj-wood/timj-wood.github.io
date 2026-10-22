@@ -8,19 +8,19 @@ For my next post, I wanted to have a go at something involving my favourite [buz
 
 Note that this is not a post about Neural Network theory, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
-For the code, I used the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses as a rough guide. All the figures and numbers here come from the notebooks in [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
+For the code, I used the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses as rough guides. All the figures and numbers here come from the notebooks in [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
 
 ## What is splicing?
 
-When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases "GT" and ends with "AG". It's very close to a universal rule, which is why I picked it for a first neural network: I already know what the answer should look like, so if the model learns something sensible I should be able to spot it, and if it learns something weird I should be able to spot that too.
+When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases "GT" and ends with "AG". It's very close to a universal rule, which is why it's a great target for my first neural network. Since I already know what the answer should look like, if the model learns something sensible I should be able to see, and if it learns something weird I should be able to spot that too.
 
-So the question I'm asking the model is: given a window of 60 bases, is there a splice junction in the middle, and if so which kind? And the thing I'm actually curious about is whether it finds the GT…AG pattern on its own. Before any of that, though, I'll fit some ordinary classifiers so there's something to compare against.
+So the question I'm asking the model is: given a window of 60 bases, is there a splice junction in the middle, and if so which kind? And the thing I'm actually curious about is whether it finds the GT…AG pattern on its own. Before any of that, though, I'll fit some ordinary classifiers so there's something to compare the NN against.
 
 ## The data
 
-Conveniently, there's a 35 year old dataset that suits this nicely. The UCI [splice-junction dataset](https://doi.org/10.24432/C5M888) has 3,190 windows of 60 bases from primate genes, each labelled `EI` (exon to intron, a donor site), `IE` (intron to exon, an acceptor site) or `N` (neither). It was put together for a paper that used neural networks to recognise DNA sequences ([Noordewier *et al.*, 1991](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)), which is quite fitting.
+The UCI [splice-junction dataset](https://doi.org/10.24432/C5M888) has 3,190 windows of 60 bases from primate genes, each labelled `EI` (exon to intron, a donor site), `IE` (intron to exon, an acceptor site) or `N` (neither). It was put together for a paper that used neural networks to recognise DNA sequences ([Noordewier *et al.*, 1991](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)), which is quite fitting.
 
-However, there is a problem with the data: a model can't do anything with a string like `CCAGTCAT`. A standardised fix to this issue is [**one-hot encoding**](https://www.sciencedirect.com/topics/computer-science/one-hot-encoding), where each position becomes four columns (one per base), with a 1 in the column for the base that's there and 0 in the other three. So each sequence becomes 240 numbers, and "there's a G at position +1" turns into a single feature the model can put a weight on.
+However, there is a problem with the data: a model can't do anything with a string like `CCAGTCAT`. A standardised fix to this issue is [**one-hot encoding**](https://www.sciencedirect.com/topics/computer-science/one-hot-encoding), where each position becomes four columns (one per base), with a 1 in the column for the base that's there and 0 in the other three. So each sequence becomes a row of 240 1's and 0's. This is important, because the model gives each column its own weight, and each column now represents one base at one position, so the model can learn how much evidence a G at position +1 provides, independently of every other base and position.
 
 A few positions (60 out of 191,400) use [IUPAC ambiguity codes](https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html), e.g. `D` means "A, G or T". I didn't want to throw that data away, so I spread the 1 evenly over the possible bases: a `D` becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I'm not sure if that's the standard thing to do, but it seemed reasonable and it only affects a handful of entries.
 
@@ -31,7 +31,9 @@ y = df["label"].values        # "EI", "IE" or "N"
 
 ## A baseline first
 
-Before the neural network stuff, I fitted a couple of simpler classifiers. The first thing to do is hold back a quarter of the data (798 sequences) as a test set that the models never see during training; otherwise you have no idea whether they've learnt anything or just memorised the answers.
+Before the fun neural network stuff, I fitted a couple of simpler classifiers. 
+
+Importantly, you want to hold back a quarter of the data (798 sequences) as a test set that the models never see during training, otherwise there is no gauge for whether they have learnt anything at all. 
 
 ```python
 from sklearn.model_selection import train_test_split
@@ -52,7 +54,7 @@ pred = logreg.predict(X_test)
 print(f"Logistic regression test accuracy: {accuracy_score(y_test, pred):.3f}")
 ```
 
-Logistic regression got **93.7%** of the test sequences right, which was higher than I expected for something this simple. I also tried $k$-nearest neighbours, picking $k$ by cross-validation as the JGI course does:
+Logistic regression got **93.7%** of the test sequences right, which was higher than I expected for this simple model. I also tried $k$-nearest neighbours, picking $k$ by cross-validation as the JGI course does:
 
 ```python
 from sklearn.neighbors import KNeighborsClassifier
@@ -66,9 +68,9 @@ print(model.best_estimator_)
 print(f"kNN test accuracy: {model.score(X_test, y_test):.3f}")
 ```
 
-That achieved an accuracy score of 85.1%. I think the gap is because of how one-hot coded vectors transform in high-dimensional spaces: two random 60-base sequences are hardly ever "close" to each other in a 240-dimensional space, so the closest neighbours aren't especially informative. (If someone has a better explanation, please let me know!) 
+The achieved accuracy score is noticeable worse, at 85.1%. I think the gap is because of how one-hot coded vectors transform in high-dimensional spaces, whereby two random 60-base sequences will never come close to each other in a 240-dimensional space, so the closest neighbours aren't especially informative. (If someone has a better explanation, please let me know!) 
 
-The thing I found most interesting is what logistic regression was able to learn. It has one weight per (position, base) for each class, so you can reshape the 240 weights into a 4 × 60 grid and plot it:
+The logistic regression model likely learns a considerable amount due to the simple nature of the data, but it still holds a lot of information. It has one weight per (position, base) for each class, so you can reshape the 240 weights into a 4 × 60 grid and plot it:
 
 ```python
 W = logreg.coef_[list(logreg.classes_).index("EI")]   # 240 weights for the EI class
@@ -77,7 +79,7 @@ grid = W.reshape(60, 4).T                               # 4 bases × 60 position
 
 ![Logistic regression weights for the EI and IE classes by position and base](/images/splice/logreg_weights.png)
 
-For `EI`, the biggest weights are T at +2 and G at +1. For `IE`, they're G at −1 and A at −2, with a stretch of C and T favoured a bit further upstream, which I believe is the [polypyrimidine tract](https://en.wikipedia.org/wiki/Polypyrimidine_tract) that sits before acceptor sites. So the humble linear model has already found GT…AG. Worth keeping in mind, since the neural network has to at least match this to be worth the effort.
+For `EI`, the biggest weights are T at +2 and G at +1. For `IE`, they're G at −1 and A at −2, with a stretch of C and T favoured a bit further upstream, which is likely the [polypyrimidine tract](https://en.wikipedia.org/wiki/Polypyrimidine_tract) which sits before acceptor sites. So the *humble* linear model has already found GT…AG. Worth keeping in mind, since the neural network has to at least match this to be worth the effort (otherwise why I am even bothering).
 
 ## Building a neuron from scratch
 
@@ -190,12 +192,6 @@ As for the tie, I don't think it's that surprising in hindsight. Noordewier *et 
 
 ## Further reading
 
-- [Morse (2017)](https://stmorse.github.io/journal/Beginner-NN-Part-I.html): a lot of my understanding of the theory came from this post, including the full backpropagation recursion that I skipped.
-- [Introduction to Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/), Jean Golding Institute: the two free courses all the code is based on.
-- [Nielsen, _Neural Networks and Deep Learning_](http://neuralnetworksanddeeplearning.com/chap1.html): a longer free treatment if you want the next step up.
-- [Noordewier, Towell & Shavlik (1991)](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf): the NIPS paper the dataset was built for.
-- [splice-site-nn](https://github.com/timj-wood/splice-site-nn): the notebooks, figures and data (UCI, [CC BY 4.0](https://doi.org/10.24432/C5M888)).
+There is a multitude of useful (and free!) tutorials covering Neural Networks on the internet, which actually cover the theory and give suitable coding examples. To name a few: [Steven Morse's blog series](https://stmorse.github.io/journal/Beginner-NN-Part-I.html), [Michael Nielsen's online book](http://neuralnetworksanddeeplearning.com/), and [JGI's online course](https://bristol-training.github.io/intro-to-ai/). If you are not from a Maths/CS background, like myself, the theory can become excessively complex, and I simply don't have enough time to make as rigorous a post as the last one. My aim for this post was not to be thorough, but rather showcase (though my example was simple) the potential of NN's in bioinformatics. 
 
-This will be my last post for a while; coursework beckons.
-
-If you spot any mistakes or have questions, feel free to email me. Thanks for reading!
+This will be my last post for a while; coursework beckons. If you have any ideas for NN applications in biology, please do let me know. Thank you for reading!
