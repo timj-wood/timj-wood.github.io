@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hawkes processes in epidemiology (Part I: theory) | Woodworks</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Hawkes processes in epidemiology (Part I: theory)" />
+<meta name="author" content="Tim Wood" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible." />
+<meta property="og:description" content="Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible." />
+<link rel="canonical" href="http://localhost:4000/posts/hawkes-processes-part-1/" />
+<meta property="og:url" content="http://localhost:4000/posts/hawkes-processes-part-1/" />
+<meta property="og:site_name" content="Woodworks" />
+<meta property="og:image" content="http://localhost:4000/images/woodworks-logo-dark.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-10-13T00:00:00+01:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="http://localhost:4000/images/woodworks-logo-dark.png" />
+<meta property="twitter:title" content="Hawkes processes in epidemiology (Part I: theory)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Tim Wood"},"dateModified":"2026-10-13T00:00:00+01:00","datePublished":"2026-10-13T00:00:00+01:00","description":"Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible.","headline":"Hawkes processes in epidemiology (Part I: theory)","image":"http://localhost:4000/images/woodworks-logo-dark.png","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/posts/hawkes-processes-part-1/"},"url":"http://localhost:4000/posts/hawkes-processes-part-1/"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400..700;1,400..700&family=Lora:ital,wght@0,400..700;1,400..700&family=JetBrains+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<script>
+  try { var t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<link rel="stylesheet" href="/css/main.css">
+
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      tags: 'ams'  /* number equation/align environments; \label + \eqref link to them */
+    }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+</head>
+
+<body>
+  <header class="site-head">
+  <a class="wordmark" href="/"><svg class="wordmark-tree" viewBox="0 0 814 700" aria-hidden="true"><path d="M0 414H150M440 94H720M440 350H720M150 606H720M150 222H440" fill="none" stroke="currentColor" stroke-width="100"/><path d="M150 222V606M440 94V350" fill="none" stroke="currentColor" stroke-width="100" stroke-linecap="square"/><circle cx="720" cy="94" r="94" style="fill: var(--moss)"/><circle cx="720" cy="350" r="94" style="fill: var(--moss)"/><circle cx="720" cy="606" r="94" style="fill: var(--moss)"/></svg>Woodworks</a>
+  
+<nav>
+  
+    
+    
+    
+    
+    
+    <a href="/">About</a>
+  
+    
+    
+    
+    
+    
+    <a href="/blog.html" class="active" aria-current="page">Blog</a>
+  
+    
+    
+    
+    
+    
+    <a href="/research.html">Research</a>
+  
+    
+    
+    
+    
+    
+    <a href="/projects.html">Projects</a>
+  
+  <button class="theme-toggle" type="button" aria-label="Switch colour theme">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
+</nav>
+
+</header>
+
+  <main><article class="prose">
+  <header class="post-head">
+    <h1>Hawkes processes in epidemiology (Part I: theory)</h1>
+    <p class="byline">Written on 13 October 2026 by Tim Wood</p>
+  </header>
+  <div class="post-body">
+    <p>Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible.</p>
+
+<p><a href="https://doi.org/10.1371/journal.pcbi.1008830">Unwin <em>et al.</em> (2021)</a> tackled this with <em>Hawkes processes</em>, separating imported from locally acquired malaria in Yunnan (China) and Eswatini using only the timing of cases. Travel histories were demoted to a check on the answer. I wanted to understand how that’s possible, so here we are.</p>
+
+<p>This post is the theory: what a Hawkes process is and why it suits an epidemic, with as little maths as I can get away with. In <a href="/posts/hawkes-processes-part-2/">part 2</a> we simulate a malaria outbreak and fit the model to it in R. (I’m a biologist by background, not a mathematician, so if you spot a mistake please let me know!)</p>
+
+<h2 id="events-on-a-timeline">Events on a timeline</h2>
+
+<p>A <em>point process</em> is a random list of times at which something happens: reported disease cases, earthquakes, neuron firings. We don’t care what the events are, only when they occur. At any moment, the list of events that have already happened is the <strong>history</strong>, and the question a point process model answers is: given the history, how likely is another event in the next little while?</p>
+
+<h2 id="the-poisson-process-events-that-ignore-each-other">The Poisson process: events that ignore each other</h2>
+
+<p>The simplest model is the <em>Poisson process</em>, where events happen at a constant rate $\lambda$ (say, cases per day) and nothing that has happened so far changes that rate. Three things follow from this:</p>
+
+<ul>
+  <li>The gaps between events are exponentially distributed, with an average gap of $1/\lambda$. The process is <strong>memoryless</strong>: however long it has been since the last event, the expected wait for the next one is the same.</li>
+  <li>The number of events in a window of length $T$ is $\text{Poisson}(\lambda T)$, so the variance of the count equals its mean. If your weekly case counts vary <em>more</em> than this (overdispersion), that’s an early hint that events cluster, though it doesn’t tell you why.</li>
+  <li>The rate can change over time, as long as the change is fixed in advance. Importations might rise around the holidays when more people travel, giving a rate $\lambda(t)$ that depends on the date. This is an <em>inhomogeneous</em> Poisson process, and the expected number of events in any window is just the area under the rate curve over that window.</li>
+</ul>
+
+<p>The catch is in the first sentence: the events ignore each other. That’s exactly wrong for an epidemic, where every case makes further cases more likely. Here’s a Poisson process next to a Hawkes process with the same background rate of 0.1 events per day. In the Hawkes process each event bumps the rate up, the bump fades, and events arrive in bursts:</p>
+
+<p><img src="/images/hawkes/poisson_vs_hawkes.png" alt="A Poisson process and a Hawkes process with the same background rate" /></p>
+
+<h2 id="letting-the-past-matter">Letting the past matter</h2>
+
+<p>The way around memorylessness is to let the rate depend on what has already happened. The <strong>conditional intensity</strong>, written $\lambda^{\ast}(t)$, is the rate of events at time $t$ given the history up to $t$. The asterisk is shorthand for “given the history”. If you multiply it by a tiny slice of time $dt$, you get roughly the probability of an event in that slice:</p>
+
+\[P(\text{an event between } t \text{ and } t + dt \mid \text{history}) \approx \lambda^{\ast}(t)\,dt.\]
+
+<p>It’s a rate rather than a probability, so it can exceed 1. For a Poisson process, $\lambda^{\ast}(t)$ is just $\lambda$, or $\lambda(t)$ if the rate varies over time: the history makes no difference. The whole point of a Hawkes process is that it does.</p>
+
+<h2 id="the-hawkes-process">The Hawkes process</h2>
+
+<p>A Hawkes process is defined by its conditional intensity:</p>
+
+\[\lambda^{\ast}(t) = \mu(t) + \sum_{t_i &lt; t} \phi(t - t_i),\]
+
+<p>where the sum runs over every event $t_i$ that has happened before $t$. There are only two pieces:</p>
+
+<ul>
+  <li>$\mu(t) \geq 0$ is the <strong>background rate</strong>: events that arrive regardless of the past. For us, imported cases.</li>
+  <li>$\phi(u) \geq 0$ is the <strong>kernel</strong>: how much a past event raises the rate $u$ days later. For us, local transmission. It’s zero for $u \leq 0$, because a case can’t cause cases before it happens.</li>
+</ul>
+
+<p>So at any moment, the intensity is the background plus one bump for every previous case, each bump being however much that case is still “pushing” given how long ago it was. That’s what <strong>self-exciting</strong> means: an event raises $\lambda^{\ast}(t)$, making more events likely, which raise $\lambda^{\ast}(t)$ again, and so on. In an inhomogeneous Poisson process, clustering comes from outside (the seasons, the holidays); here the events generate it themselves.</p>
+
+<p>A bit of history: Alan Hawkes introduced these in <a href="https://doi.org/10.1093/biomet/58.1.83">1971</a>, and <a href="https://doi.org/10.2307/3212693">Hawkes &amp; Oakes (1974)</a> showed that the same process can be read as a family tree, which we’ll lean on below. The model made its name in seismology, where aftershocks trigger aftershocks, through <a href="https://doi.org/10.1080/01621459.1988.10478560">Ogata’s ETAS model</a>. So seismologists borrowed the language of contagion for earthquakes, and epidemiologists later borrowed their model back.</p>
+
+<h2 id="choosing-a-kernel">Choosing a kernel</h2>
+
+<p>It helps to split the kernel into <em>how many</em> and <em>when</em>:</p>
+
+\[\phi(u) = \eta \, g(u).\]
+
+<p>Here $\eta$ is a single number, the total size of the bump, and $g(u)$ is a probability distribution for the delay between a case and the cases it causes. Three kernels are worth knowing about.</p>
+
+<p><strong>Exponential.</strong> $\phi(u) = \kappa e^{-\beta u}$. Each event immediately raises the rate by $\kappa$, and the bump fades away over roughly $1/\beta$ days. It’s the most common choice because it’s cheap to compute: the intensity at any moment can be updated from its value at the previous event, so fitting scales with the number of events rather than its square.</p>
+
+<p><strong>Power law.</strong> Something like $\phi(u) = k/(c+u)^p$. This decays much more slowly, so old events still matter long after they happen. It’s the standard for aftershocks, where a big earthquake can keep triggering events for years.</p>
+
+<p><strong>Built from the biology.</strong> Both kernels above peak the instant an event happens, which is wrong for malaria. A newly infected person has to become infectious to mosquitoes, the parasite has to develop inside the mosquito, and then it has to incubate in the next person (<a href="https://doi.org/10.1186/s12936-016-1537-6">Huber <em>et al.</em>, 2016</a>). So $g$ should be near zero for the first couple of weeks, then rise and fall. Unwin <em>et al.</em> used a kernel that is exactly zero for 15 days and then follows a hump-shaped curve (a Rayleigh distribution, chosen for convenience). If the event times are symptom onset dates, $g$ is essentially the <em>serial interval</em>: the distribution of the delay between one case’s symptoms and the next’s.</p>
+
+<h2 id="the-branching-ratio">The branching ratio</h2>
+
+<p>The area under the kernel,</p>
+
+\[\eta = \int_0^\infty \phi(u)\,du,\]
+
+<p>is called the <strong>branching ratio</strong>, and it has a direct meaning: the average number of cases that each case directly causes. In other words, it’s a reproduction number. The paper calls it the <em>case reproduction number</em>, $R_c$, the reproduction number with current interventions in place.</p>
+
+<p>Now the family tree. One imported case has on average $\eta$ children, $\eta^2$ grandchildren, $\eta^3$ great-grandchildren, and so on:</p>
+
+<ul>
+  <li><strong>If $\eta &lt; 1$</strong>, each generation is smaller than the last and every chain dies out. The expected chain size, including the first case, is $1 + \eta + \eta^2 + \cdots = 1/(1-\eta)$. With $\eta = 0.8$, each imported case leads to 5 cases on average.</li>
+  <li><strong>If $\eta = 1$</strong>, each case replaces itself on average. Chains still die out eventually, but they can get enormous first.</li>
+  <li><strong>If $\eta &gt; 1$</strong>, each generation is bigger than the last, and chains can grow without limit.</li>
+</ul>
+
+<p>Two consequences for malaria. First, with a constant background $\mu$ and $\eta &lt; 1$, the process settles down to an average rate of $\mu/(1-\eta)$ cases per day. So $\eta &lt; 1$ doesn’t mean zero cases: as long as importations continue, so do local cases (<a href="https://doi.org/10.1038/s41467-018-04577-y">Routledge <em>et al.</em>, 2018</a>). Second, in that settled state, a randomly chosen case is local with probability $\eta$ and imported with probability $1 - \eta$. The branching ratio is also the expected <em>fraction</em> of cases that are local, which is exactly the number a malaria programme wants.</p>
+
+<h2 id="imported-or-local-in-principle">Imported or local, in principle</h2>
+
+<p>This was the most enticing part of the paper, and the idea is simple once you have the model. At the moment case $i$ occurs, the intensity is a sum of named contributions:</p>
+
+\[\lambda^{\ast}(t_i) = \underbrace{\mu(t_i)}_{\text{importation}} + \underbrace{\phi(t_i - t_1)}_{\text{case 1}} + \underbrace{\phi(t_i - t_2)}_{\text{case 2}} + \cdots\]
+
+<p>Each term is a candidate explanation for case $i$, and its size is how strongly it was pushing at that moment. So the probability that case $i$ was imported is the background’s share of the total,</p>
+
+\[P(\text{case } i \text{ imported}) = \frac{\mu(t_i)}{\lambda^{\ast}(t_i)},\]
+
+<p>and the probability that case $j$ infected case $i$ is <em>its</em> share, $\phi(t_i - t_j)/\lambda^{\ast}(t_i)$. A case in the off-season with nothing in the preceding five weeks gets a probability of importation near 1. A case at the peak of the season, five weeks after a cluster, is ambiguous, and the model says so.</p>
+
+<p>That’s the whole trick: fit $\mu(t)$ and $\phi(u)$ to the case times, then read off each case’s probability of being imported. Whether it actually works, and what the case times can and can’t tell you, is the subject of <a href="/posts/hawkes-processes-part-2/">part 2</a>, where we simulate an outbreak with a known answer and see what the model recovers.</p>
+
+<h2 id="further-reading">Further reading</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1507.02822">Laub, Taimre &amp; Pollett (2015)</a>: a free, readable introduction to the maths, including the family-tree view. (They use $\lambda$ for the background and $\mu$ for the kernel, the reverse of this post.)</li>
+  <li><a href="https://arxiv.org/abs/1806.00221">Rasmussen (2018)</a>: short lecture notes on the conditional intensity, the likelihood and simulation.</li>
+  <li><a href="https://doi.org/10.1214/17-STS629">Reinhart (2018)</a>: a broader review, including fitting methods and applications beyond seismology.</li>
+  <li><a href="https://doi.org/10.1371/journal.pcbi.1008830">Unwin <em>et al.</em> (2021)</a>: the paper this post builds towards (open access), and <a href="https://github.com/mrc-ide/epihawkes">epihawkes</a>, the R package released with it.</li>
+</ul>
+
+<p>If you spot any mistakes or have questions, feel free to email me. Thanks for reading!</p>
+
+  </div>
+  <footer class="end-matter">
+  <p class="byline">Written on 13 October 2026 by Tim Wood</p>
+  
+  
+  
+
+  
+  <h2>Related posts</h2>
+  <ul class="related">
+    
+    <li><a href="/posts/hawkes-processes-part-2/">Hawkes processes in epidemiology (Part II: code)</a></li>
+    
+    <li><a href="/posts/composite-likelihood/">Composite likelihood corrections in dadi</a></li>
+    
+    <li><a href="/posts/splice-site-neural-network/">Creating a (mini) neural network to identify splice regions</a></li>
+    
+  </ul>
+  
+</footer>
+
+</article>
+</main>
+  <footer class="site-foot">
+  <ul class="socials">
+  <li><a href="https://github.com/timj-wood" aria-label="GitHub" title="GitHub">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+    </svg>
+  </a></li>
+  <li><a href="https://www.linkedin.com/in/timj-wood" aria-label="LinkedIn" title="LinkedIn">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+      <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z"/>
+    </svg>
+  </a></li>
+  <li><a href="mailto:tim.jwood@outlook.com" aria-label="Email" title="Email">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+  </a></li>
+  <li><a href="/docs/cv.pdf" aria-label="CV" title="CV">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+  </a></li>
+</ul>
+
+  <p>Timothy Wood</p>
+</footer>
+
+  <script>
+    document.querySelector(".theme-toggle").addEventListener("click", function () {
+      var root = document.documentElement;
+      var current = root.dataset.theme ||
+        (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      var next = current === "light" ? "dark" : "light";
+      root.dataset.theme = next;
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    });
+  </script>
+</body>
+</html>

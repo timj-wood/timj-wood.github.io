@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en_GB"><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" hreflang="en_GB" /><updated>2026-10-22T20:37:44+01:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Woodworks</title><subtitle>Tim Wood&apos;s notebook — population genomics, simulation-based inference, and writing about both.</subtitle><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><entry><title type="html">Creating a (mini) neural network to identify splice regions</title><link href="http://localhost:4000/posts/splice-site-neural-network/" rel="alternate" type="text/html" title="Creating a (mini) neural network to identify splice regions" /><published>2026-10-22T00:00:00+01:00</published><updated>2026-10-22T00:00:00+01:00</updated><id>http://localhost:4000/posts/splice-site-neural-network</id><content type="html" xml:base="http://localhost:4000/posts/splice-site-neural-network/"><![CDATA[<p>And so I return to the lands of familiarity. For my next post, I wanted to have a go at something involving my favourite <a href="https://en.wikipedia.org/wiki/Buzzword">buzzwords</a> in bioinformatics, <strong>machine learning</strong> and <strong>genomics</strong>, which both lead to the <em>holy grail</em>: <strong><em>neural networks</em></strong>. I hadn’t touched machine learning before this year, but the more I read into it the more interesting it gets, so I’ve been wanting to build (<em>some</em>) sort of neural network skillset.</p>
+
+<p>I’m not going to go into much of the mathematical theory here, partly because I’m still learning it myself. If you want the theory done properly, <a href="https://www.3blue1brown.com/lessons/neural-networks/">3Blue1Brown’s tutorials</a> are fantastic.</p>
+
+<p>For the code, I used the Jean Golding Institute’s <a href="https://bristol-training.github.io/data-analysis-python-2/">Data Analysis in Python (Part 2)</a> and <a href="https://bristol-training.github.io/intro-to-ai/">Introduction to AI</a> courses as a rough guide. All the figures and numbers here come from the notebooks in <a href="https://github.com/timj-wood/splice-site-nn">splice-site-nn</a>, so have a look there if you want to see exactly what I did (and what I probably did wrong).</p>
+
+<h2 id="what-is-splicing">What is splicing?</h2>
+
+<p>When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases “GT” and ends with “AG”. It’s very close to a universal rule, which is why I picked it for a first neural network: I already know what the answer should look like, so if the model learns something sensible I should be able to spot it, and if it learns something weird I should be able to spot that too.</p>
+
+<p>So the question I’m asking the model is: given a window of 60 bases, is there a splice junction in the middle, and if so which kind? And the thing I’m actually curious about is whether it finds the GT…AG pattern on its own. Before any of that, though, I’ll fit some ordinary classifiers so there’s something to compare against.</p>
+
+<h2 id="the-data">The data</h2>
+
+<p>Conveniently, there’s a 35 year old dataset that suits this nicely. The UCI <a href="https://doi.org/10.24432/C5M888">splice-junction dataset</a> has 3,190 windows of 60 bases from primate genes, each labelled <code class="language-plaintext highlighter-rouge">EI</code> (exon to intron, a donor site), <code class="language-plaintext highlighter-rouge">IE</code> (intron to exon, an acceptor site) or <code class="language-plaintext highlighter-rouge">N</code> (neither). It was put together for a paper that used neural networks to recognise DNA sequences (<a href="https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf">Noordewier <em>et al.</em>, 1991</a>), which is quite fitting.</p>
+
+<p>However, there is a problem with the data: a model can’t do anything with a string like <code class="language-plaintext highlighter-rouge">CCAGTCAT</code>. A standardised fix to this issue is <a href="https://www.sciencedirect.com/topics/computer-science/one-hot-encoding"><strong>one-hot encoding</strong></a>, where each position becomes four columns (one per base), with a 1 in the column for the base that’s there and 0 in the other three. So each sequence becomes 240 numbers, and “there’s a G at position +1” turns into a single feature the model can put a weight on.</p>
+
+<p>A few positions (60 out of 191,400) use <a href="https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html">IUPAC ambiguity codes</a>, e.g. <code class="language-plaintext highlighter-rouge">D</code> means “A, G or T”. I didn’t want to throw that data away, so I spread the 1 evenly over the possible bases: a <code class="language-plaintext highlighter-rouge">D</code> becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I’m not sure if that’s the standard thing to do, but it seemed reasonable and it only affects a handful of entries.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">X</span> <span class="o">=</span> <span class="n">one_hot</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">"sequence"</span><span class="p">])</span>   <span class="c1"># (3190, 240) array of 0s, 1s and the odd 1/3
+</span><span class="n">y</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">"label"</span><span class="p">].</span><span class="n">values</span>        <span class="c1"># "EI", "IE" or "N"
+</span></code></pre></div></div>
+
+<h2 id="a-baseline-first">A baseline first</h2>
+
+<p>Before the neural network stuff, I fitted a couple of simpler classifiers. The first thing to do is hold back a quarter of the data (798 sequences) as a test set that the models never see during training; otherwise you have no idea whether they’ve learnt anything or just memorised the answers.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>
+
+<span class="n">logreg</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">max_iter</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<span class="n">logreg</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">pred</span> <span class="o">=</span> <span class="n">logreg</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"Logistic regression test accuracy: </span><span class="si">{</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span><span class="si">:</span><span class="p">.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Logistic regression got <strong>93.7%</strong> of the test sequences right, which was higher than I expected for something this simple. I also tried $k$-nearest neighbours, picking $k$ by cross-validation as the JGI course does:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">KNeighborsClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">GridSearchCV</span>
+
+<span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">{</span><span class="s">"n_neighbors"</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">31</span><span class="p">]}</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">KNeighborsClassifier</span><span class="p">(),</span> <span class="n">hyperparameters</span><span class="p">)</span>
+<span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">best_estimator_</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">"kNN test accuracy: </span><span class="si">{</span><span class="n">model</span><span class="p">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span><span class="si">:</span><span class="p">.</span><span class="mi">3</span><span class="n">f</span><span class="si">}</span><span class="s">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>That achieved an accuracy score of 85.1%. I think the gap is because of how one-hot coded vectors transform in high-dimensional spaces: two random 60-base sequences are hardly ever “close” to each other in a 240-dimensional space, so the closest neighbours aren’t especially informative. (If someone has a better explanation, please let me know!)</p>
+
+<p>The thing I found most interesting is what logistic regression was able to learn. It has one weight per (position, base) for each class, so you can reshape the 240 weights into a 4 × 60 grid and plot it:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">W</span> <span class="o">=</span> <span class="n">logreg</span><span class="p">.</span><span class="n">coef_</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">logreg</span><span class="p">.</span><span class="n">classes_</span><span class="p">).</span><span class="n">index</span><span class="p">(</span><span class="s">"EI"</span><span class="p">)]</span>   <span class="c1"># 240 weights for the EI class
+</span><span class="n">grid</span> <span class="o">=</span> <span class="n">W</span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">4</span><span class="p">).</span><span class="n">T</span>                               <span class="c1"># 4 bases × 60 positions
+</span></code></pre></div></div>
+
+<p><img src="/images/splice/logreg_weights.png" alt="Logistic regression weights for the EI and IE classes by position and base" /></p>
+
+<p>For <code class="language-plaintext highlighter-rouge">EI</code>, the biggest weights are T at +2 and G at +1. For <code class="language-plaintext highlighter-rouge">IE</code>, they’re G at −1 and A at −2, with a stretch of C and T favoured a bit further upstream, which I believe is the <a href="https://en.wikipedia.org/wiki/Polypyrimidine_tract">polypyrimidine tract</a> that sits before acceptor sites. So the humble linear model has already found GT…AG. Worth keeping in mind, since the neural network has to at least match this to be worth the effort.</p>
+
+<h2 id="building-a-neuron-from-scratch">Building a neuron from scratch</h2>
+
+<p>My current understanding of a single artificial neuron is quite simplistic. First it <strong>aggregates</strong>: it takes a weighted sum of its inputs and adds a bias. Then it <strong>activates</strong>: it pushes that sum through some non-linear function.</p>
+
+\[z = \sum_j w_j x_j + b,
+\qquad a = \sigma(z) = \frac{1}{1 + e^{-z}}.\]
+
+<p>The sigmoid $\sigma$ compresses any number into the range 0 to 1, so the output can be interpreted as a probability. To keep things simple I started with a yes or no version of the problem, i.e., “is there <em>any</em> splice junction in this window?” (<code class="language-plaintext highlighter-rouge">EI</code> or <code class="language-plaintext highlighter-rouge">IE</code> gives 1, <code class="language-plaintext highlighter-rouge">N</code> gives 0).</p>
+
+<p>To train the model we first need a <strong>loss</strong> - a number that says how <em>wrong</em> a prediction was. For a probability the usual choice is binary cross-entropy,</p>
+
+\[\ell = -[y \log a + (1-y)\log(1-a)],\]
+
+<p>which (as far as I understand it) punishes a confidently wrong answers much more than a hesitant ones.</p>
+
+<p>Then we need to know how the loss changes when we nudge a weight. The weight $w_j$ affects $z$, which affects $a$, which affects $\ell$, so by the chain rule we multiply the three sensitivities together. Each one on its own is fine: $\partial z/\partial w_j = x_j$, $\partial a/\partial z = a(1-a)$ for the sigmoid, and $\partial \ell/\partial a = (a-y)/(a(1-a))$ for cross-entropy. The last two mostly cancel out, which leaves</p>
+
+\[\frac{\partial \ell}{\partial w_j} = (a - y)\, x_j, \qquad
+\frac{\partial \ell}{\partial b} = a - y.\]
+
+<p>So the gradient for each weight is just “how wrong was I?” multiplied by “was that feature on?”. If the neuron was confidently wrong about a sequence that had a G at +1, the weight for G at +1 gets a big nudge; if that feature wasn’t there, its weight is left alone. I gather the cancellation isn’t an accident, and that sigmoid and cross-entropy are usually paired for this reason. Either way, if you average this over all 2,392 training sequences and write it as a matrix product, the whole training loop is only a few lines:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">torch</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">z</span><span class="p">))</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">240</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>   <span class="c1"># one weight per (position, base)
+</span><span class="n">b</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">lr</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">400</span><span class="p">):</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">X_train</span> <span class="o">@</span> <span class="n">w</span> <span class="o">+</span> <span class="n">b</span>            <span class="c1"># aggregate
+</span>    <span class="n">a</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>                 <span class="c1"># activate
+</span>    <span class="n">grad_z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">y_train</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span>     <span class="c1"># how wrong, on average
+</span>    <span class="n">w</span> <span class="o">-=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">X_train</span><span class="p">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">grad_z</span><span class="p">)</span> <span class="c1"># the gradient step
+</span>    <span class="n">b</span> <span class="o">-=</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad_z</span><span class="p">.</span><span class="nb">sum</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>After 400 steps of plain gradient descent, this scored <strong>93.4%</strong>.</p>
+
+<p>I then built the same neuron according to the JGI course, with <code class="language-plaintext highlighter-rouge">nn.Linear(240, 1)</code>, <code class="language-plaintext highlighter-rouge">BCEWithLogitsLoss</code> and <code class="language-plaintext highlighter-rouge">loss.backward()</code>, using the same learning rate, the same number of steps and the same zero initialisation:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">neuron</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">240</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">nn</span><span class="p">.</span><span class="n">init</span><span class="p">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">neuron</span><span class="p">.</span><span class="n">weight</span><span class="p">);</span> <span class="n">nn</span><span class="p">.</span><span class="n">init</span><span class="p">.</span><span class="n">zeros_</span><span class="p">(</span><span class="n">neuron</span><span class="p">.</span><span class="n">bias</span><span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">BCEWithLogitsLoss</span><span class="p">()</span>               <span class="c1"># sigmoid + cross-entropy in one
+</span><span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">neuron</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">400</span><span class="p">):</span>
+    <span class="n">optimiser</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">neuron</span><span class="p">(</span><span class="n">X_train</span><span class="p">),</span> <span class="n">y_train</span><span class="p">)</span>
+    <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>                            <span class="c1"># PyTorch works out the gradients
+</span>    <span class="n">optimiser</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>                           <span class="c1"># w -= lr * grad
+</span></code></pre></div></div>
+
+<p><img src="/images/splice/neuron_two_ways.png" alt="Training loss for the hand-written neuron and the PyTorch one, overlaid" /></p>
+
+<p>The two loss curves sit on top of each other, and the final weights agree to within $2 \times 10^{-7}$. A reassuring result! This means <code class="language-plaintext highlighter-rouge">loss.backward()</code> isn’t doing anything weird, at least for one neuron, it’s the same chain rule I applied manually, but automatic. My understanding is that backpropagation is this same idea applied layer by layer, storing the intermediate values as it goes so nothing gets computed twice, but I’ll admit I haven’t tested that part myself.</p>
+
+<p>Whilst building a neuron yourself is an insightful (and difficult) exercise, PyTorch practically does this all for you… So just use PyTorch.</p>
+
+<h2 id="what-did-the-neuron-learn">What did the neuron learn?</h2>
+
+<p>Because a single neuron has one weight per (position, base), its 240 weights can be plotted in the same way as the logistic regression ones:</p>
+
+<p><img src="/images/splice/neuron_weights.png" alt="The neuron's weights by position and base; red is evidence for a junction, blue against" /></p>
+
+<p>The four biggest weights, in order, are G at −1, A at −2, T at +2 and G at +1. That’s AG on the left of the junction and GT on the right. Since this neuron was only asked whether there was a junction of <em>either</em> kind (<code class="language-plaintext highlighter-rouge">EI</code> or <code class="language-plaintext highlighter-rouge">IE</code>), it’s picked up both signals at once. I was hoping for this, but it was still quite nice to see it appear from nothing more than 240 columns of binary information.</p>
+
+<h2 id="adding-a-hidden-layer">Adding a hidden layer</h2>
+
+<p>A single neuron can only add up independent bits of evidence. A hidden layer should let the network combine features (something like “G at +1 <em>and</em> T at +2 <em>and</em> lots of C/T before it”), which a plain weighted sum can’t do. So I built a small multi-layer perceptron: 240 inputs, a hidden layer of 32 units with ReLU activation ($f(z) = \max(0, z)$), and 3 outputs for <code class="language-plaintext highlighter-rouge">EI</code>, <code class="language-plaintext highlighter-rouge">IE</code> and <code class="language-plaintext highlighter-rouge">N</code>, trained with mini-batch gradient descent for 40 epochs.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">mlp</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">240</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">ReLU</span><span class="p">(),</span>
+    <span class="n">nn</span><span class="p">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">loss_fn</span> <span class="o">=</span> <span class="n">nn</span><span class="p">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="n">optimiser</span> <span class="o">=</span> <span class="n">torch</span><span class="p">.</span><span class="n">optim</span><span class="p">.</span><span class="n">SGD</span><span class="p">(</span><span class="n">mlp</span><span class="p">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">40</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">torch</span><span class="p">.</span><span class="n">randperm</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">X_train</span><span class="p">)).</span><span class="n">split</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>   <span class="c1"># shuffled mini-batches
+</span>        <span class="n">optimiser</span><span class="p">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">mlp</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">idx</span><span class="p">]),</span> <span class="n">y_train_idx</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">loss</span><span class="p">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimiser</span><span class="p">.</span><span class="n">step</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>Two things I learnt along the way:</p>
+
+<ol>
+  <li>You can’t start all the weights at zero this time: every hidden unit would compute the same thing, get the same gradient and stay identical forever (and with ReLU they’d all be stuck at zero), so PyTorch’s random initialisation is used instead.</li>
+  <li>Rather than one gradient step over all 2,392 sequences per epoch, the network takes a step after every 64, which is the “stochastic” part of a stochastic gradient descent.</li>
+</ol>
+
+<p><img src="/images/splice/mlp_training.png" alt="Training and test loss by epoch, and test accuracy against the logistic regression line" /></p>
+
+<p>It reached <strong>94.0%</strong> on the test set. Logistic regression had 93.7%. So, unfortunately, more or less, a tie; a difference that small could easily be down to the particular test split.</p>
+
+<p>The loss plot turned out to be quite useful. Training loss keeps dropping for all 40 epochs, but test loss bottoms out around epoch 7 and then slowly climbs. I interpret this as a classic case of model overfitting: the 32 hidden units have enough room to start memorising the training sequences, and the extra confidence mostly goes on examples it already gets right, which would explain why test accuracy barely moves. I’d read about early stopping and regularisation before, but it was a lot clearer seeing it happen in my own plot.</p>
+
+<p>As for the tie, I don’t think it’s that surprising in hindsight. Noordewier <em>et al.</em> found something similar back in 1991, with a plain backprop network reaching about 94.5% once it had enough training examples. My guess is that the splice signal is mostly additive (a few positions each contributing on their own), so a linear model gets most of the way there, and the extra capacity doesn’t have much left to find. I’d half expected the neural network to outperform because it’s a <strong><em>neural network</em></strong>, so this was an insightful correction.</p>
+
+<h2 id="further-reading">Further reading</h2>
+
+<ul>
+  <li><a href="https://stmorse.github.io/journal/Beginner-NN-Part-I.html">Morse (2017)</a>: a lot of my understanding of the theory came from this post, including the full backpropagation recursion that I skipped.</li>
+  <li><a href="https://bristol-training.github.io/data-analysis-python-2/">Introduction to Data Analysis in Python (Part 2)</a> and <a href="https://bristol-training.github.io/intro-to-ai/">Introduction to AI</a>, Jean Golding Institute: the two free courses all the code is based on.</li>
+  <li><a href="http://neuralnetworksanddeeplearning.com/chap1.html">Nielsen, <em>Neural Networks and Deep Learning</em></a>: a longer free treatment if you want the next step up.</li>
+  <li><a href="https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf">Noordewier, Towell &amp; Shavlik (1991)</a>: the NIPS paper the dataset was built for.</li>
+  <li><a href="https://github.com/timj-wood/splice-site-nn">splice-site-nn</a>: the notebooks, figures and data (UCI, <a href="https://doi.org/10.24432/C5M888">CC BY 4.0</a>).</li>
+</ul>
+
+<p>This will be my last post for a while; coursework beckons.</p>
+
+<p>If you spot any mistakes or have questions, feel free to email me. Thanks for reading!</p>]]></content><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><category term="machine-learning" /><category term="neural-networks" /><category term="genomics" /><summary type="html"><![CDATA[And so I return to the lands of familiarity. For my next post, I wanted to have a go at something involving my favourite buzzwords in bioinformatics, machine learning and genomics, which both lead to the holy grail: neural networks. I hadn’t touched machine learning before this year, but the more I read into it the more interesting it gets, so I’ve been wanting to build (some) sort of neural network skillset.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/images/woodworks-logo-dark.png" /><media:content medium="image" url="http://localhost:4000/images/woodworks-logo-dark.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hawkes processes in epidemiology (Part II: code)</title><link href="http://localhost:4000/posts/hawkes-processes-part-2/" rel="alternate" type="text/html" title="Hawkes processes in epidemiology (Part II: code)" /><published>2026-10-14T00:00:00+01:00</published><updated>2026-10-14T00:00:00+01:00</updated><id>http://localhost:4000/posts/hawkes-processes-part-2</id><content type="html" xml:base="http://localhost:4000/posts/hawkes-processes-part-2/"><![CDATA[<p>In <a href="/posts/hawkes-processes-part-1/">part 1</a> we met the Hawkes process and the idea behind <a href="https://doi.org/10.1371/journal.pcbi.1008830">Unwin <em>et al.</em> (2021)</a>: fit a model to the timing of malaria cases, then read off how much transmission there is and which cases were probably imported. This post puts it to the test. The best way I found to understand the method was to simulate an outbreak where the true transmission tree is known, fit the model to the case times alone, and see what it recovers.</p>
+
+<p>If you haven’t read part 1, the short version is this. The rate of new cases at time $t$, given everything that has happened so far, is</p>
+
+\[\lambda^{\ast}(t) = \mu(t) + \sum_{t_i &lt; t} \eta\, g(t - t_i),\]
+
+<p>where $\mu(t)$ is the <strong>background rate</strong> of imported cases, $\eta$ is the <strong>branching ratio</strong> (the average number of local cases each case causes, a reproduction number), and $g$ is the distribution of the <strong>delay</strong> between a case and the cases it causes. The probability that a case was imported is the background’s share of the intensity at the moment it occurred.</p>
+
+<p>I used the simulator, likelihood, gradient and intensity plot from Unwin, Mishra and Bhatt’s excellent <a href="https://github.com/mrc-ide/epihawkes">epihawkes</a> package, and my scripts are at <a href="https://github.com/timj-wood/hawkes-malaria">hawkes-malaria</a>. The package isn’t on CRAN, so install it from GitHub:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">remotes</span><span class="o">::</span><span class="n">install_github</span><span class="p">(</span><span class="s2">"mrc-ide/epihawkes"</span><span class="p">)</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">epihawkes</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="setting-up-the-outbreak">Setting up the outbreak</h2>
+
+<p>The setup (numbers made up for illustration) is five years of cases where:</p>
+
+<ul>
+  <li>Imported cases arrive at a seasonal background rate, $\mu(t) = m\,\big(1 + a\cos(2\pi(t - t_{\text{peak}})/365.25)\big)$, averaging $m = 0.1$ per day ($\approx 3$ per month), with a strong annual cycle ($a = 0.8$) peaking around day 200.</li>
+  <li>Each case causes, on average, $\eta = 0.6$ local cases.</li>
+  <li>The delay $g$ is zero for 15 days, then follows a Rayleigh curve with spread $\sigma = 20$ days, so onward cases are most likely about five weeks later.</li>
+</ul>
+
+<p>Since $\eta = 0.6$, about 60% of cases should be local, and every chain should eventually die out.</p>
+
+<p><code class="language-plaintext highlighter-rouge">epihawkes</code> uses a different parameterisation, so first we translate. Its Rayleigh kernel, <code class="language-plaintext highlighter-rouge">ray_kernel()</code>, is</p>
+
+\[\phi(u) = \alpha\,(u - d)\,e^{-\frac{1}{2}\delta (u - d)^2} \quad \text{for } u &gt; d,\]
+
+<p>where $d$ is the 15-day delay. This is $\eta\, g(u)$ with $\sigma^2 = 1/\delta$ and $\eta = \alpha/\delta$. Its seasonal background, <code class="language-plaintext highlighter-rouge">mu_sinusoidal_constant()</code>, is $A + M\cos(\omega t) + N\sin(\omega t)$ with $\omega = 2\pi/365.25$, which is my $\mu(t)$ with $A = m$ and $(M, N) = m a\,(\cos \omega t_{\text{peak}}, \sin \omega t_{\text{peak}})$:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">T_max</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="m">365</span><span class="w">
+</span><span class="n">m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.10</span><span class="p">;</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.80</span><span class="p">;</span><span class="w"> </span><span class="n">t_peak</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">200</span><span class="p">;</span><span class="w"> </span><span class="n">eta</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0.60</span><span class="p">;</span><span class="w"> </span><span class="n">sigma</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">20</span><span class="p">;</span><span class="w"> </span><span class="n">delay</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">15</span><span class="w">
+</span><span class="n">w</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">pi</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">365.25</span><span class="w">
+
+</span><span class="n">true</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">eta</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sigma</span><span class="o">^</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">delta</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sigma</span><span class="o">^</span><span class="m">2</span><span class="p">,</span><span class="w"> </span><span class="n">delay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">delay</span><span class="p">,</span><span class="w">
+             </span><span class="n">A</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">cos</span><span class="p">(</span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t_peak</span><span class="p">),</span><span class="w"> </span><span class="n">N</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">sin</span><span class="p">(</span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t_peak</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I’ll keep talking about $\eta$ and $\sigma$ since they mean something directly (a reproduction number and a spread in days); $\alpha$ and $\delta$ are just what the optimiser sees.</p>
+
+<h2 id="simulating">Simulating</h2>
+
+<p><code class="language-plaintext highlighter-rouge">hawkes_simulation()</code> uses Ogata’s thinning algorithm: walk forward in time, bound the intensity over the near future, propose the next event at that bound, and accept it with probability $\lambda^{\ast}(t)/\text{bound}$. It works for any kernel and background because it only ever evaluates $\lambda^{\ast}(t)$.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">events_thin</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">hawkes_simulation</span><span class="p">(</span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">),</span><span class="w"> </span><span class="n">T_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T_max</span><span class="p">,</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ray_kernel</span><span class="p">,</span><span class="w">
+                                 </span><span class="n">parameters</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">true</span><span class="p">,</span><span class="w"> </span><span class="n">mu_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mu_sinusoidal_constant</span><span class="p">,</span><span class="w">
+                                 </span><span class="n">mu_fn_diff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mu_diff_sinusoidal_constant</span><span class="p">,</span><span class="w"> </span><span class="n">print_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="nf">length</span><span class="p">(</span><span class="n">events_thin</span><span class="p">)</span><span class="w">   </span><span class="c1"># 438</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Thinning gives case times but doesn’t track which cases were imported, and to test the model I need the true answer. So from here on I simulate via the family tree instead: draw imported cases from $\mu(t)$, give each case $\text{Poisson}(\eta)$ children at delays of $15 + \text{Rayleigh}(\sigma)$ days, and repeat for each new generation until one comes up empty, recording every case’s parent. That’s <code class="language-plaintext highlighter-rouge">simulate_tree()</code> in the script (about 15 lines). The two simulators produce the same process; one run of each gave 438 and 466 cases.</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">tree</span><span class="w">     </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">simulate_tree</span><span class="p">(</span><span class="n">T_max</span><span class="p">,</span><span class="w"> </span><span class="n">true</span><span class="p">)</span><span class="w">
+</span><span class="n">events</span><span class="w">   </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tree</span><span class="o">$</span><span class="n">times</span><span class="w">          </span><span class="c1"># used from here on</span><span class="w">
+</span><span class="n">imported</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">tree</span><span class="o">$</span><span class="n">parent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="m">0</span><span class="w">    </span><span class="c1"># the truth, for marking later</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This run had 178 imported and 288 local cases, a local fraction of 0.62 against the 0.60 expected. Here’s the intensity from the package’s <code class="language-plaintext highlighter-rouge">plot_intensity_imported()</code>, with each case sitting on the curve, coloured imported (red) or local (blue, which the package calls “within country”):</p>
+
+<p><img src="/images/hawkes/simulated_outbreak_r.png" alt="Conditional intensity with imported and local cases marked" /></p>
+
+<h2 id="fitting-the-model">Fitting the model</h2>
+
+<p>Now pretend we only have the case times. The parameters are fitted by maximum likelihood, and the log-likelihood of a point process is quite a nice equation:</p>
+
+\[\log L = \sum_i \log \lambda^{\ast}(t_i) - \int_0^T \lambda^{\ast}(t)\,dt.\]
+
+<p>The first term rewards high intensity at the moments cases actually occurred. The second, the <em>compensator</em>, charges for intensity everywhere else, so the model can’t win by making $\lambda^{\ast}$ enormous. Put the rate where the cases are, and nowhere else. The integral splits into the area under the background (<code class="language-plaintext highlighter-rouge">mu_int_sinusoidal_constant()</code>) plus, for each case, $\eta$ times the fraction of its kernel that falls before the end of the window (<code class="language-plaintext highlighter-rouge">int_ray()</code>).</p>
+
+<p>That’s <code class="language-plaintext highlighter-rouge">neg_log_likelihood()</code>, and <code class="language-plaintext highlighter-rouge">ray_derivatives()</code> gives the analytic gradient (derived in the paper’s S2 Text). Following the paper I minimise with BFGS from ten random starts and keep the best:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fit_once</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">start</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="n">optim</span><span class="p">(</span><span class="n">par</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">start</span><span class="p">,</span><span class="w"> </span><span class="n">fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">neg_log_likelihood</span><span class="p">,</span><span class="w"> </span><span class="n">gr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ray_derivatives</span><span class="p">,</span><span class="w"> </span><span class="n">method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"BFGS"</span><span class="p">,</span><span class="w">
+        </span><span class="n">events</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">delay</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">delay</span><span class="p">,</span><span class="w"> </span><span class="n">kernel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ray_kernel</span><span class="p">,</span><span class="w">
+        </span><span class="n">mu_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mu_sinusoidal_constant</span><span class="p">,</span><span class="w"> </span><span class="n">mu_diff_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mu_diff_sinusoidal_constant</span><span class="p">,</span><span class="w">
+        </span><span class="n">mu_int_fn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mu_int_sinusoidal_constant</span><span class="p">,</span><span class="w"> </span><span class="n">print_level</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">fits</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">10</span><span class="p">,</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="n">fit_once</span><span class="p">(</span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">random_start</span><span class="p">()))</span><span class="w">
+</span><span class="n">best</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">fits</span><span class="p">[[</span><span class="n">which.min</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">fits</span><span class="p">,</span><span class="w"> </span><span class="n">`[[`</span><span class="p">,</span><span class="w"> </span><span class="s2">"value"</span><span class="p">))]]</span><span class="w">
+</span><span class="n">fit</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.list</span><span class="p">(</span><span class="n">best</span><span class="o">$</span><span class="n">par</span><span class="p">);</span><span class="w"> </span><span class="n">fit</span><span class="o">$</span><span class="n">delay</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">delay</span><span class="w">   </span><span class="c1"># optim drops the fixed delay</span><span class="w">
+</span></code></pre></div></div>
+
+<p>where <code class="language-plaintext highlighter-rouge">random_start()</code> draws each parameter uniformly from a sensible range (<code class="language-plaintext highlighter-rouge">fit_epihawkes()</code> in the script does all of this in one go).</p>
+
+<p>Most starts landed on the same answer, which is reassuring about the optimiser. The answer itself was less reassuring:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>True</th>
+      <th>Estimate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>$m$</td>
+      <td>0.10</td>
+      <td>0.165</td>
+    </tr>
+    <tr>
+      <td>$a$</td>
+      <td>0.80</td>
+      <td>0.58</td>
+    </tr>
+    <tr>
+      <td>$t_{\text{peak}}$</td>
+      <td>200</td>
+      <td>220</td>
+    </tr>
+    <tr>
+      <td>$\eta$</td>
+      <td>0.60</td>
+      <td>0.36</td>
+    </tr>
+    <tr>
+      <td>$\sigma$</td>
+      <td>20</td>
+      <td>22.5</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The background is too high and $\eta$ too low, so naturally I assumed I’d done something wrong. But the analytic gradient matches a numerical one to six figures, and restarting the optimiser <em>at the true parameters</em> walks away to the same estimate, with a better likelihood than the truth. The fit is fine; the data are ambiguous. With a handful of cases a week, “more importation, less transmission” and “less importation, more transmission” produce similar case timings, and this particular five years happened to look like the former.</p>
+
+<p>To see how much of this is chance, I repeated the whole thing on twenty simulated datasets (dashed lines are the true values):</p>
+
+<p><img src="/images/hawkes/replicates_r.png" alt="Parameter estimates across twenty simulated datasets" /></p>
+
+<p>The estimates scatter around the truth, with $\eta$ anywhere from 0.1 to 0.7 and the background pulled up whenever $\eta$ is pulled down. The two trade off against each other, and 450 cases isn’t enough to pin both down tightly. The paper dealt with this by comparing fits across different background terms, and it’s worth remembering whenever you read an $R_c$ from this kind of model.</p>
+
+<h2 id="imported-or-local">Imported or local?</h2>
+
+<p>From part 1, the probability that case $i$ was imported is the background’s share of the intensity when it happened, $\mu(t_i)/\lambda^{\ast}(t_i)$, and the probability that case $j$ infected it is the share of $j$’s kernel. With the package’s functions it’s a few lines:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">lags</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">outer</span><span class="p">(</span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="s2">"-"</span><span class="p">)</span><span class="w">                 </span><span class="c1"># lags[i, j] = t_i - t_j</span><span class="w">
+</span><span class="n">contrib</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ray_kernel</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span><span class="w"> </span><span class="n">fit</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">lags</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">fit</span><span class="o">$</span><span class="n">delay</span><span class="p">)</span><span class="w"> </span><span class="c1"># earlier cases' pull on each case</span><span class="w">
+</span><span class="n">mu_i</span><span class="w">    </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mu_sinusoidal_constant</span><span class="p">(</span><span class="n">events</span><span class="p">,</span><span class="w"> </span><span class="n">fit</span><span class="p">)</span><span class="w">
+</span><span class="n">p_imported</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mu_i</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">mu_i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">rowSums</span><span class="p">(</span><span class="n">contrib</span><span class="p">))</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This is a probability, and should be treated as one. Here’s how the estimates split against what actually happened:</p>
+
+<p><img src="/images/hawkes/classification_r.png" alt="Estimated probability of importation, split by the truth" /></p>
+
+<p>The two histograms overlap heavily: thresholding at 0.5 labels fewer than half the cases correctly, so you may as well guess. Case timing tells you how much transmission there is, in aggregate and over years, but very little about where any individual case came from. That’s why the paper kept the travel histories: to check the population-level answer, which the model nails quite nicely.</p>
+
+<p>It’s worth playing with the parameters to see what moves this. A sharper kernel (say $\sigma = 5$) improves individual classification a lot, because “five weeks after a case” becomes a very precise statement. Pushing $\eta$ towards 0.9 makes chains longer, excitation dominates the intensity, and the background becomes hard to see.</p>
+
+<h2 id="wrapping-up">Wrapping up</h2>
+
+<p>Two things stuck with me. First, the maths of the Hawkes process is clean enough that a biologist can follow it, and the fitting is a few dozen lines of R on top of <code class="language-plaintext highlighter-rouge">epihawkes</code>. Second, the model’s honest answer is a population-level one: with this many cases, $\eta$ and the background are hard to separate, and individual cases are mostly unclassifiable from timing alone. The clever part of Unwin <em>et al.</em> isn’t that the model labels cases, it’s that it estimates how much local transmission is left, and that the travel histories agree.</p>
+
+<p>The scripts for everything above are at <a href="https://github.com/timj-wood/hawkes-malaria">hawkes-malaria</a>. If you spot any mistakes or have questions, feel free to email me. Thanks for reading!</p>]]></content><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><category term="stats" /><category term="hawkes" /><summary type="html"><![CDATA[In part 1 we met the Hawkes process and the idea behind Unwin et al. (2021): fit a model to the timing of malaria cases, then read off how much transmission there is and which cases were probably imported. This post puts it to the test. The best way I found to understand the method was to simulate an outbreak where the true transmission tree is known, fit the model to the case times alone, and see what it recovers.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/images/woodworks-logo-dark.png" /><media:content medium="image" url="http://localhost:4000/images/woodworks-logo-dark.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Hawkes processes in epidemiology (Part I: theory)</title><link href="http://localhost:4000/posts/hawkes-processes-part-1/" rel="alternate" type="text/html" title="Hawkes processes in epidemiology (Part I: theory)" /><published>2026-10-13T00:00:00+01:00</published><updated>2026-10-13T00:00:00+01:00</updated><id>http://localhost:4000/posts/hawkes-processes-part-1</id><content type="html" xml:base="http://localhost:4000/posts/hawkes-processes-part-1/"><![CDATA[<p>Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible.</p>
+
+<p><a href="https://doi.org/10.1371/journal.pcbi.1008830">Unwin <em>et al.</em> (2021)</a> tackled this with <em>Hawkes processes</em>, separating imported from locally acquired malaria in Yunnan (China) and Eswatini using only the timing of cases. Travel histories were demoted to a check on the answer. I wanted to understand how that’s possible, so here we are.</p>
+
+<p>This post is the theory: what a Hawkes process is and why it suits an epidemic, with as little maths as I can get away with. In <a href="/posts/hawkes-processes-part-2/">part 2</a> we simulate a malaria outbreak and fit the model to it in R. (I’m a biologist by background, not a mathematician, so if you spot a mistake please let me know!)</p>
+
+<h2 id="events-on-a-timeline">Events on a timeline</h2>
+
+<p>A <em>point process</em> is a random list of times at which something happens: reported disease cases, earthquakes, neuron firings. We don’t care what the events are, only when they occur. At any moment, the list of events that have already happened is the <strong>history</strong>, and the question a point process model answers is: given the history, how likely is another event in the next little while?</p>
+
+<h2 id="the-poisson-process-events-that-ignore-each-other">The Poisson process: events that ignore each other</h2>
+
+<p>The simplest model is the <em>Poisson process</em>, where events happen at a constant rate $\lambda$ (say, cases per day) and nothing that has happened so far changes that rate. Three things follow from this:</p>
+
+<ul>
+  <li>The gaps between events are exponentially distributed, with an average gap of $1/\lambda$. The process is <strong>memoryless</strong>: however long it has been since the last event, the expected wait for the next one is the same.</li>
+  <li>The number of events in a window of length $T$ is $\text{Poisson}(\lambda T)$, so the variance of the count equals its mean. If your weekly case counts vary <em>more</em> than this (overdispersion), that’s an early hint that events cluster, though it doesn’t tell you why.</li>
+  <li>The rate can change over time, as long as the change is fixed in advance. Importations might rise around the holidays when more people travel, giving a rate $\lambda(t)$ that depends on the date. This is an <em>inhomogeneous</em> Poisson process, and the expected number of events in any window is just the area under the rate curve over that window.</li>
+</ul>
+
+<p>The catch is in the first sentence: the events ignore each other. That’s exactly wrong for an epidemic, where every case makes further cases more likely. Here’s a Poisson process next to a Hawkes process with the same background rate of 0.1 events per day. In the Hawkes process each event bumps the rate up, the bump fades, and events arrive in bursts:</p>
+
+<p><img src="/images/hawkes/poisson_vs_hawkes.png" alt="A Poisson process and a Hawkes process with the same background rate" /></p>
+
+<h2 id="letting-the-past-matter">Letting the past matter</h2>
+
+<p>The way around memorylessness is to let the rate depend on what has already happened. The <strong>conditional intensity</strong>, written $\lambda^{\ast}(t)$, is the rate of events at time $t$ given the history up to $t$. The asterisk is shorthand for “given the history”. If you multiply it by a tiny slice of time $dt$, you get roughly the probability of an event in that slice:</p>
+
+\[P(\text{an event between } t \text{ and } t + dt \mid \text{history}) \approx \lambda^{\ast}(t)\,dt.\]
+
+<p>It’s a rate rather than a probability, so it can exceed 1. For a Poisson process, $\lambda^{\ast}(t)$ is just $\lambda$, or $\lambda(t)$ if the rate varies over time: the history makes no difference. The whole point of a Hawkes process is that it does.</p>
+
+<h2 id="the-hawkes-process">The Hawkes process</h2>
+
+<p>A Hawkes process is defined by its conditional intensity:</p>
+
+\[\lambda^{\ast}(t) = \mu(t) + \sum_{t_i &lt; t} \phi(t - t_i),\]
+
+<p>where the sum runs over every event $t_i$ that has happened before $t$. There are only two pieces:</p>
+
+<ul>
+  <li>$\mu(t) \geq 0$ is the <strong>background rate</strong>: events that arrive regardless of the past. For us, imported cases.</li>
+  <li>$\phi(u) \geq 0$ is the <strong>kernel</strong>: how much a past event raises the rate $u$ days later. For us, local transmission. It’s zero for $u \leq 0$, because a case can’t cause cases before it happens.</li>
+</ul>
+
+<p>So at any moment, the intensity is the background plus one bump for every previous case, each bump being however much that case is still “pushing” given how long ago it was. That’s what <strong>self-exciting</strong> means: an event raises $\lambda^{\ast}(t)$, making more events likely, which raise $\lambda^{\ast}(t)$ again, and so on. In an inhomogeneous Poisson process, clustering comes from outside (the seasons, the holidays); here the events generate it themselves.</p>
+
+<p>A bit of history: Alan Hawkes introduced these in <a href="https://doi.org/10.1093/biomet/58.1.83">1971</a>, and <a href="https://doi.org/10.2307/3212693">Hawkes &amp; Oakes (1974)</a> showed that the same process can be read as a family tree, which we’ll lean on below. The model made its name in seismology, where aftershocks trigger aftershocks, through <a href="https://doi.org/10.1080/01621459.1988.10478560">Ogata’s ETAS model</a>. So seismologists borrowed the language of contagion for earthquakes, and epidemiologists later borrowed their model back.</p>
+
+<h2 id="choosing-a-kernel">Choosing a kernel</h2>
+
+<p>It helps to split the kernel into <em>how many</em> and <em>when</em>:</p>
+
+\[\phi(u) = \eta \, g(u).\]
+
+<p>Here $\eta$ is a single number, the total size of the bump, and $g(u)$ is a probability distribution for the delay between a case and the cases it causes. Three kernels are worth knowing about.</p>
+
+<p><strong>Exponential.</strong> $\phi(u) = \kappa e^{-\beta u}$. Each event immediately raises the rate by $\kappa$, and the bump fades away over roughly $1/\beta$ days. It’s the most common choice because it’s cheap to compute: the intensity at any moment can be updated from its value at the previous event, so fitting scales with the number of events rather than its square.</p>
+
+<p><strong>Power law.</strong> Something like $\phi(u) = k/(c+u)^p$. This decays much more slowly, so old events still matter long after they happen. It’s the standard for aftershocks, where a big earthquake can keep triggering events for years.</p>
+
+<p><strong>Built from the biology.</strong> Both kernels above peak the instant an event happens, which is wrong for malaria. A newly infected person has to become infectious to mosquitoes, the parasite has to develop inside the mosquito, and then it has to incubate in the next person (<a href="https://doi.org/10.1186/s12936-016-1537-6">Huber <em>et al.</em>, 2016</a>). So $g$ should be near zero for the first couple of weeks, then rise and fall. Unwin <em>et al.</em> used a kernel that is exactly zero for 15 days and then follows a hump-shaped curve (a Rayleigh distribution, chosen for convenience). If the event times are symptom onset dates, $g$ is essentially the <em>serial interval</em>: the distribution of the delay between one case’s symptoms and the next’s.</p>
+
+<h2 id="the-branching-ratio">The branching ratio</h2>
+
+<p>The area under the kernel,</p>
+
+\[\eta = \int_0^\infty \phi(u)\,du,\]
+
+<p>is called the <strong>branching ratio</strong>, and it has a direct meaning: the average number of cases that each case directly causes. In other words, it’s a reproduction number. The paper calls it the <em>case reproduction number</em>, $R_c$, the reproduction number with current interventions in place.</p>
+
+<p>Now the family tree. One imported case has on average $\eta$ children, $\eta^2$ grandchildren, $\eta^3$ great-grandchildren, and so on:</p>
+
+<ul>
+  <li><strong>If $\eta &lt; 1$</strong>, each generation is smaller than the last and every chain dies out. The expected chain size, including the first case, is $1 + \eta + \eta^2 + \cdots = 1/(1-\eta)$. With $\eta = 0.8$, each imported case leads to 5 cases on average.</li>
+  <li><strong>If $\eta = 1$</strong>, each case replaces itself on average. Chains still die out eventually, but they can get enormous first.</li>
+  <li><strong>If $\eta &gt; 1$</strong>, each generation is bigger than the last, and chains can grow without limit.</li>
+</ul>
+
+<p>Two consequences for malaria. First, with a constant background $\mu$ and $\eta &lt; 1$, the process settles down to an average rate of $\mu/(1-\eta)$ cases per day. So $\eta &lt; 1$ doesn’t mean zero cases: as long as importations continue, so do local cases (<a href="https://doi.org/10.1038/s41467-018-04577-y">Routledge <em>et al.</em>, 2018</a>). Second, in that settled state, a randomly chosen case is local with probability $\eta$ and imported with probability $1 - \eta$. The branching ratio is also the expected <em>fraction</em> of cases that are local, which is exactly the number a malaria programme wants.</p>
+
+<h2 id="imported-or-local-in-principle">Imported or local, in principle</h2>
+
+<p>This was the most enticing part of the paper, and the idea is simple once you have the model. At the moment case $i$ occurs, the intensity is a sum of named contributions:</p>
+
+\[\lambda^{\ast}(t_i) = \underbrace{\mu(t_i)}_{\text{importation}} + \underbrace{\phi(t_i - t_1)}_{\text{case 1}} + \underbrace{\phi(t_i - t_2)}_{\text{case 2}} + \cdots\]
+
+<p>Each term is a candidate explanation for case $i$, and its size is how strongly it was pushing at that moment. So the probability that case $i$ was imported is the background’s share of the total,</p>
+
+\[P(\text{case } i \text{ imported}) = \frac{\mu(t_i)}{\lambda^{\ast}(t_i)},\]
+
+<p>and the probability that case $j$ infected case $i$ is <em>its</em> share, $\phi(t_i - t_j)/\lambda^{\ast}(t_i)$. A case in the off-season with nothing in the preceding five weeks gets a probability of importation near 1. A case at the peak of the season, five weeks after a cluster, is ambiguous, and the model says so.</p>
+
+<p>That’s the whole trick: fit $\mu(t)$ and $\phi(u)$ to the case times, then read off each case’s probability of being imported. Whether it actually works, and what the case times can and can’t tell you, is the subject of <a href="/posts/hawkes-processes-part-2/">part 2</a>, where we simulate an outbreak with a known answer and see what the model recovers.</p>
+
+<h2 id="further-reading">Further reading</h2>
+
+<ul>
+  <li><a href="https://arxiv.org/abs/1507.02822">Laub, Taimre &amp; Pollett (2015)</a>: a free, readable introduction to the maths, including the family-tree view. (They use $\lambda$ for the background and $\mu$ for the kernel, the reverse of this post.)</li>
+  <li><a href="https://arxiv.org/abs/1806.00221">Rasmussen (2018)</a>: short lecture notes on the conditional intensity, the likelihood and simulation.</li>
+  <li><a href="https://doi.org/10.1214/17-STS629">Reinhart (2018)</a>: a broader review, including fitting methods and applications beyond seismology.</li>
+  <li><a href="https://doi.org/10.1371/journal.pcbi.1008830">Unwin <em>et al.</em> (2021)</a>: the paper this post builds towards (open access), and <a href="https://github.com/mrc-ide/epihawkes">epihawkes</a>, the R package released with it.</li>
+</ul>
+
+<p>If you spot any mistakes or have questions, feel free to email me. Thanks for reading!</p>]]></content><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><category term="stats" /><category term="hawkes" /><summary type="html"><![CDATA[Let’s suppose you work in a country that has almost eliminated malaria, and a new case is reported. It could be from a traveller who was infected abroad, in which case it’s a dead end. Or it could be the first visible link in a local chain: a mosquito bites the infected person, later bites someone else, and so on. These situations need very different responses, but on the day the case is reported they are indiscernible.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/images/woodworks-logo-dark.png" /><media:content medium="image" url="http://localhost:4000/images/woodworks-logo-dark.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Composite likelihood corrections in dadi</title><link href="http://localhost:4000/posts/composite-likelihood/" rel="alternate" type="text/html" title="Composite likelihood corrections in dadi" /><published>2026-09-03T00:00:00+01:00</published><updated>2026-09-03T00:00:00+01:00</updated><id>http://localhost:4000/posts/composite-likelihood</id><content type="html" xml:base="http://localhost:4000/posts/composite-likelihood/"><![CDATA[<p>For my first post I will, briefly, cover the issues that I was experiencing whilst creating demographic models for lineage splits between Scottish wildcats and domestic cats; all fits were carried out using the <a href="https://dadi.readthedocs.io/en/latest/">dadi</a> package. After an initial model, dadi produces, convincingly, narrow confidence intervals. However, I quickly discovered this reassurance to be a lie.</p>
+
+<h2 id="why-dadi-lies-to-you">Why dadi lies to you</h2>
+
+<p>dadi fits a model by computing the expected site frequency spectrum under it and comparing that to the observed spectrum with a Poisson likelihood, with one term per bin. The likelihood is a product over bins, and the count in each bin is a sum over sites. Every site contributes as if it were an independent draw.</p>
+
+<p>The sites aren’t independent. Neighbouring positions on a chromosome share a genealogy, so they carry nearly the same information about the demographic history, and a run of a thousand linked SNPs tells you far less than a thousand independent ones would. dadi’s likelihood counts them all. The technical name for this is <em>composite likelihood</em>: it has the form of a likelihood and is maximised like one, but it is not the probability of the data under the model.</p>
+
+<p>The consequence is that the likelihood surface is much sharper than the data can justify. Everything you’d normally derive from curvature inherits the problem: Wald intervals come out too narrow, and AIC penalises complexity too lightly, so it favours over-fitted models, which is a major issue when comparing multiple models with differing parameters.</p>
+
+<h2 id="how-much-does-it-matter">How much does it matter?</h2>
+
+<p>The composite-likelihood version of AIC replaces the parameter count $k$ with an effective parameter count that accounts for the dependence between sites. For my main wildcat model, which has twelve parameters including $\theta$, the effective count came out at 293.</p>
+
+<p>Treating linked sites as independent made the likelihood behave as though the model had about 25× as many free parameters as it does. The uncorrected AIC for that fit was 2,846; the corrected value was 3,408. That’s a gap of over 500 units between two scores for the same model, which is more than enough to flip a model comparison.</p>
+
+<h2 id="the-fix">The fix</h2>
+
+<p>There are two things you can measure about a likelihood at its maximum. One is how sharply it curves away from the peak: the Hessian, $H$. That’s what standard errors are normally built from, and it’s what the composite likelihood gets wrong. The other is how much the gradient of the likelihood wobbles when you look at different parts of the data: the variability of the score, $J$.</p>
+
+<p>For a true likelihood these two agree, which is why you can get away with using only $H$. For a composite likelihood they don’t: $H$ says the peak is sharp, while $J$, measured across independent blocks of genome, says the location of the peak jumps around from block to block far more than the curvature implies. The ratio between them is the correction. Formally the sandwich covariance is $H^{-1} J H^{-1}$, and the effective parameter count is $\operatorname{tr}(J H^{-1})$, which replaces $k$ in AIC:</p>
+
+\[\mathrm{CLAIC} = -2\,\ell_{\mathrm{CL}}(\hat\Theta) + 2\,\operatorname{tr}\!\left(J H^{-1}\right).\]
+
+<p>This is the composite-likelihood AIC of <a href="https://doi.org/10.1093/biomet/92.3.519">Varin and Vidoni (2005)</a>, and <a href="https://doi.org/10.1093/molbev/msv255">Coffman <em>et al.</em> (2016)</a> showed that the Godambe approach works well for dadi specifically.</p>
+
+<p>$J$ has to be estimated by bootstrapping. You chop the genome into blocks long enough that linkage between blocks is negligible (I used 1 Mb), resample blocks with replacement to make replicate spectra, and compute the covariance of the gradient across replicates. I used 100 replicates, which is enough for the point estimate but leaves roughly 10–15% noise on the effective parameter count, since a covariance matrix from $n$ replicates has error of order $1/\sqrt{n}$. That noise matters when comparing two models that score within a few tens of units of each other, as two of mine did.</p>
+
+<h2 id="what-can-go-wrong">What can go wrong</h2>
+
+<p>dadi has a function for this, <code class="language-plaintext highlighter-rouge">Godambe.GIM_uncert</code>, and I ended up not using it, for reasons that are worth spelling out.</p>
+
+<p><strong>Two inversions when one will do.</strong> The library forms $G = H J^{-1} H$ and then inverts $G$ to get the covariance. That inverts $J$ and then $G$. Writing the covariance directly as $H^{-1} J H^{-1}$ inverts only $H$. This sounds pedantic until you see that my $H$ had a condition number of around $10^{15}$, which in double precision leaves essentially no significant digits. Every inversion you can avoid, you should.</p>
+
+<p><strong>Negative time.</strong> A Wald interval is symmetric on whatever scale you compute it. On the linear scale, the lower limit for one of my times came out negative. The fix is to take the interval on $\log p$ instead, using the delta method ($\sigma_{\log p} = \sigma_p / p$), and exponentiate. The interval is then multiplicative about the estimate, which is also how I’d describe the widths: “known to within a factor of four” is more useful than “$\pm 3 \times 10^4$ years”.</p>
+
+<p><strong>Log scale, but not for the derivatives.</strong> You might think that if the intervals are on the log scale, the finite differences should be too. dadi supports this, but its step-size rule falls back to a one-sided difference for any parameter below one, and on my data that put a negative eigenvalue into $H$, which means the “maximum” no longer looks like a maximum. Derivatives on the linear scale, intervals on the log scale.</p>
+
+<p><strong>Check two step sizes.</strong> $H$ and $J$ both come from finite differences with a step $\varepsilon$, and there’s no principled way to choose it. I computed everything at $\varepsilon = 0.01$ and $0.005$. If the effective parameter count barely moves, the differences have converged. For my best model it changed by 0.56; for the worst-fitting model it changed by 21, which is itself a diagnostic, since misspecification makes $J$ and $H$ diverge and the penalty unstable.</p>
+
+<p><strong>Fits on a bound are not fits.</strong> All of this assumes the fit is at an interior maximum. If a parameter finished on the edge of its search box, the likelihood doesn’t fall away in every direction, the asymptotic theory doesn’t apply, and the finite differences step outside the region you searched. One of my three models did this, and its CLAIC, though numerically the best, doesn’t mean anything.</p>
+
+<h2 id="the-code">The code</h2>
+
+<p>dadi 2.4.4 doesn’t implement CLAIC directly (later versions do). But <code class="language-plaintext highlighter-rouge">Godambe.get_godambe</code> computes $H$ and $J$ along the way, and once you have them the rest is a few lines. Everything below, including the CLAIC, the intervals, and the correlation matrix, all derive from the same pair of matrices at the same step size, so a model refit is not necessary.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">from</span> <span class="nn">dadi</span> <span class="kn">import</span> <span class="n">Godambe</span>
+
+<span class="c1"># popt: fitted parameters (with theta appended if you want it included);
+# boots: list of bootstrap spectra
+</span><span class="n">G</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">J</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">Godambe</span><span class="p">.</span><span class="n">get_godambe</span><span class="p">(</span><span class="n">func_ex</span><span class="p">,</span> <span class="n">pts</span><span class="p">,</span> <span class="n">boots</span><span class="p">,</span> <span class="n">popt</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span>
+                                 <span class="n">eps</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+<span class="c1"># effective number of parameters and CLAIC
+</span><span class="n">k_eff</span>  <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">trace</span><span class="p">(</span><span class="n">J</span> <span class="o">@</span> <span class="n">np</span><span class="p">.</span><span class="n">linalg</span><span class="p">.</span><span class="n">inv</span><span class="p">(</span><span class="n">H</span><span class="p">))</span>
+<span class="n">claic</span>  <span class="o">=</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">ll_opt</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">k_eff</span>
+
+<span class="c1"># sandwich covariance: invert H only
+</span><span class="n">Hinv</span>   <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">linalg</span><span class="p">.</span><span class="n">inv</span><span class="p">(</span><span class="n">H</span><span class="p">)</span>
+<span class="n">cov</span>    <span class="o">=</span> <span class="n">Hinv</span> <span class="o">@</span> <span class="n">J</span> <span class="o">@</span> <span class="n">Hinv</span>
+<span class="n">se</span>     <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">diag</span><span class="p">(</span><span class="n">cov</span><span class="p">))</span>
+
+<span class="c1"># 95% intervals on the log scale, via the delta method
+</span><span class="n">se_log</span> <span class="o">=</span> <span class="n">se</span> <span class="o">/</span> <span class="n">popt</span>
+<span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">popt</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.96</span> <span class="o">*</span> <span class="n">se_log</span><span class="p">),</span> <span class="n">popt</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">1.96</span> <span class="o">*</span> <span class="n">se_log</span><span class="p">)</span>
+
+<span class="c1"># correlation matrix
+</span><span class="n">corr</span>   <span class="o">=</span> <span class="n">cov</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="n">outer</span><span class="p">(</span><span class="n">se</span><span class="p">,</span> <span class="n">se</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>Note that <code class="language-plaintext highlighter-rouge">get_godambe</code> works on whatever parameter vector it is given. To include $\theta$, do what <code class="language-plaintext highlighter-rouge">GIM_uncert</code> does internally with <code class="language-plaintext highlighter-rouge">multinom=True</code>: append the fitted $\theta$ to <code class="language-plaintext highlighter-rouge">popt</code> and wrap <code class="language-plaintext highlighter-rouge">func_ex</code> so that it scales the spectrum by the last parameter instead of optimising $\theta$ out.</p>
+
+<h2 id="why-the-correlation-matrix-is-not-optional">Why the correlation matrix is not optional</h2>
+
+<p>I would consdier the last line of that code block as a non-negotiable. Even corrected intervals are marginal, because each describes one parameter with all the others free to move. This can heavily skew “the bigger picture”. Here’s the correlation matrix for the wildcat model:</p>
+
+<p><img src="/images/corr.png" alt="Parameter correlation matrix from the sandwich covariance" /></p>
+
+<p>The three deepest parameters, the two ancestral sizes ($N_S$, $N_L$) and the split time ($T_A$), each had intervals spanning a factor of five to seven, which sounds like three separately uncertain quantities. The block in the top left says otherwise: they correlate above 0.97 with each other and below −0.99 with $\theta$, so they move together along a single ridge, and the data constrain one direction in that three-dimensional space, not three. Meanwhile two of my four “well determined” parameters correlate at 0.987, so what is actually pinned down is their product. Neither fact is visible in a table of intervals. If you report one, report both.</p>
+
+<h2 id="further-reading">Further reading</h2>
+
+<ul>
+  <li><a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1000695">Gutenkunst <em>et al.,</em> 2009</a>: the original paper that developed the <a href="https://dadi.readthedocs.io/en/latest/">dadi</a> package.</li>
+  <li><a href="https://academic.oup.com/mbe/article/33/2/591/2579696">Coffman <em>et al.,</em> 2016</a>: using the Godambe Information Matrix for Composite-likelihood corrections.</li>
+</ul>
+
+<p>I’ll leave it there for now. If you’re aware of any other potential fixes to this issue, then please let me know!</p>]]></content><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><category term="stats" /><summary type="html"><![CDATA[For my first post I will, briefly, cover the issues that I was experiencing whilst creating demographic models for lineage splits between Scottish wildcats and domestic cats; all fits were carried out using the dadi package. After an initial model, dadi produces, convincingly, narrow confidence intervals. However, I quickly discovered this reassurance to be a lie.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/images/woodworks-logo-dark.png" /><media:content medium="image" url="http://localhost:4000/images/woodworks-logo-dark.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">New website formatting</title><link href="http://localhost:4000/posts/new-site/" rel="alternate" type="text/html" title="New website formatting" /><published>2026-09-01T00:00:00+01:00</published><updated>2026-09-01T00:00:00+01:00</updated><id>http://localhost:4000/posts/new-site</id><content type="html" xml:base="http://localhost:4000/posts/new-site/"><![CDATA[<p>This website runs on <a href="https://jekyllrb.com/">Jekyll</a> and lives on GitHub Pages. The infrastructure is borrowed the <a href="https://github.com/lenpaul/lagrange">Lagrange</a> theme, so this is a mod. This post is the kitchen-sink tour, showing all possible formats, in one place, so I can check nothing has broken (and for use as a cross reference when I soon forget everything).</p>
+
+<h2 id="words">Words</h2>
+
+<p>We have <em>italics</em> for emphasis, <strong>bold</strong> for when emphasis isn’t enough, and <strong><em>bold italics</em></strong> for emergencies. Inline code looks like <code class="language-plaintext highlighter-rouge">print("hello, world")</code>, and <a href="https://en.wikipedia.org/wiki/Quokka">links</a> look like that.</p>
+
+<p>Lists can either be numbered:</p>
+
+<ol>
+  <li>Old MacDonald</li>
+  <li>Had</li>
+  <li>A farm</li>
+</ol>
+
+<p>Or bullet pointed:</p>
+
+<ul>
+  <li>Hello</li>
+  <li>there</li>
+</ul>
+
+<p>and a blockquote, for quotation:</p>
+
+<blockquote>
+  <p>“All models are wrong, but some are useful.”</p>
+
+  <p>— George Box</p>
+</blockquote>
+
+<h2 id="code">Code</h2>
+
+<p>Code is coloured by language. Here’s how it looks in Python:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">15</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"FizzBuzz"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Fizz"</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">"Buzz"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>And in R:</p>
+
+<div class="language-r highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">rolls</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">sample</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="m">6</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1000</span><span class="p">,</span><span class="w"> </span><span class="n">replace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">)</span><span class="w">
+</span><span class="n">table</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span><span class="w">
+</span><span class="n">mean</span><span class="p">(</span><span class="n">rolls</span><span class="p">)</span><span class="w">  </span><span class="c1"># should be close to 3.5</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Collapsible code:</p>
+
+<details>
+  <summary>Code</summary>
+
+  <div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">iterable</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">iterable</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">element</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</code></pre></div>  </div>
+</details>
+
+<h2 id="maths">Maths</h2>
+
+<p>Testing some math formatting inline \(\sum_i x_i^2\), some block…</p>
+
+\[\Theta_{ij} = \sum_{i,j} \int_0^t f(i,j,t) dt\]
+
+<p>some alignment:</p>
+
+\[\begin{align*}
+\lambda &amp;= \tau + \int_0^t h(s) ds \\
+ &amp;= \tau + \sum_i h(t_i)
+\end{align*}\]
+
+<p>and without the <code class="language-plaintext highlighter-rouge">$$</code>,</p>
+
+<p>\begin{equation}
+A \sim \mathcal{N}(0, \frac{1}{\tau})
+\label{eq:test}
+\end{equation}</p>
+
+<p>which I can reference with Eq. \eqref{eq:test}.</p>
+
+<h2 id="tables">Tables</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Left</th>
+      <th style="text-align: center">Centre</th>
+      <th style="text-align: right">Right</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">17</td>
+      <td style="text-align: center">4</td>
+      <td style="text-align: right">1.5</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">15</td>
+      <td style="text-align: center">7</td>
+      <td style="text-align: right">22.75</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">10</td>
+      <td style="text-align: center">14</td>
+      <td style="text-align: right">300</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">5</td>
+      <td style="text-align: center">20</td>
+      <td style="text-align: right">4,096</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="margin-notes">Margin notes</h2>
+
+<div class="marginnote">On a wide screen this note sits out in the margin. On a phone it tucks itself into the text instead.</div>
+<p>Some thoughts are worth sharing but would derail the paragraph they belong to. A margin note keeps them close by without getting in the way, like scribbling in the margins of a textbook.</p>
+
+<h2 id="headings">Headings</h2>
+
+<h1 id="heading-1">Heading 1</h1>
+
+<h2 id="heading-2">Heading 2</h2>
+
+<h3 id="heading-3">Heading 3</h3>
+
+<h4 id="heading-4">Heading 4</h4>
+
+<p>All done. One last thing: the sun/moon button in the header switches between light and dark mode.</p>]]></content><author><name>Tim Wood</name><email>tim.jwood@outlook.com</email></author><category term="site" /><summary type="html"><![CDATA[This website runs on Jekyll and lives on GitHub Pages. The infrastructure is borrowed the Lagrange theme, so this is a mod. This post is the kitchen-sink tour, showing all possible formats, in one place, so I can check nothing has broken (and for use as a cross reference when I soon forget everything).]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/images/woodworks-logo-dark.png" /><media:content medium="image" url="http://localhost:4000/images/woodworks-logo-dark.png" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
