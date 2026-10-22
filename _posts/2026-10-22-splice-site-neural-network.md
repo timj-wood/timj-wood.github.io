@@ -177,7 +177,10 @@ for epoch in range(40):
         optimiser.step()
 ```
 
-Two things I learnt along the way: (1) you can't start all the weights at zero this time: every hidden unit would compute the same thing, get the same gradient and stay identical forever (and with ReLU they'd all be stuck at zero), so PyTorch's random initialisation is used instead; (2) rather than one gradient step over all 2,392 sequences per epoch, the network takes a step after every 64, which is the "stochastic" part of a stochastic gradient descent.
+Two things I learnt along the way: 
+
+1. You can't start all the weights at zero this time: every hidden unit would compute the same thing, get the same gradient and stay identical forever (and with ReLU they'd all be stuck at zero), so PyTorch's random initialisation is used instead.
+2. Rather than one gradient step over all 2,392 sequences per epoch, the network takes a step after every 64, which is the "stochastic" part of a stochastic gradient descent.
 
 ![Training and test loss by epoch, and test accuracy against the logistic regression line](/images/splice/mlp_training.png)
 
