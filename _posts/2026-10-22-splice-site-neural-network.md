@@ -10,7 +10,7 @@ Note that this is not a post about Neural Network theory, partly because I'm sti
 
 For the code, I have roughly followed the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses. All the figures and numbers here come from the scripts in the repo, [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
 
-## What is splicing?
+## An introduction to gene splicing
 
 When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases "GT" and ends with "AG". It's very close to a universal rule, which is why it's a great target for my first neural network. Since I already know what the answer should look like, if the model learns something sensible I should be able to see, and if it learns something weird I should be able to spot that too.
 
@@ -29,7 +29,7 @@ X = one_hot(df["sequence"])   # (3190, 240) array of 0s, 1s and the odd 1/3
 y = df["label"].values        # "EI", "IE" or "N"
 ```
 
-## A baseline first
+## Creating a comparable baseline with classical methods
 
 Before the fun neural network stuff, I fitted a couple of simpler classifiers. 
 
@@ -148,7 +148,7 @@ The two loss curves sit on top of each other, and the final weights agree to wit
 
 Whilst building a neuron yourself is an insightful (and difficult) exercise, PyTorch practically does this all for you... So just use PyTorch.
 
-## What did the neuron learn?
+## What the neuron learnt
 
 Because a single neuron has one weight per (position, base), its 240 weights can be plotted in the same way as the logistic regression ones:
 
@@ -192,6 +192,6 @@ As for the tie, I don't think it's that surprising in hindsight. Noordewier *et 
 
 ## Further reading
 
-There is a multitude of useful (and free!) tutorials covering Neural Networks on the internet, which actually cover the theory and give suitable coding examples. To name a few: [Steven Morse's blog series](https://stmorse.github.io/journal/Beginner-NN-Part-I.html), [Michael Nielsen's online book](http://neuralnetworksanddeeplearning.com/), and [JGI's online course](https://bristol-training.github.io/intro-to-ai/). If you are not from a Maths/CS background, like myself, the theory can become excessively complex, and I simply don't have enough time to make as rigorous a post as the last one. My aim for this post was not to be thorough, but rather showcase (though my example was simple) the potential of NN's in bioinformatics. 
+There is a multitude of useful (and free!) tutorials covering Neural Networks on the internet, which actually cover the theory and give suitable coding examples. To name a few: [Steven Morse's blog series](https://stmorse.github.io/journal/Beginner-NN-Part-I.html), [Michael Nielsen's online book](http://neuralnetworksanddeeplearning.com/), and [JGI's online course](https://bristol-training.github.io/intro-to-ai/). If you are not from a Maths/CS background, like myself, the theory can become excessively complex, and I simply don't have enough time to make as rigorous a post as the last one. My aim for this post was not to be thorough, but rather showcase the potential of NN's in the biological sciences (though my example was very simple).
 
 This will be my last post for a while; coursework beckons. If you have any ideas for NN applications in biology, please do let me know. Thank you for reading!
