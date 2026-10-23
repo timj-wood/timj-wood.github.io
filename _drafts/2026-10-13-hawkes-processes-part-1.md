@@ -1,5 +1,6 @@
 ---
 title: "Hawkes processes in epidemiology (Part I: theory)"
+redirect_from: /posts/hawkes-processes-part-1/
 category: stats
 tags: hawkes
 ---

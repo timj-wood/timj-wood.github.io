@@ -19,7 +19,7 @@ redirect_from:
     <div class="entry-card">
       <p class="entry-meta">Jun - Sept 2026 · with Mark Beaumont, Dennis Prangle and Grace Yan</p>
       <p class="entry-summary">Summer internship fitting 2D dadi models to the joint site frequency spectrum of wildcat and domestic cat, with Godambe-corrected confidence intervals. The preferred model puts their split at roughly 485,000 years ago.</p>
-      <p class="entry-links"><a href="https://github.com/timj-wood/wildcat_models">Repo</a>, <a href="{{ '/docs/dadi_report.pdf' | relative_url }}">Report</a>, <a href="{{ '/posts/composite-likelihood/' | relative_url }}">Blog</a></p>
+      <p class="entry-links"><a href="https://github.com/timj-wood/wildcat_models">Repo</a>, <a href="{{ '/docs/dadi_report.pdf' | relative_url }}">Report</a>, <a href="{{ '/posts/composite-likelihood.html' | relative_url }}">Blog</a></p>
     </div>
   </div>
 </section>
