@@ -4,11 +4,11 @@ category: machine-learning
 tags: [neural-networks, genomics]
 ---
 
-For my next post, I wanted to have a go at something involving my favourite [buzzwords](https://en.wikipedia.org/wiki/Buzzword) in bioinformatics, **machine learning** and **genomics**, which both lead to the *holy grail*: ***neural networks***. I hadn't touched machine learning before this year, but the more I read into it the more interesting it gets, so I've been wanting to build (_some_) sort of neural network skillset.
+For my first post, I wanted to have a go at something involving my favourite bioinformatics [buzzwords](https://en.wikipedia.org/wiki/Buzzword), **machine learning** and **genomics**, which both lead to the *holy grail*: ***neural networks***. I had never touched machine learning before this, but the more I read into it the more fascinated I became by it, so (_some_) sort of neural network skillset has been a top priority for me.
 
 Note that this is not a post about Neural Network theory, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
-For the code, I used the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses as rough guides. All the figures and numbers here come from the notebooks in [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
+For the code, I have roughly followed the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses. All the figures and numbers here come from the scripts in the repo, [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
 
 ## What is splicing?
 
