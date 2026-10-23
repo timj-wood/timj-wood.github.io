@@ -11,11 +11,11 @@ Note that this is not a post about Neural Network theory, partly because I'm sti
 
 For the code, I have roughly followed the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses. All the figures and numbers here come from the scripts in the repo, [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
 
-## An introduction to gene splicing
+## Gene splicing and rationale
 
-When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases "GT" and ends with "AG". It's very close to a universal rule, which is why it's a great target for my first neural network. Since I already know what the answer should look like, if the model learns something sensible I should be able to see, and if it learns something weird I should be able to spot that too.
+When a gene is transcribed, the result is a pre-mRNA that still contains the introns (the non-coding regions). These have to be cut out before the message can move on to the next step, translation. So how do your cells know which parts of the transcript are introns, you might ask? Well, (almost) every intron begins with the two bases "GT" and ends with "AG". It's very close to a universal rule, which is why it's a great target for my first neural network. Since I already know what the answer should look like, if the model learns something sensible I should be able to see, and if it learns something weird I should be able to spot that too... because it will be wrong.
 
-So the question I'm asking the model is: given a window of 60 bases, is there a splice junction in the middle, and if so which kind? And the thing I'm actually curious about is whether it finds the GT…AG pattern on its own. Before any of that, though, I'll fit some ordinary classifiers so there's something to compare the NN against.
+So the question I'm asking the model is: given a window of 60 bases, is there a splice junction in the middle, and if so which kind? The end goal is to produce a model that is able to learn the GT…AG pattern by itself. Before any of that, though, I'll fit some ordinary classifiers so there's something to compare the NN against.
 
 ## The data
 
