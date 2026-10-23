@@ -1,5 +1,6 @@
 ---
 title: "Creating a (mini) neural network to identify splice regions"
+redirect_from: /posts/splice-site-neural-network/
 category: machine-learning
 tags: [neural-networks, genomics]
 ---

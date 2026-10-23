@@ -1,5 +1,6 @@
 ---
 title: "Composite likelihood corrections in dadi"
+redirect_from: /posts/composite-likelihood/
 summary: "Composite likelihood, the Godambe correction, and the mistakes I made applying it."
 category: stats
 math: true

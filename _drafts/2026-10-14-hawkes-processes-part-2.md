@@ -1,5 +1,6 @@
 ---
 title: "Hawkes processes in epidemiology (Part II: code)"
+redirect_from: /posts/hawkes-processes-part-2/
 category: stats
 tags: hawkes
 ---

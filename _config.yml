@@ -10,7 +10,7 @@ author:
   linkedin: timj-wood
 lang: en_GB
 
-permalink: /posts/:slug/
+permalink: /posts/:slug.html
 markdown: kramdown
 kramdown:
   math_engine: mathjax
