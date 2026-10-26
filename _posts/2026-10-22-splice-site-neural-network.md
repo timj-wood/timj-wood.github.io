@@ -69,7 +69,7 @@ print(model.best_estimator_)
 print(f"kNN test accuracy: {model.score(X_test, y_test):.3f}")
 ```
 
-This was noticeably worse, at 85.1%. I think the gap comes from how distances behave between one-hot vectors in 240 dimensions: two unrelated 60-base sequences differ at most positions, so almost every pair ends up roughly the same distance apart, and the nearest neighbours aren't especially informative. (If someone has a better explanation, please let me know!)
+This was noticeably worse, at 85.1%. This stark drop might come from how distances behave between one-hot vectors in 240 dimensions: two unrelated 60-base sequences differ at most positions, so almost every pair ends up roughly the same distance apart, and the nearest neighbours aren't especially informative. (If someone has a better explanation, please let me know!)
 
 The logistic regression model is simple, but its weights are easy to read. It has one weight per (position, base) for each class, so you can reshape the 240 weights into a 4 × 60 grid and plot it:
 
