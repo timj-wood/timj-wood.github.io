@@ -84,6 +84,8 @@ For `EI`, the biggest weights are T at +2 and G at +1. For `IE`, they're G at âˆ
 
 ## Building a neuron from scratch
 
+*Preface: we are working with a single neuron, you might find in the literature that $z$ is computed to the $i$-th neuron - we only have one.*
+
 A single artificial neuron does two things. First, it takes a weighted sum of its inputs and adds a bias - known as **aggregation**. Then, it pushes that sum through some non-linear function - **activation**.
 
 $$
