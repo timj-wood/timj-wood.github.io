@@ -84,31 +84,31 @@ For `EI`, the biggest weights are T at +2 and G at +1. For `IE`, they're G at âˆ
 
 ## Building a neuron from scratch
 
-My current understanding of a single artificial neuron is quite simple. First it **aggregates**: it takes a weighted sum of its inputs and adds a bias. Then it **activates**: it pushes that sum through some non-linear function.
+A single artificial neuron does two things. First, it takes a weighted sum of its inputs and adds a bias - known as **aggregation**. Then, it pushes that sum through some non-linear function - **activation**.
 
 $$
 z = \sum_j w_j x_j + b,
 \qquad a = \sigma(z) = \frac{1}{1 + e^{-z}}.
 $$
 
-The sigmoid $\sigma$ squashes any number into the range 0 to 1, so the output can be read as a probability. To keep things simple, I started with a yes-or-no version of the problem: "is there *any* splice junction in this window?" (`EI` or `IE` gives 1, `N` gives 0).
+The sigmoid $\sigma$ compresses any number into the range 0 to 1, so the output can be read as a probability. To keep things simple, I started with a binary approach to this problem, i.e., "is there *any* splice junction in this window?" - where `EI` or `IE` gives 1 and `N` gives 0.
 
-To train the model, we first need a **loss**: a number that says how *wrong* a prediction was. For a probability, the usual choice is binary cross-entropy,
+To train the model, we first need to measure the difference between model predictions and our desired values - known as loss (what the model got wrong). In this case, smaller values are more favourable. For a binary classification problem (our problem), the standardised choice is binary cross-entropy,
 
 $$
 \ell = -[y \log a + (1-y)\log(1-a)],
 $$
 
-which (as far as I understand it) punishes confidently wrong answers much more than hesitant ones.
+where $y$ is the binary label (0 or 1) of the observation, and $p$ is the predicted probability of the observation. Lower values equivalate to a better alignment between a model prediction and the true data labels. 
 
-Then we need to know how the loss changes when we nudge a weight. The weight $w_j$ affects $z$, which affects $a$, which affects $\ell$, so by the chain rule we multiply the three sensitivities together. Each one on its own is straightforward: $\partial z/\partial w_j = x_j$, $\partial a/\partial z = a(1-a)$ for the sigmoid, and $\partial \ell/\partial a = (a-y)/(a(1-a))$ for cross-entropy. The last two mostly cancel out, which leaves
+When training a model, it is common for errors to occur, which impact its final accuracy - how loss impacted when a weight is "nudged". This is where backpropagation comes in, by dividing the error between connections. The weight $w_j$ affects $z$, which affects $a$, which affects $\ell$, using the chain rule the sensitivites can be multiplied together. The calculation for each component is straightforward: $\partial z/\partial w_j = x_j$, $\partial a/\partial z = a(1-a)$ for the sigmoid, and $\partial \ell/\partial a = (a-y)/(a(1-a))$ for cross-entropy. The last two mostly cancel out, which leaves
 
 $$
 \frac{\partial \ell}{\partial w_j} = (a - y)\, x_j, \qquad
 \frac{\partial \ell}{\partial b} = a - y.
 $$
 
-So the gradient for each weight is just "how wrong was I?" multiplied by "was that feature on?". If the neuron was confidently wrong about a sequence that had a G at +1, the weight for G at +1 gets a big nudge; if that feature wasn't there, its weight is left alone. I gather the cancellation isn't an accident, and that sigmoid and cross-entropy are usually paired for this reason. Either way, if you average this over all 2,392 training sequences and write it as a matrix product, the whole training loop is only a few lines:
+So the gradient for each weight is the partial derivative of the loss function with respect to that specific weight. If the neuron was confidently wrong about a sequence that had a G at +1, the weight for G at +1 receives a big nudge; if that feature wasn't there, the weight is unchanged. I gather the cancellation isn't an accident, and that sigmoid and cross-entropy are usually paired for this reason. Either way, if you average this over all 2,392 training sequences and write it as a matrix product, the whole training loop is only a few lines:
 
 ```python
 def sigmoid(z):
@@ -126,7 +126,7 @@ for epoch in range(400):
     b -= lr * grad_z.sum()
 ```
 
-After 400 steps of plain gradient descent, this scored **93.4%** (on the yes-or-no task, so it isn't directly comparable to the three-class 93.7% above).
+After 400 steps of plain gradient descent, this scored **93.4%** (on the binary "yes-or-no" task, so it isn't directly comparable to the three-class 93.7% above).
 
 I then built the same neuron the way the JGI course does, with `nn.Linear(240, 1)`, `BCEWithLogitsLoss` and `loss.backward()`, using the same learning rate, the same number of steps and the same zero initialisation:
 
