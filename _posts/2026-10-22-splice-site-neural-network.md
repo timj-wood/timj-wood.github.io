@@ -195,6 +195,6 @@ In hindsight, the tie isn't that surprising. Noordewier *et al.* found something
 
 ## Further reading
 
-There are lots of useful (and free!) tutorials online that actually cover the theory and give good coding examples. To name a few: [Steven Morse's blog series](https://stmorse.github.io/journal/Beginner-NN-Part-I.html), [Michael Nielsen's online book](http://neuralnetworksanddeeplearning.com/), and [JGI's online course](https://bristol-training.github.io/intro-to-ai/). If you're not from a maths/CS background (I'm not), the theory can get complicated quickly, but if you keep it simple and stick to the code, you can get a long way. My aim for this post wasn't to be thorough, but to show what neural networks can do in the biological sciences, even with a very simple example.
+There are lots of useful (and free!) tutorials online that actually cover the theory and give good coding examples. To name a few: [Steven Morse's blog series](https://stmorse.github.io/journal/Beginner-NN-Part-I.html), [Michael Nielsen's online book](http://neuralnetworksanddeeplearning.com/), and [JGI's online course](https://bristol-training.github.io/intro-to-ai/). If you're not from a maths/CS background (I'm not), the theory can get complicated quickly, but if you keep it simple and stick to the code, *anything is possible*. My aim for this post wasn't to be thorough, but to give an example of neural network applications in bioinformatics, though mine was very simple...
 
-This will be my last post for a while; coursework beckons. If you have any ideas for applied neural networks in biology, please do let me know. Thank you for reading!
+This will be my last post for a while; coursework beckons. If you spot any mistakes, please do let me know. Thank you for reading!
