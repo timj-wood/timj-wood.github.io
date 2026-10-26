@@ -9,7 +9,7 @@ For my next post, I wanted to have a go at something involving my favourite bioi
 
 Note that this is not a post about Neural Network theory, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
-For the code, I have roughly followed the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses. All the figures and numbers here come from the scripts in the repo, [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I probably did wrong).
+For the code, I have roughly followed the Jean Golding Institute's [Data Analysis in Python (Part 2)](https://bristol-training.github.io/data-analysis-python-2/) and [Introduction to AI](https://bristol-training.github.io/intro-to-ai/) courses. All the figures and numbers here come from the scripts in the repo [splice-site-nn](https://github.com/timj-wood/splice-site-nn), so have a look there if you want to see exactly what I did (and what I did wrong I'm sure).
 
 ## Gene splicing and rationale
 
@@ -23,7 +23,7 @@ The UCI [splice-junction dataset](https://doi.org/10.24432/C5M888) has 3,190 win
 
 However, there is a problem with the data: a model can't do anything with a string like `CCAGTCAT`. A standardised fix to this issue is known as [one-hot encoding](https://www.geeksforgeeks.org/machine-learning/ml-one-hot-encoding/). By applying this fix, each position becomes four columns (one per base), with a 1 in the column for the base that's there and 0 in the other three. So each sequence becomes a row of 240 1's and 0's (binary data). Looking at the bigger picture, the model gives each column its own weight, and this fix means that each column now represents one base at one position; the model can learn how much evidence a G at position +1 provides, independently of every other base and position.
 
-A few positions (60 out of 191,400) use [IUPAC ambiguity codes](https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html), e.g. `D` means "A, G or T". I didn't want to throw that data away, so I spread the 1 evenly over the possible bases: a `D` becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I'm not sure if that's the standard thing to do, but it seemed reasonable and it only affects a handful of entries.
+A few positions (60 out of 191,400) use [IUPAC ambiguity codes](https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html), e.g. `D` means "A, G or T". I didn't want to discard this data, so I spread the 1 evenly over the possible bases: a `D` becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I'm not sure if that's the standard approach, but it seemed reasonable and it only affects a handful of entries.
 
 ```python
 X = one_hot(df["sequence"])   # (3190, 240) array of 0s, 1s and the odd 1/3
