@@ -5,7 +5,7 @@ category: machine-learning
 tags: [neural-networks, genomics]
 ---
 
-For my next post, I wanted to have a go at something involving my favourite bioinformatics [buzzwords](https://en.wikipedia.org/wiki/Buzzword), **machine learning** and **genomics**, which both lead to the *holy grail*: ***neural networks***. I had never touched machine learning before this, but the more I read into it the more fascinated I became by it, so building (_some_) sort of neural network skillset has been a top priority for me.
+For my next post, I wanted to have a go at something involving my favourite bioinformatics [buzzwords](https://en.wikipedia.org/wiki/Buzzword), **machine learning** and **genomics**, which both lead to the *holy grail*: ***neural networks***. I had never touched machine learning before this, but the more I read into it the more fascinated I became by it, so building (some) sort of neural network skillset has been a top priority for me.
 
 Note that this is not a post about Neural Network theory, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
@@ -21,7 +21,7 @@ So the question I'm asking the model is: given a window of 60 bases, is there a 
 
 The UCI [splice-junction dataset](https://doi.org/10.24432/C5M888) has 3,190 windows of 60 bases from primate genes, each labelled `EI` (exon to intron, a donor site), `IE` (intron to exon, an acceptor site) or `N` (neither). It was put together for a paper that used neural networks to recognise DNA sequences ([Noordewier *et al.*, 1991](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)), which is quite fitting.
 
-However, there is a problem with the data: a model can't do anything with a string like `CCAGTCAT`. A standardised fix to this issue is [**one-hot encoding**](https://www.sciencedirect.com/topics/computer-science/one-hot-encoding), where each position becomes four columns (one per base), with a 1 in the column for the base that's there and 0 in the other three. So each sequence becomes a row of 240 1's and 0's. This is important, because the model gives each column its own weight, and each column now represents one base at one position, so the model can learn how much evidence a G at position +1 provides, independently of every other base and position.
+However, there is a problem with the data: a model can't do anything with a string like `CCAGTCAT`. A standardised fix to this issue is known as [one-hot encoding](https://www.geeksforgeeks.org/machine-learning/ml-one-hot-encoding/). By applying this fix, each position becomes four columns (one per base), with a 1 in the column for the base that's there and 0 in the other three. So each sequence becomes a row of 240 1's and 0's (binary data). Looking at the bigger picture, the model gives each column its own weight, and this fix means that each column now represents one base at one position; the model can learn how much evidence a G at position +1 provides, independently of every other base and position.
 
 A few positions (60 out of 191,400) use [IUPAC ambiguity codes](https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html), e.g. `D` means "A, G or T". I didn't want to throw that data away, so I spread the 1 evenly over the possible bases: a `D` becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I'm not sure if that's the standard thing to do, but it seemed reasonable and it only affects a handful of entries.
 
