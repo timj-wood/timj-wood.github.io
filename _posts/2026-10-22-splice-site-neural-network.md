@@ -26,8 +26,8 @@ However, there is a serious issue with the data that must be addressed: a string
 A few positions (60 out of 191,400) use [IUPAC ambiguity codes](https://www.dnabaser.com/articles/IUPAC%20ambiguity%20codes.html); for example, `D` means "A, G or T". I didn't want to discard this data, so I spread the 1 evenly over the possible bases: a `D` becomes $\frac{1}{3}$, $\frac{1}{3}$, $\frac{1}{3}$ for A, G and T. I'm not sure if that's the standard approach, but it seemed reasonable, and it only affects a handful of entries.
 
 ```python
-X = one_hot(df["sequence"])   # (3190, 240) array of 0s, 1s and the odd 1/3
-y = df["label"].values        # "EI", "IE" or "N"
+X = np.stack([one_hot_encode(s) for s in data["sequence"]]) # encode each sequence, then stack into a (3190, 240) array
+y = data["label"].values
 ```
 
 ## Creating a comparable baseline with classical methods
