@@ -5,7 +5,7 @@ category: machine-learning
 tags: [neural-networks, genomics]
 ---
 
-For my next post, I wanted to have a go at something involving my favourite bioinformatics buzzwords, **machine learning** and **genomics**, which both lead to the *holy grail*: [***neural networks***](https://en.wikipedia.org/wiki/Neural_network_(machine_learning)). I had never touched machine learning before this, but it is more relevant to computer science now than ever, so building some sort of neural network skillset has been a top priority for me.
+For my next post, I wanted to have a go at something involving my favourite bioinformatics buzzwords, **machine learning** and **genomics**, which both lead to the *holy grail*: [***neural networks***](https://en.wikipedia.org/wiki/Neural_network_(machine_learning)). I had never touched machine learning before this, but its relevance in bioinformatics has never been greater, so building some sort of skillset in this field has been a top priority.
 
 Note that this is not a post about neural network theory, partly because I'm still learning it myself. If you want the theory done properly, [3Blue1Brown's tutorials](https://www.3blue1brown.com/lessons/neural-networks/) are fantastic.
 
