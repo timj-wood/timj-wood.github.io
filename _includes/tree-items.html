@@ -1,0 +1,26 @@
+{%- comment -%} The rows in one folder of the home-page tree: the newest `show` posts, then a
+    "N more →" row to the folder's page if there are more.
+    include.cats = post categories that belong here;
+    include.catchall = also take posts whose category isn't in include.mapped;
+    include.page = where "more" goes; include.show = how many to list (default 3).
+    A post with `short:` in its front matter is listed under that instead of its full title. {%- endcomment -%}
+{%- assign show = include.show | default: 3 -%}
+{%- assign n = 0 -%}
+{%- for post in site.posts -%}
+  {%- assign keep = false -%}
+  {%- if include.cats contains post.category -%}
+    {%- assign keep = true -%}
+  {%- elsif include.catchall -%}
+    {%- unless include.mapped contains post.category -%}{%- assign keep = true -%}{%- endunless -%}
+  {%- endif -%}
+  {%- if keep -%}
+    {%- assign n = n | plus: 1 -%}
+    {%- if n <= show %}
+    <li><span class="row"><a href="{{ post.url | relative_url }}">{{ post.short | default: post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m" }}</time></span></li>
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign extra = n | minus: show -%}
+{%- if extra > 0 %}
+    <li><span class="row"><a class="more" href="{{ include.page | relative_url }}">{{ extra }} more →</a></span></li>
+{%- endif -%}

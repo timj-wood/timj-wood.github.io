@@ -1,0 +1,38 @@
+---
+layout: default
+---
+{%- comment -%} The home page: a folder tree. The folders and their order live in _data/contents.yml;
+    each shows its newest few items. {%- endcomment -%}
+{%- assign mapped = "" | split: "" -%}
+{%- for s in site.data.contents -%}
+  {%- if s.categories -%}{%- assign mapped = mapped | concat: s.categories -%}{%- endif -%}
+  {%- for sh in s.shelves -%}{%- assign mapped = mapped | concat: sh.categories -%}{%- endfor -%}
+{%- endfor -%}
+<main class="contents">
+{% for s in site.data.contents %}
+  {%- capture items -%}{% include tree-items.html data=s.data page=s.page show=s.show cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}
+  {%- for sh in s.shelves -%}
+    {%- assign slug = sh.title | slugify -%}
+    {%- assign shelf_link = s.page | append: "#" | append: slug -%}
+    {%- if sh.page -%}{%- assign shelf_link = sh.page -%}{%- endif -%}
+    {%- capture inner -%}{% include tree-items.html cats=sh.categories page=shelf_link show=s.show %}{%- endcapture -%}
+    {%- if inner != "" -%}
+      {%- capture items %}{{ items }}
+    <li><span class="row"><a class="dir" href="{{ shelf_link | relative_url }}">{{ sh.title }}/</a></span>
+      <ul>{{ inner }}
+      </ul>
+    </li>{% endcapture -%}
+    {%- endif -%}
+  {%- endfor %}
+  <section class="tree">
+    <h2><a href="{{ s.page | relative_url }}">{{ s.title }}/</a></h2>
+    <ul>
+    {%- if items != "" %}{{ items }}
+    {%- else %}
+      <li><span class="row"><span class="empty">nothing here yet</span></span></li>
+    {%- endif %}
+    </ul>
+  </section>
+{% endfor %}
+  {% include foot.html %}
+</main>

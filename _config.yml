@@ -1,0 +1,43 @@
+title: Woodworks
+tagline: The personal website of Tim Wood
+description: The personal website of Tim Wood — projects and writing.
+url: "https://timj-wood.github.io"
+baseurl: ""
+author:
+  name: Timothy Wood
+  email: tim.jwood@outlook.com
+  github: timj-wood
+  linkedin: timj-wood
+lang: en_GB
+
+permalink: /posts/:slug.html
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+  input: GFM
+
+# Where a post's file sits decides where it appears on the site (see _data/contents.yml):
+#   _posts/projects/, _posts/blog/, _posts/writing/<shelf>/
+defaults:
+  - scope: { path: "", type: posts }
+    values: { layout: post, math: true }
+  - scope: { path: "_posts/projects", type: posts }
+    values: { category: project }
+  - scope: { path: "_posts/blog", type: posts }
+    values: { category: blog }
+  - scope: { path: "_posts/writing/book-reviews", type: posts }
+    values: { category: book-reviews }
+  - scope: { path: "_posts/writing/essays", type: posts }
+    values: { category: essays }
+  - scope: { path: "_posts/writing/creative-writing", type: posts }
+    values: { category: creative-writing }
+  - scope: { path: "" }
+    values: { layout: page, image: /images/woodworks-card.png }
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-redirect-from
+
+exclude: [Gemfile, Gemfile.lock, README.md, vendor]

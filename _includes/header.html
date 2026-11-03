@@ -1,0 +1,22 @@
+{%- comment -%} Logo, name and path bar: identical on every page, so nothing moves when you click around.
+    The path sits on the right of the band: empty on the home page, "folder / page" elsewhere. {%- endcomment -%}
+<header class="top">
+ <div class="top-inner">
+  <div class="brand">
+    <a href="{{ '/' | relative_url }}" aria-hidden="true" tabindex="-1">{% include rings.html %}</a>
+    <a class="name" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+  </div>
+  <nav class="path mono" aria-label="Where you are">
+    {%- if page.url != "/" and page.url != "/index.html" -%}
+      {%- if page.layout == "post" and page.category -%}
+        {%- include crumb.html category=page.category %} / <span>{{ page.short | default: page.title | downcase }}</span>
+      {%- elsif page.shelf -%}
+        {%- assign folder = site.data.contents | where: "title", page.section | first -%}
+        <a href="{{ folder.page | relative_url }}">{{ folder.title }}</a> / <span>{{ page.shelf }}</span>
+      {%- else -%}
+        <span>{{ page.title | downcase }}</span>
+      {%- endif -%}
+    {%- endif -%}
+  </nav>
+ </div>
+</header>

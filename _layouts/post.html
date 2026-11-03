@@ -1,0 +1,71 @@
+---
+layout: default
+---
+{%- comment -%} Every post opens the same way: a centred title, then one or two centred lines under it.
+    A post in a folder marked `paper: true` in _data/contents.yml (projects/) is laid out like a paper: an
+    optional affiliation above the title, a byline (author, `with:`, `when:`), the `links:`, an optional
+    abstract, and numbered sections once there are three or more. No date or word count.
+    Everything else shows date · words · reading time, then the `links:`. Writing (essays, reviews, stories)
+    also shows its summary as a subtitle, and a review its rating between the subtitle and the date; a post in blog/ shows neither.
+    A post can force either look with `paper: true` or `paper: false` in its front matter. {%- endcomment -%}
+{%- assign paper = false -%}
+{%- for s in site.data.contents -%}
+  {%- if s.paper -%}
+    {%- if s.categories contains page.category -%}{%- assign paper = true -%}{%- endif -%}
+    {%- for sh in s.shelves -%}{%- if sh.categories contains page.category -%}{%- assign paper = true -%}{%- endif -%}{%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if page.paper != nil -%}{%- assign paper = page.paper -%}{%- endif -%}
+{%- if paper %}
+<article class="sheet doc">
+  {%- if page.affiliation %}
+  <p class="affiliation">{{ page.affiliation }}</p>
+  {%- endif %}
+  <h1>{{ page.title }}</h1>
+  <p class="byline">{{ site.author.name }}{% if page.with %}, with {{ page.with }}{% endif %}{% if page.when %} · {{ page.when }}{% endif %}</p>
+  {%- if page.links %}
+  <p class="links mono">{% for l in page.links %}{% assign c = l.url | slice: 0 %}<a href="{% if c == '/' %}{{ l.url | relative_url }}{% else %}{{ l.url }}{% endif %}">{{ l.label }}</a>{% unless forloop.last %} · {% endunless %}{% endfor %}</p>
+  {%- endif %}
+  {%- if page.abstract %}
+  <section class="abstract">
+    <h2>Abstract</h2>
+    {{ page.abstract | markdownify }}
+  </section>
+  {%- endif %}
+
+  {%- assign sections = content | split: "<h2" | size | minus: 1 %}
+  <div class="post-body{% if sections > 2 %} numbered{% endif %}">
+    {{ content }}
+  </div>
+
+  {% include end.html %}
+</article>
+{%- else -%}
+{%- assign words = content | strip_html | number_of_words -%}
+{%- assign minutes = words | divided_by: 200 | at_least: 1 -%}
+{%- assign subtitle = true -%}{%- if page.category == "blog" -%}{%- assign subtitle = false -%}{%- endif %}
+<article class="sheet post">
+  <h1>{{ page.title }}</h1>
+  {%- if page.summary and subtitle %}
+  <p class="sub">{{ page.summary | markdownify | remove: "<p>" | remove: "</p>" | strip }}</p>
+  {%- endif %}
+  {%- if page.rating %}
+  <p class="meta mono">rating <span class="rating" title="{{ page.rating }} out of 5">{% for i in (1..5) %}<i{% if i <= page.rating %} class="on"{% endif %}></i>{% endfor %}</span> {{ page.rating }} / 5</p>
+  {%- endif %}
+  <p class="meta mono">
+    {%- if page.when %}{{ page.when }}{% else %}<time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %b %Y" | downcase }}</time>{% endif %} · {{ words }} words · {{ minutes }} min
+  </p>
+  {%- if page.with or page.links %}
+  <p class="meta mono">
+    {%- if page.with %}with {{ page.with }}{% endif %}
+    {%- for l in page.links %}{% if forloop.first and page.with %} · {% elsif forloop.first == false %} · {% endif %}{% assign c = l.url | slice: 0 %}<a href="{% if c == '/' %}{{ l.url | relative_url }}{% else %}{{ l.url }}{% endif %}">{{ l.label }}</a>{% endfor %}
+  </p>
+  {%- endif %}
+
+  <div class="post-body">
+    {{ content }}
+  </div>
+
+  {% include end.html %}
+</article>
+{%- endif %}

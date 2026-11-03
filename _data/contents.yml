@@ -1,0 +1,35 @@
+# The folders on the home page, in order. Every folder has its own page (`page`),
+# and the folder's name on the home page links to it. A post's category comes from the
+# folder its file sits in (set in _config.yml), so moving a file moves the post.
+#   categories: [...]   -> posts with one of these categories
+#   everything_else     -> also posts whose category isn't listed anywhere
+#   shelves             -> sub-folders of posts; an empty sub-folder is hidden on the home page.
+#                          Each has a `page` of its own listing just that sub-folder.
+#   show: 3             -> how many of the newest items to list on the home page (default 3);
+#                          the rest are behind a "N more" link to the folder's page
+#   paper: true         -> posts in this folder are laid out like papers (centred title, abstract,
+#                          numbered sections, no date or word count) rather than blog posts
+# A folder with nothing in it says "nothing here yet".
+
+- title: projects
+  page: /projects.html
+  paper: true
+  categories: [project]
+
+- title: blog
+  page: /blog.html
+  categories: [blog]
+  everything_else: true
+
+- title: writing
+  page: /writing.html
+  shelves:
+    - title: book reviews
+      page: /writing/book-reviews.html
+      categories: [book-reviews]
+    - title: essays
+      page: /writing/essays.html
+      categories: [essays]
+    - title: creative writing
+      page: /writing/creative-writing.html
+      categories: [creative-writing]

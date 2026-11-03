@@ -1,0 +1,16 @@
+{%- comment -%} The folder (and sub-folder) a post lives in, as path-bar links, from _data/contents.yml. {%- endcomment -%}
+{%- assign folder = nil -%}
+{%- assign shelf = nil -%}
+{%- for s in site.data.contents -%}
+  {%- if s.categories contains include.category -%}{%- assign folder = s -%}{%- endif -%}
+  {%- for sh in s.shelves -%}
+    {%- if sh.categories contains include.category -%}{%- assign folder = s -%}{%- assign shelf = sh -%}{%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+{%- unless folder -%}
+  {%- for s in site.data.contents -%}{%- if s.everything_else -%}{%- assign folder = s -%}{%- endif -%}{%- endfor -%}
+{%- endunless -%}
+{%- if folder -%}
+  {%- if folder.page -%}<a href="{{ folder.page | relative_url }}">{{ folder.title }}</a>{%- else -%}{{ folder.title }}{%- endif -%}
+  {%- if shelf %} / {% if shelf.page %}<a href="{{ shelf.page | relative_url }}">{{ shelf.title }}</a>{% elsif folder.page %}<a href="{{ folder.page | relative_url }}#{{ shelf.title | slugify }}">{{ shelf.title }}</a>{% else %}{{ shelf.title }}{% endif %}{%- endif -%}
+{%- endif -%}

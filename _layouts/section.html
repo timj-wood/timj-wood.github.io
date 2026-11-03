@@ -1,0 +1,44 @@
+---
+layout: default
+---
+{%- comment -%} A folder's own page, or a shelf's: the home-page tree, trimmed to that one folder, with every item listed.
+    Set `section:` in the front matter to the folder's title in _data/contents.yml; add `shelf:` with a shelf's
+    title to show just that shelf. A folder with shelves lists them nested, each shelf name linking to its page. {%- endcomment -%}
+{%- assign mapped = "" | split: "" -%}
+{%- for s in site.data.contents -%}
+  {%- if s.categories -%}{%- assign mapped = mapped | concat: s.categories -%}{%- endif -%}
+  {%- for sh in s.shelves -%}{%- assign mapped = mapped | concat: sh.categories -%}{%- endfor -%}
+{%- endfor -%}
+{%- assign s = site.data.contents | where: "title", page.section | first -%}
+{%- if page.shelf -%}
+  {%- assign sh = s.shelves | where: "title", page.shelf | first -%}
+  {%- assign heading = sh.title -%}
+  {%- capture items -%}{% include tree-items.html cats=sh.categories page=page.url show=1000 %}{%- endcapture -%}
+{%- else -%}
+  {%- assign heading = s.title -%}
+  {%- capture items -%}{% include tree-items.html page=s.page show=1000 cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}
+  {%- for sh in s.shelves -%}
+    {%- assign shelf_link = s.page | append: "#" | append: sh.title | slugify -%}
+    {%- if sh.page -%}{%- assign shelf_link = sh.page -%}{%- endif -%}
+    {%- capture inner -%}{% include tree-items.html cats=sh.categories page=shelf_link show=1000 %}{%- endcapture -%}
+    {%- if inner != "" -%}
+      {%- capture items %}{{ items }}
+    <li><span class="row"><a class="dir" href="{{ shelf_link | relative_url }}">{{ sh.title }}/</a></span>
+      <ul>{{ inner }}
+      </ul>
+    </li>{% endcapture -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif %}
+<main class="contents">
+  <section class="tree">
+    <h2><a href="{{ page.url | relative_url }}">{{ heading }}/</a></h2>
+    <ul>
+    {%- if items != "" %}{{ items }}
+    {%- else %}
+      <li><span class="row"><span class="empty">nothing here yet</span></span></li>
+    {%- endif %}
+    </ul>
+  </section>
+  {% include foot.html %}
+</main>

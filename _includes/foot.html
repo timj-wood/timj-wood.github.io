@@ -1,0 +1,8 @@
+{%- comment -%} The line at the foot of every tree page. On the home page it is the site line (about, cv…);
+    on a folder or shelf page it is the way back: "← home", and on a shelf page "← <folder>" before it. {%- endcomment -%}
+{%- if page.url == "/" or page.url == "/index.html" %}
+<p class="foot"><a href="{{ '/about.html' | relative_url }}">about</a> · <a href="{{ '/docs/cv.pdf' | relative_url }}">cv</a> · <a href="https://github.com/{{ site.author.github }}">github</a> · <a href="{{ '/feed.xml' | relative_url }}">rss</a></p>
+{%- else %}
+{%- assign folder = site.data.contents | where: "title", page.section | first %}
+<p class="foot">{% if page.shelf and folder.page %}<a href="{{ folder.page | relative_url }}">← {{ folder.title }}</a> · {% endif %}<a href="{{ '/' | relative_url }}">← home</a></p>
+{%- endif %}

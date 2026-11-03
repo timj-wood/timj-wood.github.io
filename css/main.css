@@ -1,0 +1,286 @@
+/* woodworks */
+
+:root {
+  --forest: #17261d;   /* the background */
+  --moss: #8fa58f;     /* faint text on the background */
+  --bark: #f6f3ec;     /* main text on the background */
+  --sap: #d6a462;      /* links on the background */
+  --paper: #f4f0e6;
+  --ink: #23201b;
+  --pencil: #6e675c;
+  --rule: #d9d2c3;
+  --shade: #ebe5d8;
+  --leaf: #2f5a3e;     /* links on paper */
+  --lichen: #4a6353;   /* trunk, branches and buds on the background */
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--forest); }
+/* desktop browsers: always leave room for the scrollbar, so the header never shifts between short and long pages */
+@media (min-width: 641px) { html { scrollbar-gutter: stable; } }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--bark);
+  font: 20px/1.6 "EB Garamond", Garamond, Georgia, serif;
+  -webkit-text-size-adjust: 100%;
+}
+/* the tree pages (home, folders, shelves) are the green cover; a post or page is a cream sheet inside it */
+body.paper { background: var(--paper); color: var(--ink); }
+
+a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+
+.mono { font-family: "IBM Plex Mono", "Courier New", monospace; font-weight: 300; }
+
+/* ---------- top of every page: a green band with a gold edge ---------- */
+
+.top {
+  background: var(--forest);
+  color: var(--bark);
+  border-bottom: 2px solid var(--sap);
+}
+.top-inner {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 34px 24px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;          /* a long path drops under the name */
+  gap: 10px 32px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand a { display: flex; }
+.top .rings { width: 44px; height: 44px; }
+.top .name { font-size: 34px; text-decoration: none; letter-spacing: -0.3px; }
+/* the path: folder / page, on the right of the band */
+.path { font-size: 15px; color: var(--moss); text-align: right; }
+.path a { text-decoration: none; }
+.path a:hover { color: var(--sap); text-decoration: underline; }
+.path span { color: var(--bark); }
+
+/* ---------- tree pages: home, folders and shelves ---------- */
+
+.contents {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 72px 24px 80px;
+}
+
+.tree { margin: 0 0 48px 30px; }
+/* everything in the tree (folders, titles, placeholders) shares one type */
+.tree h2, .tree .dir, .tree .row a, .tree .empty {
+  font: 400 16px/2.2 "IBM Plex Mono", "Courier New", monospace;
+  margin: 0;
+}
+.tree .empty, .tree .row a.more { font-weight: 300; }
+.tree h2 a, .tree a.dir { text-decoration: none; }
+.tree h2 a:hover, .tree a.dir:hover { color: var(--sap); text-decoration: underline; }
+.tree ul { list-style: none; margin: 0; padding: 0; }
+.tree li { position: relative; padding-left: 52px; }
+/* the trunk: a straight line running down past every item but the last */
+.tree li::before {
+  content: "";
+  position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  border-left: 1px solid var(--lichen);
+}
+.tree li:last-child::before { display: none; }
+/* the branch: leaves the trunk and curves out to the item, like a limb */
+.tree li::after {
+  content: "";
+  position: absolute;
+  left: 6px; top: 0; width: 30px; height: 19px;
+  border-left: 1px solid var(--lichen);
+  border-bottom: 1px solid var(--lichen);
+  border-bottom-left-radius: 16px;
+}
+/* a bud at the tip of each branch; it warms up when the item is hovered */
+.tree .row::before {
+  content: "";
+  position: absolute;
+  left: 33px; top: 16px; width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--lichen);
+  transition: background .15s;
+  z-index: 1;   /* above the branch line, which otherwise shows through it */
+}
+.tree li:hover > .row::before { background: var(--sap); }
+.tree .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 38px;
+}
+.tree .row a { text-decoration: none; }
+.tree .row a, .tree .empty { line-height: 1.4; }
+.tree .row a:hover { color: var(--sap); text-decoration: underline; }
+.tree .empty, .tree .row a.more { color: var(--moss); }
+.tree time { color: var(--moss); font: 300 13px "IBM Plex Mono", "Courier New", monospace; white-space: nowrap; }
+
+.foot {
+  margin-top: 80px;
+  font: 300 15px "IBM Plex Mono", "Courier New", monospace;
+  color: var(--moss);
+}
+.foot a:hover { color: var(--sap); }
+
+/* ---------- a post or page: a cream page, edge to edge ---------- */
+
+.sheet {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+
+
+/* the title and the lines under it: centred, the same on every post */
+.sheet h1 {
+  text-align: center;
+  font-weight: 400;
+  font-size: 38px;
+  line-height: 1.15;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.sheet .sub {
+  text-align: center;
+  font-style: italic;
+  color: var(--pencil);
+  max-width: 640px;
+  margin: 16px auto 0;
+}
+.sheet .meta {
+  text-align: center;
+  font-size: 14px;
+  color: var(--pencil);
+  margin: 0;
+}
+.sheet h1 + .meta, .sheet .sub + .meta { margin-top: 16px; }
+.sheet .meta + .meta { margin-top: 8px; }
+/* a post (either look) starts lower down the page than the about page does */
+.doc, .post { padding-top: 96px; }
+.post .post-body, .doc .post-body { margin-top: 64px; }
+.page-body { margin-top: 48px; }
+.rating { display: inline-flex; gap: 5px; vertical-align: -2px; margin: 0 8px 0 6px; }
+.rating i { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--leaf); }
+.rating i.on { background: var(--leaf); }
+
+.sheet p { margin: 0 0 1em; hyphens: auto; -webkit-hyphens: auto; }
+.sheet a { color: var(--leaf); }
+.sheet h2 { font-weight: 500; font-size: 26px; line-height: 1.25; margin: 48px 0 14px; }
+.sheet h3 { font-weight: 500; font-size: 22px; margin: 36px 0 10px; }
+.sheet h4 { font-weight: 500; font-style: italic; font-size: 20px; margin: 28px 0 8px; }
+.post-body h1 { font-size: 32px; text-align: left; margin: 56px 0 14px; }
+.sheet h1 + h2, .sheet h2 + h3, .sheet h3 + h4 { margin-top: 10px; }
+.post-body > :first-child, .page-body > :first-child { margin-top: 0; }
+.sheet ul, .sheet ol { padding-left: 1.4em; margin: 0 0 1em; }
+.sheet blockquote { margin: 1.4em 2em; font-style: italic; color: #4a453d; }
+.sheet blockquote p:last-child { margin-bottom: 0; }
+.sheet hr { border: 0; text-align: center; margin: 48px 0; }
+.sheet hr::after { content: "·  ·  ·"; white-space: pre; color: var(--pencil); }
+.sheet img { max-width: 100%; height: auto; display: block; margin: 28px auto; }
+/* smaller images: ![..](..){: .narrow} or {: .half}; or any width with {: width="60%"} */
+.sheet img.narrow { width: 70%; }
+.sheet img.half { width: 50%; }
+.sheet figure { margin: 32px 0; }
+.sheet figure img { margin: 0 auto; }
+.sheet figcaption { font-size: 16px; color: var(--pencil); margin-top: 8px; }
+
+/* code */
+.sheet code { font: .8em "IBM Plex Mono", monospace; }
+.sheet pre { background: var(--shade); padding: 14px 18px; overflow-x: auto; font-size: 15px; line-height: 1.5; margin: 0 0 1em; hyphens: none; }
+.sheet pre code { font-size: inherit; }
+.sheet div.highlighter-rouge { margin: 0 0 1em; }
+.sheet div.highlighter-rouge pre { margin: 0; }
+.highlight .c, .highlight .c1, .highlight .cm, .highlight .cs, .highlight .ch, .highlight .cd, .highlight .cp { color: #857e72; font-style: italic; }
+.highlight .k, .highlight .kc, .highlight .kd, .highlight .kn, .highlight .kp, .highlight .kr, .highlight .kt, .highlight .ow { color: var(--leaf); font-weight: bold; }
+.highlight .nf, .highlight .fm, .highlight .nc, .highlight .nd { color: #8a5a00; }
+.highlight .nb, .highlight .bp, .highlight .nn { color: #2a6f7c; }
+.highlight .s, .highlight .s1, .highlight .s2, .highlight .sa, .highlight .sb, .highlight .sc, .highlight .sd, .highlight .se, .highlight .sh, .highlight .si, .highlight .sx, .highlight .sr, .highlight .ss, .highlight .dl { color: #a4472b; }
+.highlight .m, .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi, .highlight .il, .highlight .mo, .highlight .mx { color: #7a4a9e; }
+.highlight .err { color: inherit; background: none; }
+
+/* collapsible: <details markdown="1"><summary>Code</summary> ... </details> */
+.sheet details { margin: 0 0 1em; }
+.sheet summary { cursor: pointer; font: 300 15px "IBM Plex Mono", monospace; color: var(--pencil); padding: 4px 0; list-style: none; }
+.sheet summary::-webkit-details-marker { display: none; }
+.sheet summary::before { content: "+ "; color: var(--leaf); }
+.sheet details[open] summary::before { content: "− "; }
+.sheet summary:hover { color: var(--ink); }
+
+/* tables */
+.sheet table { border-collapse: collapse; margin: 1.4em 0; font-size: 17px; display: block; overflow-x: auto; width: fit-content; max-width: 100%; }
+.sheet th { font-weight: 500; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+.sheet th, .sheet td { padding: 5px 16px; }
+.sheet tr:last-child td { border-bottom: 1px solid var(--ink); }
+
+/* maths */
+mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+
+/* margin notes: <div class="marginnote">...</div>
+   pencilled into the text; out in the margin on wide screens */
+.marginnote { font-size: 16px; line-height: 1.5; font-style: italic; color: var(--pencil); margin: 0 0 1em 2em; }
+@media (min-width: 1360px) {
+  .sheet .marginnote { float: right; clear: right; width: 200px; margin: 4px -240px 16px 0; }
+}
+
+/* a paper (projects/ posts): affiliation, byline, abstract, numbered sections */
+.doc .affiliation { text-align: center; color: var(--pencil); font-size: 18px; margin: 0 0 16px; }
+.doc .byline { text-align: center; color: var(--pencil); font-size: 16px; margin: 16px 0 0; }
+.doc .links { text-align: center; font-size: 14px; margin: 8px 0 0; }
+.doc .abstract { max-width: 620px; margin: 56px auto 0; font-style: italic; color: #4a453d; }
+.doc .abstract h2 { text-align: center; font-size: 20px; font-weight: 500; font-style: italic; margin: 0 0 22px; }
+.doc .abstract p { font-size: 18px; line-height: 1.65; }
+.doc .post-body { counter-reset: sec; }
+.doc .post-body h2, .doc .post-body h3 { font-weight: 400; }
+/* numbered only when the page has three or more sections */
+.doc .numbered h2 { counter-increment: sec; counter-reset: sub; }
+.doc .numbered h2::before { content: counter(sec) "\2002"; }
+.doc .numbered h3 { counter-increment: sub; }
+.doc .numbered h3::before { content: counter(sec) "." counter(sub) "\2002"; }
+.doc .numbered h2.unnumbered { counter-increment: none; }
+.doc .numbered h2.unnumbered::before { content: none; }
+.sheet h2.unnumbered ~ p { font-size: 17px; line-height: 1.5; margin: 0 0 1.1em; padding-left: 2em; text-indent: -2em; }
+
+/* about */
+/* the about page's header: photo with name and title beside it (set `profile:` in front matter) */
+.profile { display: flex; align-items: center; gap: 32px; }
+.profile img { width: 140px; height: 140px; object-fit: cover; margin: 0; flex: none; }
+.sheet .profile .sub { margin: 6px 0 0; }
+.sheet .contact { font-size: 15px; color: var(--pencil); text-align: center; margin-top: 40px; }
+.sheet .contact.first { text-align: left; margin: 0 0 36px; }
+.sheet .who { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+
+.end {
+  text-align: center;
+  margin-top: 56px;
+  color: var(--pencil);
+}
+.end .rings { width: 26px; height: 26px; opacity: .55; display: block; margin: 0 auto 18px; }
+.end a { font-size: 15px; }
+
+@media (max-width: 640px) {
+  body { font-size: 18px; }
+  .top-inner { padding: 22px 20px 16px; gap: 6px 20px; }
+  .top .name { font-size: 28px; }
+  .top .rings { width: 38px; height: 38px; }
+  .path { font-size: 13px; text-align: left; }
+  .tree { margin-left: 0; }
+  .tree li { padding-left: 34px; }
+  .tree li::after { width: 20px; height: 21px; border-bottom-left-radius: 12px; }
+  .tree .row::before { left: 23px; top: 18px; }
+  .tree .row { display: block; min-height: 0; line-height: 1.4; padding: 10px 0 6px; }
+  .tree time { display: block; font-size: 12px; }
+  .contents { padding-top: 32px; }
+  .sheet { padding: 36px 20px 48px; }
+  .sheet h1 { font-size: 30px; }
+  .doc, .post { padding-top: 48px; }
+  .profile { flex-direction: column; align-items: flex-start; gap: 18px; }
+  .profile img { width: 112px; height: 112px; }
+  .sheet blockquote { margin: 1.4em 1em; }
+  .marginnote { margin-left: 1em; }
+}
