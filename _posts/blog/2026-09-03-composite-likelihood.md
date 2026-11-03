@@ -88,8 +88,8 @@ corr   = cov / np.outer(se, se)
 I consider the last line of that code block non-negotiable. Even corrected intervals are marginal: each describes one parameter while all the others are free to move. A table of intervals therefore hides how the parameters trade off against each other. Here is the correlation matrix for the wildcat model:
 
 <figure>
-  <img src="/images/wildcat/jsfs.png" alt="A joint site frequency spectrum" class="half">
-  <figcaption><strong>Figure 1.</strong> The joint site frequency spectrum for wildcat and domestic cat, with the fitted model on the right.</figcaption>
+  <img src="/images/wildcat/corr.png" alt="Parameter correlation matrix" class="half">
+  <figcaption><strong>Figure 1.</strong> Correlation matrix of the parameter estimates. The deeper parameters lie along a single ridge in the likelihood, so their intervals cannot be read independently.</figcaption>
 </figure>
 
 The three deepest parameters, the two ancestral sizes ($N_S$, $N_L$) and the split time ($T_A$), each had intervals spanning a factor of five to seven. That sounds like three separately uncertain quantities. The block in the top left says otherwise. They correlate above 0.97 with each other and below −0.99 with $\theta$, so they move together along a single ridge: the data constrain one direction in that three-dimensional space, not three. Meanwhile, two of my four "well-determined" parameters correlate at 0.987, so what is actually pinned down is their product. Neither fact is visible in a table of intervals. If you report one, report both.
