@@ -13,7 +13,7 @@ This post details my first attempt at creating a neural network, applied to a pr
 
 ## RNA splicing and rationale
 
-When a gene is transcribed, the pre-mRNA still contains its introns, which must be removed before translation. The boundaries of almost every intron carry a short consensus: GT at the exon–intron (donor) junction and AG at the intron–exon (acceptor) junction, the GT–AG rule first described by Breathnach *et al.* (1978) and reviewed by Breathnach and Chambon (1981). Catalogues of junction sequences later established an extended consensus, including a pyrimidine-rich tract upstream of acceptor sites (Mount, 1982; Shapiro and Senapathy, 1987). Because the rule is near-universal, it makes a good first target: I know what the answer should look like, so I can tell whether a model has learnt something sensible or something strange.
+When a gene is transcribed, the pre-mRNA still contains its introns, which must be removed before translation. The boundaries of almost every intron carry a short consensus: GT at the exon–intron (donor) junction and AG at the intron–exon (acceptor) junction, the GT–AG rule, first described in the late 1970s. Later catalogues of junction sequences established an extended consensus, including a pyrimidine-rich tract upstream of acceptor sites (Mount, 1982). Because the rule is near-universal, it makes a good first target: I know what the answer should look like, so I can tell whether a model has learnt something sensible or something strange.
 
 The question I put to each model is: given a window of 60 bases, is there a splice junction at its centre, and if so, which kind? The aim is a model that learns the GT…AG pattern by itself. Before that, I fit some ordinary classifiers so there is something to compare the network against.
 
@@ -42,7 +42,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 ```
 
-Logistic regression, fitted with scikit-learn (Pedregosa *et al.*, 2011), is the natural baseline.
+Logistic regression, fitted with [scikit-learn](https://scikit-learn.org/), is the natural baseline.
 
 ```python
 from sklearn.linear_model import LogisticRegression
@@ -55,7 +55,7 @@ pred = logreg.predict(X_test)
 print(f"Logistic regression test accuracy: {accuracy_score(y_test, pred):.3f}")
 ```
 
-It classified **93.7%** of the test sequences correctly, higher than I expected from a linear model. I also tried $k$-nearest neighbours (Cover and Hart, 1967), choosing $k$ by cross-validation as the JGI course does:
+It classified **93.7%** of the test sequences correctly, higher than I expected from a linear model. I also tried $k$-nearest neighbours, choosing $k$ by cross-validation as the JGI course does:
 
 ```python
 from sklearn.neighbors import KNeighborsClassifier
@@ -69,7 +69,7 @@ print(model.best_estimator_)
 print(f"kNN test accuracy: {model.score(X_test, y_test):.3f}")
 ```
 
-This was markedly worse, at **85.1%**. The likely reason is how distances behave between one-hot vectors in 240 dimensions: two unrelated 60-base sequences differ at most positions, so almost every pair ends up roughly the same distance apart and the nearest neighbours carry little information (Beyer *et al.*, 1999). The dataset's own contributors reported similarly poor nearest-neighbour results (Towell and Shavlik, 1994).
+This was markedly worse, at **85.1%**. The likely reason is how distances behave between one-hot vectors in 240 dimensions: two unrelated 60-base sequences differ at most positions, so almost every pair ends up roughly the same distance apart and the nearest neighbours carry little information. The dataset's own contributors reported similarly poor nearest-neighbour results.
 
 The logistic model is simple, but its weights are readable. It has one weight per (position, base) for each class, so the 240 weights can be reshaped into a 4 × 60 grid and plotted:
 
@@ -106,7 +106,7 @@ $$
 \frac{\partial \ell}{\partial b} = a - y.
 $$
 
-The gradient for each weight is the error times the input it multiplies. If the neuron was confidently wrong about a sequence that had a G at +1, the weight for G at +1 receives a large correction; if that feature was absent, the weight is unchanged. The cancellation is not an accident, and is the reason sigmoid and cross-entropy are usually paired. Averaged over all 2,392 training sequences and written as a matrix product, the whole training loop is a few lines of PyTorch (Paszke *et al.*, 2019):
+The gradient for each weight is the error times the input it multiplies. If the neuron was confidently wrong about a sequence that had a G at +1, the weight for G at +1 receives a large correction; if that feature was absent, the weight is unchanged. The cancellation is not an accident, and is the reason sigmoid and cross-entropy are usually paired. Averaged over all 2,392 training sequences and written as a matrix product, the whole training loop is a few lines of [PyTorch](https://pytorch.org/):
 
 ```python
 def sigmoid(z):
@@ -143,7 +143,7 @@ for epoch in range(400):
 
 ![Training loss for the hand-written neuron and the PyTorch one, overlaid](/images/splice/neuron_two_ways.png){: .narrow}
 
-The two loss curves sit on top of each other, and the final weights agree to within $2 \times 10^{-7}$. For a single neuron, then, `loss.backward()` is exactly the chain rule applied above, automated. Backpropagation proper is the same idea applied layer by layer, storing intermediate values so that nothing is computed twice (Rumelhart, Hinton and Williams, 1986), though I have not tested that part myself. Building a neuron by hand was a useful exercise; PyTorch does all of it for you, and in practice that is what you should use.
+The two loss curves sit on top of each other, and the final weights agree to within $2 \times 10^{-7}$. For a single neuron, then, `loss.backward()` is exactly the chain rule applied above, automated. Backpropagation proper is the same idea applied layer by layer, storing intermediate values so that nothing is computed twice, though I have not tested that part myself. Building a neuron by hand was a useful exercise; PyTorch does all of it for you, and in practice that is what you should use.
 
 ## What the neuron learnt
 
@@ -155,7 +155,7 @@ The four largest weights, in order, are G at −1, A at −2, T at +2 and G at +
 
 ## Adding a hidden layer
 
-A single neuron can only add up independent pieces of evidence. A hidden layer lets the network combine features (something like "G at +1 *and* T at +2 *and* a run of C and T before it"), which a weighted sum cannot do. So I built a small multilayer perceptron: 240 inputs, a hidden layer of 32 units with ReLU activation, $f(z) = \max(0, z)$ (Nair and Hinton, 2010), and three outputs for `EI`, `IE` and `N`, trained with mini-batch stochastic gradient descent for 40 epochs.
+A single neuron can only add up independent pieces of evidence. A hidden layer lets the network combine features (something like "G at +1 *and* T at +2 *and* a run of C and T before it"), which a weighted sum cannot do. So I built a small multilayer perceptron: 240 inputs, a hidden layer of 32 units with ReLU activation, $f(z) = \max(0, z)$, and three outputs for `EI`, `IE` and `N`, trained with mini-batch stochastic gradient descent for 40 epochs.
 
 ```python
 mlp = nn.Sequential(
@@ -183,39 +183,15 @@ Two things I learnt along the way:
 
 It reached **94.0%** on the test set, against 93.7% for logistic regression. That is effectively a tie: a difference this small, on 798 test sequences, is within what a different train–test split could produce.
 
-The loss plot turned out to be the most informative part. Training loss keeps falling for all 40 epochs, but test loss bottoms out around epoch 7 and then climbs slowly. This is overfitting: the 32 hidden units have enough capacity to start memorising the training sequences, and the extra confidence goes mostly on examples the network already classifies correctly, which is why test accuracy barely moves. Early stopping (Prechelt, 1998) or regularisation would address it, though neither would be expected to change the ranking of the models. I had read about both before, but it was much clearer seeing it happen in my own plot.
+The loss plot turned out to be the most informative part. Training loss keeps falling for all 40 epochs, but test loss bottoms out around epoch 7 and then climbs slowly. This is overfitting: the 32 hidden units have enough capacity to start memorising the training sequences, and the extra confidence goes mostly on examples the network already classifies correctly, which is why test accuracy barely moves. Early stopping or regularisation would address it, though neither would be expected to change the ranking of the models. I had read about both before, but it was much clearer seeing it happen in my own plot.
 
-In hindsight, the tie is not surprising. Noordewier *et al.* (1991) found much the same, with a plain backpropagation network reaching about 94.5% once it had enough training examples, and Towell and Shavlik (1994) tabulate similar error rates. My reading is that the splice signal within a 60-base window is largely additive, a few positions each contributing on their own, so a linear model captures most of it and the extra capacity has little left to find. That is also why position-specific weight matrices, which are linear in exactly this sense, have long been the standard model of splice-site signals (Shapiro and Senapathy, 1987). I had half expected the network to win simply because it was a neural network; this was a useful correction. Whether the conclusion holds beyond this benchmark is another matter: genome-scale splice-site prediction involves longer context, dependence between positions and severe class imbalance (Burge and Karlin, 1997).
+In hindsight, the tie is not surprising. Noordewier *et al.* (1991) found much the same, with a plain backpropagation network reaching about 94.5% once it had enough training examples. My reading is that the splice signal within a 60-base window is largely additive, a few positions each contributing on their own, so a linear model captures most of it and the extra capacity has little left to find. That is also why position-specific weight matrices, which are linear in exactly this sense, have long been the standard model of splice-site signals. I had half expected the network to win simply because it was a neural network; this was a useful correction. Whether the conclusion holds beyond this benchmark is another matter: genome-scale splice-site prediction involves longer context, dependence between positions and severe class imbalance.
 
 ## References
 {: .unnumbered}
 
-Beyer, K., Goldstein, J., Ramakrishnan, R. & Shaft, U. (1999) When is "nearest neighbor" meaningful? In C. Beeri & P. Buneman (eds), *Database Theory — ICDT'99*, Lecture Notes in Computer Science 1540, pp. 217–235. Springer. [doi:10.1007/3-540-49257-7_15](https://doi.org/10.1007/3-540-49257-7_15)
-
-Breathnach, R., Benoist, C., O'Hare, K., Gannon, F. & Chambon, P. (1978) Ovalbumin gene: evidence for a leader sequence in mRNA and DNA sequences at the exon–intron boundaries. *Proceedings of the National Academy of Sciences USA* 75(10), 4853–4857. [doi:10.1073/pnas.75.10.4853](https://doi.org/10.1073/pnas.75.10.4853)
-
-Breathnach, R. & Chambon, P. (1981) Organization and expression of eucaryotic split genes coding for proteins. *Annual Review of Biochemistry* 50, 349–383. [doi:10.1146/annurev.bi.50.070181.002025](https://doi.org/10.1146/annurev.bi.50.070181.002025)
-
-Burge, C. & Karlin, S. (1997) Prediction of complete gene structures in human genomic DNA. *Journal of Molecular Biology* 268(1), 78–94. [doi:10.1006/jmbi.1997.0951](https://doi.org/10.1006/jmbi.1997.0951)
-
-Cover, T. & Hart, P. (1967) Nearest neighbor pattern classification. *IEEE Transactions on Information Theory* 13(1), 21–27. [doi:10.1109/TIT.1967.1053964](https://doi.org/10.1109/TIT.1967.1053964)
-
 Mount, S. M. (1982) A catalogue of splice junction sequences. *Nucleic Acids Research* 10(2), 459–472. [doi:10.1093/nar/10.2.459](https://doi.org/10.1093/nar/10.2.459)
-
-Nair, V. & Hinton, G. E. (2010) Rectified linear units improve restricted Boltzmann machines. *Proceedings of the 27th International Conference on Machine Learning (ICML)*, pp. 807–814. Omnipress.
 
 Noordewier, M. O., Towell, G. G. & Shavlik, J. W. (1991) Training knowledge-based neural networks to recognize genes in DNA sequences. *Advances in Neural Information Processing Systems* 3, 530–536. Morgan Kaufmann. [pdf](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)
 
-Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., Desmaison, A., Köpf, A., Yang, E., DeVito, Z., Raison, M., Tejani, A., Chilamkurthy, S., Steiner, B., Fang, L., Bai, J. & Chintala, S. (2019) PyTorch: an imperative style, high-performance deep learning library. *Advances in Neural Information Processing Systems* 32, 8024–8035.
-
-Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M. & Duchesnay, É. (2011) Scikit-learn: machine learning in Python. *Journal of Machine Learning Research* 12, 2825–2830.
-
-Prechelt, L. (1998) Early stopping — but when? In G. B. Orr & K.-R. Müller (eds), *Neural Networks: Tricks of the Trade*, Lecture Notes in Computer Science 1524, pp. 55–69. Springer. [doi:10.1007/3-540-49430-8_3](https://doi.org/10.1007/3-540-49430-8_3)
-
-Rumelhart, D. E., Hinton, G. E. & Williams, R. J. (1986) Learning representations by back-propagating errors. *Nature* 323, 533–536. [doi:10.1038/323533a0](https://doi.org/10.1038/323533a0)
-
-Shapiro, M. B. & Senapathy, P. (1987) RNA splice junctions of different classes of eukaryotes: sequence statistics and functional implications in gene expression. *Nucleic Acids Research* 15(17), 7155–7174. [doi:10.1093/nar/15.17.7155](https://doi.org/10.1093/nar/15.17.7155)
-
 Towell, G. G., Noordewier, M. O. & Shavlik, J. W. (1991) Molecular Biology (Splice-junction Gene Sequences) [dataset]. UCI Machine Learning Repository. [doi:10.24432/C5M888](https://doi.org/10.24432/C5M888)
-
-Towell, G. G. & Shavlik, J. W. (1994) Knowledge-based artificial neural networks. *Artificial Intelligence* 70(1–2), 119–165. [doi:10.1016/0004-3702(94)90105-8](https://doi.org/10.1016/0004-3702(94)90105-8)
