@@ -9,7 +9,7 @@ links:
   - { label: repo, url: "https://github.com/timj-wood/splice-site-nn" }
 ---
 
-This post is my first attempt at a neural network, applied to a problem in genomics with a known answer. I had not used machine learning before, but its place in bioinformatics is now hard to ignore, so building some competence in it has become a priority. The post is not an introduction to the theory, which I am still learning; for that, 3Blue1Brown's lessons and Nielsen (2015) are good places to start. For the code I have followed the Jean Golding Institute's *Data Analysis in Python (Part 2)* and *Introduction to AI* courses. All figures and numbers come from the scripts in the [repository](https://github.com/timj-wood/splice-site-nn).
+This post details my first attempt at creating a neural network, applied to a problem in genomics with a known answer - making interpretation easy. I had not used machine learning before this, but its place in bioinformatics is now hard to ignore, so building some competence in it has become a priority. The post is not an introduction to the theory, which I am still learning; for that, 3Blue1Brown's lessons and [Nielsen's](http://neuralnetworksanddeeplearning.com/) online book are good places to start. For the code I have followed the Jean Golding Institute's *Data Analysis in Python (Part 2)* and *Introduction to AI* courses. All figures and numbers come from the scripts in the [repository](https://github.com/timj-wood/splice-site-nn).
 
 ## RNA splicing and rationale
 
@@ -203,8 +203,6 @@ Cover, T. & Hart, P. (1967) Nearest neighbor pattern classification. *IEEE Trans
 Mount, S. M. (1982) A catalogue of splice junction sequences. *Nucleic Acids Research* 10(2), 459–472. [doi:10.1093/nar/10.2.459](https://doi.org/10.1093/nar/10.2.459)
 
 Nair, V. & Hinton, G. E. (2010) Rectified linear units improve restricted Boltzmann machines. *Proceedings of the 27th International Conference on Machine Learning (ICML)*, pp. 807–814. Omnipress.
-
-Nielsen, M. A. (2015) *Neural Networks and Deep Learning*. Determination Press. [neuralnetworksanddeeplearning.com](http://neuralnetworksanddeeplearning.com/)
 
 Noordewier, M. O., Towell, G. G. & Shavlik, J. W. (1991) Training knowledge-based neural networks to recognize genes in DNA sequences. *Advances in Neural Information Processing Systems* 3, 530–536. Morgan Kaufmann. [pdf](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)
 
