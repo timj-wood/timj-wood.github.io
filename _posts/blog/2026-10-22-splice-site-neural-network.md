@@ -190,8 +190,8 @@ In hindsight, the tie is not surprising. Noordewier *et al.* (1991) found much t
 ## References
 {: .unnumbered}
 
-Mount, S. M. (1982) A catalogue of splice junction sequences. *Nucleic Acids Research* 10(2), 459–472. [doi:10.1093/nar/10.2.459](https://doi.org/10.1093/nar/10.2.459)
+Mount, S. M. (1982) [A catalogue of splice junction sequences.](https://doi.org/10.1093/nar/10.2.459) *Nucleic Acids Research* 10(2), 459–472.
 
-Noordewier, M. O., Towell, G. G. & Shavlik, J. W. (1991) Training knowledge-based neural networks to recognize genes in DNA sequences. *Advances in Neural Information Processing Systems* 3, 530–536. Morgan Kaufmann. [pdf](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf)
+Noordewier, M. O., Towell, G. G. & Shavlik, J. W. (1991) [Training knowledge-based neural networks to recognize genes in DNA sequences.](https://proceedings.neurips.cc/paper/1990/file/8efb100a295c0c690931222ff4467bb8-Paper.pdf) *Advances in Neural Information Processing Systems* 3, 530–536. Morgan Kaufmann.
 
-Towell, G. G., Noordewier, M. O. & Shavlik, J. W. (1991) Molecular Biology (Splice-junction Gene Sequences) [dataset]. UCI Machine Learning Repository. [doi:10.24432/C5M888](https://doi.org/10.24432/C5M888)
+Towell, G. G., Noordewier, M. O. & Shavlik, J. W. (1991) [Molecular Biology (Splice-junction Gene Sequences).](https://doi.org/10.24432/C5M888) Dataset, UCI Machine Learning Repository.
