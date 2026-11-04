@@ -284,3 +284,8 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
   .sheet blockquote { margin: 1.4em 1em; }
   .marginnote { margin-left: 1em; }
 }
+
+/* ---------- the tree on cream: darker text, lines and hover colours than it needed on the green ---------- */
+body.paper .tree .empty, body.paper .tree .row a.more, body.paper .tree time, body.paper .foot { color: var(--pencil); }
+body.paper .tree li::before, body.paper .tree li::after { border-color: var(--lichen); }
+body.paper .tree h2 a:hover, body.paper .tree a.dir:hover, body.paper .tree .row a:hover, body.paper .foot a:hover { color: var(--leaf); }

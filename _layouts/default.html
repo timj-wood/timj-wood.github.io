@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en-GB">
 {% include head.html %}
-{%- comment -%} Tree pages (the home page, folders and shelves) sit on the green cover; a post or page is a cream sheet. {%- endcomment -%}
-<body class="{% if page.url == "/" or page.layout == "section" %}cover{% else %}paper{% endif %}">
+{%- comment -%} Every page, tree pages included, is a cream sheet under the green band. {%- endcomment -%}
+<body class="paper">
   {% include header.html %}
   {{ content }}
 </body>
