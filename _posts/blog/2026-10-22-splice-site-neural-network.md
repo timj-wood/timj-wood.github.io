@@ -9,7 +9,7 @@ links:
   - { label: repo, url: "https://github.com/timj-wood/splice-site-nn" }
 ---
 
-This post details my first attempt at creating a neural network, applied to a problem in genomics with a known answer - making interpretation easy. I had not used machine learning before this, but its place in bioinformatics is now hard to ignore, so building some competence in it has become a priority. The post is not an introduction to the theory, which I am still learning; for that, 3Blue1Brown's lessons and [Nielsen's](http://neuralnetworksanddeeplearning.com/) online book are good places to start. For the code I have followed the Jean Golding Institute's *Data Analysis in Python (Part 2)* and *Introduction to AI* courses. All figures and numbers come from the scripts in the [repository](https://github.com/timj-wood/splice-site-nn).
+This post details my first attempt at creating a neural network, applied to a problem in genomics with a known answer - making interpretation easy. I had not used machine learning before this, but its place in bioinformatics is now hard to ignore, so building some competence in it has become a priority. This post is not an introduction to the theory, which I am still learning; for that, 3Blue1Brown's lessons and [Nielsen's](http://neuralnetworksanddeeplearning.com/) online book are good places to start. For the code I have followed the Jean Golding Institute's *Data Analysis in Python (Part 2)* and *Introduction to AI* courses. All figures and numbers come from the scripts in the [repository](https://github.com/timj-wood/splice-site-nn).
 
 ## RNA splicing and rationale
 
