@@ -13,7 +13,7 @@ layout: default
 {%- if page.shelf -%}
   {%- assign sh = s.shelves | where: "title", page.shelf | first -%}
   {%- assign heading = sh.title -%}
-  {%- capture items -%}{% include tree-items.html cats=sh.categories page=page.url show=1000 %}{%- endcapture -%}
+  {%- capture items -%}{% include tree-items.html cats=sh.categories page=page.url show=1000 detail=true %}{%- endcapture -%}
 {%- else -%}
   {%- assign heading = s.title -%}
   {%- capture items -%}{% include tree-items.html page=s.page show=1000 cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}

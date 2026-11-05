@@ -7,6 +7,7 @@ layout: default
     abstract, and numbered sections once there are three or more. No date or word count.
     Everything else shows date · words · reading time, then the `links:`. Writing (essays, reviews, stories)
     also shows its summary as a subtitle, and a review its rating between the subtitle and the date; a post in blog/ shows neither.
+    A review with `author_of_book:` (and `published:`) shows them as a byline between the title and the subtitle.
     A post can force either look with `paper: true` or `paper: false` in its front matter. {%- endcomment -%}
 {%- assign paper = false -%}
 {%- for s in site.data.contents -%}
@@ -46,6 +47,9 @@ layout: default
 {%- assign subtitle = true -%}{%- if page.category == "blog" -%}{%- assign subtitle = false -%}{%- endif %}
 <article class="sheet post">
   <h1>{{ page.title }}</h1>
+  {%- if page.author_of_book %}
+  <p class="by">{{ page.author_of_book }}{% if page.published %}<em>, {{ page.published }}</em>{% endif %}</p>
+  {%- endif %}
   {%- if page.summary and subtitle %}
   <p class="sub">{{ page.summary | markdownify | remove: "<p>" | remove: "</p>" | strip }}</p>
   {%- endif %}

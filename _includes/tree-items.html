@@ -3,7 +3,9 @@
     include.cats = post categories that belong here;
     include.catchall = also take posts whose category isn't in include.mapped;
     include.page = where "more" goes; include.show = how many to list (default 3).
-    A post with `short:` in its front matter is listed under that instead of its full title. {%- endcomment -%}
+    A post with `short:` in its front matter is listed under that instead of its full title.
+    include.detail = also show, on a book review, the author's surname after the title and the rating as dots
+    (a shelf page passes this; the home page doesn't). {%- endcomment -%}
 {%- assign show = include.show | default: 3 -%}
 {%- assign n = 0 -%}
 {%- for post in site.posts -%}
@@ -16,7 +18,7 @@
   {%- if keep -%}
     {%- assign n = n | plus: 1 -%}
     {%- if n <= show %}
-    <li><span class="row"><a href="{{ post.url | relative_url }}">{{ post.short | default: post.title }}</a><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m" }}</time></span></li>
+    <li><span class="row"><a href="{{ post.url | relative_url }}">{{ post.short | default: post.title }}{% if include.detail and post.author_of_book %} <span class="who">· {{ post.author_of_book | split: " " | last }}</span>{% endif %}</a><span class="right">{% if include.detail and post.rating %}<span class="dots" title="{{ post.rating }} out of 5">{% for i in (1..5) %}<i{% if i <= post.rating %} class="on"{% endif %}></i>{% endfor %}</span>{% endif %}<time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m" }}</time></span></span></li>
     {%- endif -%}
   {%- endif -%}
 {%- endfor -%}

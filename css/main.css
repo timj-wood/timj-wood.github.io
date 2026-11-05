@@ -120,6 +120,12 @@ a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; 
 .tree .row a:hover { color: var(--sap); text-decoration: underline; }
 .tree .empty, .tree .row a.more { color: var(--moss); }
 .tree time { color: var(--moss); font: 300 13px "IBM Plex Mono", "Courier New", monospace; white-space: nowrap; }
+/* a shelf page can show more on each row (see tree-items.html): the author after the title, the rating as dots before the date */
+.tree .who { color: var(--moss); font-weight: 300; font-size: 13px; }
+.tree .right { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
+.tree .dots { display: inline-flex; gap: 3px; }
+.tree .dots i { width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--moss); }
+.tree .dots i.on { background: var(--moss); }
 
 .foot {
   margin-top: 80px;
@@ -159,6 +165,9 @@ a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; 
   color: var(--pencil);
   margin: 0;
 }
+/* a book review: the author under the title, like a title page, with the year in italics */
+.sheet .by { text-align: center; font-size: 22px; margin: 10px auto 0; }
+.sheet .by em { color: var(--pencil); font-size: 18px; }
 .sheet h1 + .meta, .sheet .sub + .meta { margin-top: 16px; }
 .sheet .meta + .meta { margin-top: 8px; }
 /* a post (either look) starts lower down the page than the about page does */
@@ -275,6 +284,7 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
   .tree .row::before { left: 23px; top: 18px; }
   .tree .row { display: block; min-height: 0; line-height: 1.4; padding: 10px 0 6px; }
   .tree time { display: block; font-size: 12px; }
+  .tree .right { margin-top: 2px; }
   .contents { padding-top: 32px; }
   .sheet { padding: 36px 20px 48px; }
   .sheet h1 { font-size: 30px; }
@@ -286,7 +296,9 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 }
 
 /* ---------- the tree on cream: darker text, lines and hover colours than it needed on the green ---------- */
-body.paper .tree .empty, body.paper .tree .row a.more, body.paper .tree time, body.paper .foot { color: var(--pencil); }
+body.paper .tree .empty, body.paper .tree .row a.more, body.paper .tree time, body.paper .tree .who, body.paper .foot { color: var(--pencil); }
+body.paper .tree .dots i { border-color: var(--pencil); }
+body.paper .tree .dots i.on { background: var(--pencil); }
 body.paper .tree li::before, body.paper .tree li::after { border-color: var(--lichen); }
 body.paper .tree h2 a:hover, body.paper .tree a.dir:hover, body.paper .tree .row a:hover, body.paper .foot a:hover { color: var(--leaf); }
 
