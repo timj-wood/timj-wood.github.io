@@ -1,6 +1,6 @@
 ---
 title: "Burmese Days"
-summary: "Orwell's first and one of his best novels."
+summary: "A stark tale of imperialism and love, and the disappointed of human nature."
 rating: 5
 author_of_book: George Orwell
 published: 1934
