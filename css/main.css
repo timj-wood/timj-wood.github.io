@@ -165,9 +165,8 @@ a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; 
   color: var(--pencil);
   margin: 0;
 }
-/* a book review: the author under the title, like a title page, with the year in italics */
+/* a book review: the author and year under the title, like a title page */
 .sheet .by { text-align: center; font-size: 22px; margin: 10px auto 0; }
-.sheet .by em { color: var(--pencil); font-size: 18px; }
 .sheet h1 + .meta, .sheet .sub + .meta { margin-top: 16px; }
 .sheet .meta + .meta { margin-top: 8px; }
 /* a post (either look) starts lower down the page than the about page does */
