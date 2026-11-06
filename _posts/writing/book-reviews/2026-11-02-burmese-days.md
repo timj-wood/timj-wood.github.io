@@ -1,7 +1,7 @@
 ---
 title: "Burmese Days"
 summary: "A stark tale of imperialism, love, and the disappointment of human nature."
-rating: 5
+rating: 4
 author_of_book: George Orwell
 published: 1934
 ---
