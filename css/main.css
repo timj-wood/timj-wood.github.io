@@ -233,11 +233,15 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .profile img { width: 160px; height: 160px; object-fit: cover; margin: 0; flex: none; border: 1px solid var(--rule); padding: 4px; background: var(--paper); }
 .sheet .profile .sub { margin: 6px 0 0; }
 
-/* ---------- the about page: headed like a folder page, the text in a reading measure, a small photo at its head ---------- */
+/* ---------- the about page: headed like a folder page; the photo with the name, email and links beside it; then the text ---------- */
 .about { max-width: 640px; margin: 0 auto; }
-.about .me { float: right; width: 112px; height: 112px; object-fit: cover; margin: 4px 0 18px 28px; border: 1px solid var(--rule); padding: 3px; background: var(--paper); }
+.about .who { font-size: 24px; font-weight: 500; margin: 0 0 8px; }
+.about .contact { font: 300 14px "IBM Plex Mono", "Courier New", monospace; color: var(--pencil); margin: 0; }
+.about .contact + .contact { margin-top: 5px; }
+.about .contact a { color: var(--pencil); text-decoration: none; }
+.about .contact a:hover { color: var(--leaf); text-decoration: underline; }
 .about p { font-size: 19px; margin: 0 0 1em; hyphens: auto; -webkit-hyphens: auto; }
-.about a { color: var(--leaf); }
+.about p a { color: var(--leaf); }
 
 /* the end of a post or page: the same colophon as the foot of a contents page */
 .end {
@@ -267,7 +271,6 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
   .doc, .post { padding-top: 48px; }
   .profile { flex-direction: column; align-items: flex-start; gap: 18px; }
   .profile img { width: 128px; height: 128px; }
-  .about .me { width: 88px; height: 88px; margin: 0 0 12px 18px; }
   .about p { font-size: 18px; }
   .sheet blockquote { margin: 1.4em 1em; }
   .marginnote { margin-left: 1em; }
