@@ -3,7 +3,7 @@ layout: default
 ---
 {%- comment -%} The home page: a contents page, like a book's. The folders are its parts, in the order they have in
     _data/contents.yml, each listing its newest few posts; the posts are numbered straight through like chapters
-    (the stylesheet counts them). {%- endcomment -%}
+    on the folder pages; on the home page itself the entries carry no number (the stylesheet decides). {%- endcomment -%}
 {%- assign mapped = "" | split: "" -%}
 {%- for s in site.data.contents -%}
   {%- if s.categories -%}{%- assign mapped = mapped | concat: s.categories -%}{%- endif -%}
@@ -11,7 +11,7 @@ layout: default
 {%- endfor -%}
 <main class="contents">
   <h1 class="toc-title">Contents</h1>
-  <ol class="toc">
+  <ol class="toc plain">
 {%- for s in site.data.contents %}
   {%- capture items -%}{% include toc-items.html page=s.page show=s.show cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}
   {%- for sh in s.shelves -%}

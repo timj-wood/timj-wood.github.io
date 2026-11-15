@@ -79,6 +79,8 @@ a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; 
 .toc .part { counter-increment: part; margin-top: 36px; padding-bottom: 4px; }
 .toc .part::before { content: counter(part, upper-roman); font-size: 14px; font-weight: 400; color: var(--ink); }
 .toc li:first-child { margin-top: 0; }
+/* the home page's entries carry no number (the gutter stays, so titles line up under the part names); a folder's page keeps them */
+.toc.plain .entry::before { content: ""; }
 .toc .part a { font-variant: small-caps; letter-spacing: .08em; font-size: 22px; }
 /* a sub-folder's name, a "more" row and an empty folder's placeholder: small and italic, in the title column */
 .toc .shelf, .toc .more, .toc .empty { font-size: 16px; font-style: italic; color: var(--pencil); padding: 10px 0 2px; }
