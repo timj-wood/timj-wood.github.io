@@ -1,31 +1,27 @@
 ---
+layout: default
 title: About
 permalink: /about.html
 redirect_from:
   - /about/
-bare: true
 ---
-<header class="profile">
-  <img src="{{ '/images/profile-square.jpg' | relative_url }}" alt="{{ site.author.name }}">
-  <div>
-    <p class="who">{{ site.author.name }}</p>
-    <p class="contact mono first">contact: tim [dot] jwood [at] outlook</p>
+{%- comment -%} The about page: headed like a folder page, a small photo at the head of the text, and the contact
+    links set in the same colophon as the foot of the home page. {%- endcomment -%}
+<main class="contents">
+  <h1 class="toc-title">About</h1>
+  <div class="about">
+    <img class="me" src="{{ '/images/profile-square.jpg' | relative_url }}" alt="{{ site.author.name }}">
+    <p>Hi! I'm Tim, a master's student in <a href="https://www.bristol.ac.uk/">Bioinformatics</a> at the
+      University of Bristol, funded by an <a href="https://www.hdruk.ac.uk/people/timothy-wood/">HDR UK scholarship</a>.
+      This website acts as an outlet for my bioinformatics projects - academic or independent - and creative writing, book reviews, and essays.</p>
+    <p>For my master's thesis, I'm working with
+      <a href="https://research-information.bris.ac.uk/en/persons/tom-r-gaunt/publications/">Prof. Tom Gaunt</a>,
+      group lead of <a href="https://www.biocompute.org.uk/">DMER</a>, to identify drug-repurposing opportunities
+      for coeliac disease. I did my undergraduate degree in Biology at Bristol, graduating with
+      first-class honours, where I also interned with
+      <a href="https://www.bristol.ac.uk/people/person/Mark-Beaumont-c51e682d-904b-45b4-bda5-9cf2213d4e9d/">Prof. Mark Beaumont</a>'s
+      group in the School of Mathematics.</p>
+    <p>You can see what I've been working on <a href="{{ '/projects.html' | relative_url }}">here</a>.</p>
   </div>
-</header>
-
-<p>Hi! I'm Tim, a master's student in <a href="https://www.bristol.ac.uk/">Bioinformatics</a> at the
-  University of Bristol, funded by an <a href="https://www.hdruk.ac.uk/people/timothy-wood/">HDR UK scholarship</a>.
-  This website acts as an outlet for my bioinformatics projects - academic or independent - and creative writing, book reviews, and essays.</p>
-
-<p>For my master's thesis, I'm working with
-  <a href="https://research-information.bris.ac.uk/en/persons/tom-r-gaunt/publications/">Prof. Tom Gaunt</a>,
-  group lead of <a href="https://www.biocompute.org.uk/">DMER</a>, to identify drug-repurposing opportunities
-  for coeliac disease. I did my undergraduate degree in Biology at Bristol, graduating with
-  first-class honours, where I also interned with
-  <a href="https://www.bristol.ac.uk/people/person/Mark-Beaumont-c51e682d-904b-45b4-bda5-9cf2213d4e9d/">Prof. Mark Beaumont</a>'s
-  group in the School of Mathematics.</p>
-
-<p>You can see what I've been working on <a href="{{ '/projects.html' | relative_url }}">here</a>.</p>
-
-<p class="contact mono"><a href="{{ '/docs/cv.pdf' | relative_url }}">cv</a> · <a href="https://github.com/{{ site.author.github }}">github</a> · <a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">linkedin</a></p>
-
+  <p class="foot">{% include rings.html %}tim [dot] jwood [at] outlook · <a href="{{ '/docs/cv.pdf' | relative_url }}">cv</a> · <a href="https://github.com/{{ site.author.github }}">github</a> · <a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">linkedin</a> · <a href="{{ '/' | relative_url }}">← home</a></p>
+</main>

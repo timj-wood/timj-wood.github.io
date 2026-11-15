@@ -228,14 +228,16 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .doc .numbered h2.unnumbered::before { content: none; }
 .sheet h2.unnumbered ~ p { font-size: 17px; line-height: 1.5; margin: 0 0 1.1em; padding-left: 2em; text-indent: -2em; }
 
-/* about */
-/* the about page's header: photo with name and title beside it (set `profile:` in front matter) */
-.profile { display: flex; align-items: center; gap: 32px; }
-.profile img { width: 140px; height: 140px; object-fit: cover; margin: 0; flex: none; }
+/* a page with `profile:` in its front matter: photo with name and title beside it */
+.profile { display: flex; align-items: center; gap: 32px; margin-bottom: 36px; }
+.profile img { width: 160px; height: 160px; object-fit: cover; margin: 0; flex: none; border: 1px solid var(--rule); padding: 4px; background: var(--paper); }
 .sheet .profile .sub { margin: 6px 0 0; }
-.sheet .contact { font-size: 15px; color: var(--pencil); text-align: center; margin-top: 40px; }
-.sheet .contact.first { text-align: left; margin: 0 0 36px; }
-.sheet .who { font-size: 22px; font-weight: 500; margin: 0 0 4px; }
+
+/* ---------- the about page: headed like a folder page, the text in a reading measure, a small photo at its head ---------- */
+.about { max-width: 640px; margin: 0 auto; }
+.about .me { float: right; width: 112px; height: 112px; object-fit: cover; margin: 4px 0 18px 28px; border: 1px solid var(--rule); padding: 3px; background: var(--paper); }
+.about p { font-size: 19px; margin: 0 0 1em; hyphens: auto; -webkit-hyphens: auto; }
+.about a { color: var(--leaf); }
 
 /* the end of a post or page: the same colophon as the foot of a contents page */
 .end {
@@ -264,13 +266,11 @@ mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
   .sheet h1 { font-size: 30px; }
   .doc, .post { padding-top: 48px; }
   .profile { flex-direction: column; align-items: flex-start; gap: 18px; }
-  .profile img { width: 112px; height: 112px; }
+  .profile img { width: 128px; height: 128px; }
+  .about .me { width: 88px; height: 88px; margin: 0 0 12px 18px; }
+  .about p { font-size: 18px; }
   .sheet blockquote { margin: 1.4em 1em; }
   .marginnote { margin-left: 1em; }
 }
 
-/* the about page: the photo sits beside the name and contact line */
-.profile .contact.first { margin-bottom: 0; }
-.profile { margin-bottom: 36px; }
-.profile img { width: 160px; height: 160px; border: 1px solid var(--rule); padding: 4px; background: var(--paper); }
-@media (max-width: 640px) { .profile img { width: 128px; height: 128px; } }
+
