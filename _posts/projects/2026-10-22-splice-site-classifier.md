@@ -5,7 +5,7 @@ summary: "Logistic regression, a single sigmoid neuron and a small multilayer pe
 when: oct 2026
 links:
   - { label: repo, url: "https://github.com/timj-wood/splice-site-nn" }
-  - { label: blog, url: /posts/splice-site-neural-network.html }
+  - { label: write-up, url: /posts/splice-site-neural-network.html }
 ---
 
 ## Approach

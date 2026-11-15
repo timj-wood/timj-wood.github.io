@@ -13,4 +13,4 @@ redirect_from:
   - /projects/wildcat-introgression/
 summary: "Independent projects and academic work."
 ---
-{%- comment -%} A tree of the posts with `category: project`. {%- endcomment -%}
+{%- comment -%} A contents page of the posts with `category: project`. {%- endcomment -%}

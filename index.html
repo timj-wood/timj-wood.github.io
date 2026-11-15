@@ -1,38 +1,35 @@
 ---
 layout: default
 ---
-{%- comment -%} The home page: a folder tree. The folders and their order live in _data/contents.yml;
-    each shows its newest few items. {%- endcomment -%}
+{%- comment -%} The home page: a contents page, like a book's. The folders are its parts, in the order they have in
+    _data/contents.yml, each listing its newest few posts; the posts are numbered straight through like chapters
+    (the stylesheet counts them). {%- endcomment -%}
 {%- assign mapped = "" | split: "" -%}
 {%- for s in site.data.contents -%}
   {%- if s.categories -%}{%- assign mapped = mapped | concat: s.categories -%}{%- endif -%}
   {%- for sh in s.shelves -%}{%- assign mapped = mapped | concat: sh.categories -%}{%- endfor -%}
 {%- endfor -%}
 <main class="contents">
-{% for s in site.data.contents %}
-  {%- capture items -%}{% include tree-items.html data=s.data page=s.page show=s.show cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}
+  <h1 class="toc-title">Contents</h1>
+  <ol class="toc">
+{%- for s in site.data.contents %}
+  {%- capture items -%}{% include toc-items.html page=s.page show=s.show cats=s.categories catchall=s.everything_else mapped=mapped %}{%- endcapture -%}
   {%- for sh in s.shelves -%}
     {%- assign slug = sh.title | slugify -%}
     {%- assign shelf_link = s.page | append: "#" | append: slug -%}
     {%- if sh.page -%}{%- assign shelf_link = sh.page -%}{%- endif -%}
-    {%- capture inner -%}{% include tree-items.html cats=sh.categories page=shelf_link show=s.show %}{%- endcapture -%}
+    {%- capture inner -%}{% include toc-items.html cats=sh.categories page=shelf_link show=s.show %}{%- endcapture -%}
     {%- if inner != "" -%}
       {%- capture items %}{{ items }}
-    <li><span class="row"><a class="dir" href="{{ shelf_link | relative_url }}">{{ sh.title }}/</a></span>
-      <ul>{{ inner }}
-      </ul>
-    </li>{% endcapture -%}
+    <li class="shelf"><a href="{{ shelf_link | relative_url }}">{{ sh.title | capitalize }}</a></li>{{ inner }}{% endcapture -%}
     {%- endif -%}
   {%- endfor %}
-  <section class="tree">
-    <h2><a href="{{ s.page | relative_url }}">{{ s.title }}/</a></h2>
-    <ul>
+    <li class="part"><a href="{{ s.page | relative_url }}">{{ s.title | capitalize }}</a></li>
     {%- if items != "" %}{{ items }}
     {%- else %}
-      <li><span class="row"><span class="empty">nothing here yet</span></span></li>
+    <li class="empty">nothing here yet</li>
     {%- endif %}
-    </ul>
-  </section>
-{% endfor %}
+{%- endfor %}
+  </ol>
   {% include foot.html %}
 </main>

@@ -6,4 +6,4 @@ permalink: /blog.html
 redirect_from: /blog/
 summary: "Writeups for my independent projects and things I find interesting"
 ---
-{%- comment -%} A tree of every post that isn't in another folder. {%- endcomment -%}
+{%- comment -%} A contents page of every post that isn't in another folder. {%- endcomment -%}
