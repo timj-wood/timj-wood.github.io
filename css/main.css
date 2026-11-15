@@ -64,7 +64,7 @@ a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1px; 
 /* ---------- contents pages: home, folders and shelves ---------- */
 
 .contents {
-  max-width: 640px;
+  max-width: 820px;   /* the same width as the band, so the list lines up with the mark and the band's edge */
   margin: 0 auto;
   padding: 72px 24px 96px;
 }
