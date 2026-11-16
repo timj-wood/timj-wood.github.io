@@ -14,6 +14,6 @@ Three classifiers were trained to decide whether a 60-base window of primate DNA
 
 ## Findings
 
-Logistic regression reached 93.7% test accuracy, the neuron 93.4% on the binary version of the task, and the perceptron 94.0%; *k*-nearest neighbours only managed 85.1%. Every model that can be read position by position was able to identify GT immediately after the junction and AG immediately before it. The perceptron's small lead over logistic regression is within what a different test split could produce, and it began overfitting after about seven epochs. The splice signal in this data appears to be largely additive, so a linear model captures most the data.
+Logistic regression reached 93.7% test accuracy, the neuron 93.4% on the binary version of the task, and the perceptron 94.0%; *k*-nearest neighbours only managed 85.1%. Every model that can be read position by position was able to identify GT immediately after the junction and AG immediately before it. The perceptron's marginal gains logistic regression is within what a different test split could produce, and it began overfitting after about seven epochs. The splice signal in this data appears to be largely additive, so a linear model captures most the data.
 
 The code and figures are in the [repository](https://github.com/timj-wood/splice-site-nn); how each model was built, and what I learnt doing it, is in the [blog]({{ '/posts/splice-site-neural-network.html' | relative_url }}) post.
